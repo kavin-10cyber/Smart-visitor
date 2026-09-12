@@ -10,6 +10,14 @@ export function getApiBaseUrl() {
   return API_BASE_URL;
 }
 
+export function getDownloadUrl(tokenCode) {
+  return `${API_BASE_URL}/tokens/${encodeURIComponent(tokenCode)}/download`;
+}
+
+export function getBadgeUrl(tokenCode) {
+  return `${API_BASE_URL}/tokens/${encodeURIComponent(tokenCode)}/badge`;
+}
+
 async function request(endpoint, options = {}) {
   try {
     const res = await fetch(`${API_BASE_URL}${endpoint}`, {

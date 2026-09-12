@@ -10,9 +10,11 @@ import {
   FlatList,
   RefreshControl,
   Alert,
+  Linking,
+  BackHandler,
 } from 'react-native';
 import QRCodeDisplay from '../components/QRCodeDisplay';
-import { api } from '../services/api';
+import { api, getDownloadUrl, getBadgeUrl } from '../services/api';
 
 export default function AdminPortal({ onLogout }) {
   const [currentTab, setCurrentTab] = useState('menu'); // 'menu' | 'generate' | 'tokens' | 'visitors'
@@ -51,6 +53,20 @@ export default function AdminPortal({ onLogout }) {
     loadData();
   }, [searchQuery]);
 
+  // Handle Android back swipe/button to navigate back one screen
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (currentTab !== 'menu') {
+        setCurrentTab('menu');
+        return true;
+      }
+      return false;
+    };
+
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return () => backSubscription.remove();
+  }, [currentTab]);
+
   const handleGenerateNewQR = async () => {
     setLoading(true);
     try {
@@ -79,61 +95,93 @@ export default function AdminPortal({ onLogout }) {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+
   // Render Top Menu Dashboard
   const renderMenu = () => (
-    <View style={styles.menuContainer}>
-      <Text style={styles.welcomeTitle}>ADMIN PORTAL</Text>
-      <Text style={styles.subtitle}>Generate tokens and manage campus visitor records</Text>
+    <ScrollView
+      style={styles.viewSection}
+      contentContainerStyle={styles.viewSectionContent}
+      showsVerticalScrollIndicator={true}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#2563eb']}
+          tintColor="#2563eb"
+        />
+      }
+    >
+      <View style={styles.menuContainer}>
+        <Text style={styles.welcomeTitle}>ADMIN PORTAL</Text>
+        <Text style={styles.subtitle}>Generate tokens and manage campus visitor records</Text>
 
-      {/* Main Action Buttons as required */}
-      <View style={styles.actionButtonsCol}>
-        <TouchableOpacity
-          style={[styles.mainActionBtn, styles.generateBtn]}
-          onPress={handleGenerateNewQR}
-          disabled={loading}
-        >
-          <Text style={styles.mainActionIcon}>⚡</Text>
-          <Text style={styles.mainActionBtnText}>GENERATE NEW QR</Text>
-        </TouchableOpacity>
+        {/* Main Action Buttons as required */}
+        <View style={styles.actionButtonsCol}>
+          <TouchableOpacity
+            style={[styles.mainActionBtn, styles.generateBtn]}
+            onPress={handleGenerateNewQR}
+            disabled={loading}
+          >
+            <Text style={styles.mainActionIcon}>⚡</Text>
+            <Text style={styles.mainActionBtnText}>GENERATE NEW QR</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.mainActionBtn, styles.viewVisitorsBtn]}
-          onPress={() => setCurrentTab('visitors')}
-        >
-          <Text style={styles.mainActionIcon}>👥</Text>
-          <Text style={styles.mainActionBtnText}>VIEW VISITORS</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.mainActionBtn, styles.viewVisitorsBtn]}
+            onPress={() => setCurrentTab('visitors')}
+          >
+            <Text style={styles.mainActionIcon}>👥</Text>
+            <Text style={styles.mainActionBtnText}>VIEW VISITORS</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.mainActionBtn, styles.tokensBtn]}
-          onPress={() => setCurrentTab('tokens')}
-        >
-          <Text style={styles.mainActionIcon}>📋</Text>
-          <Text style={styles.mainActionBtnText}>QR TOKEN LIST ({tokens.length})</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.mainActionBtn, styles.tokensBtn]}
+            onPress={() => setCurrentTab('tokens')}
+          >
+            <Text style={styles.mainActionIcon}>📋</Text>
+            <Text style={styles.mainActionBtnText}>QR TOKEN LIST ({tokens.length})</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Quick Summary Cards */}
+        <View style={styles.statsRow}>
+          <View style={styles.statCard}>
+            <Text style={styles.statNumber}>{tokens.length}</Text>
+            <Text style={styles.statLabel}>Total Tokens</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: '#2563eb' }]}>{activeVisits.length}</Text>
+            <Text style={styles.statLabel}>Inside Campus</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={[styles.statNumber, { color: '#16a34a' }]}>{historyVisits.length}</Text>
+            <Text style={styles.statLabel}>Completed</Text>
+          </View>
+        </View>
       </View>
-
-      {/* Quick Summary Cards */}
-      <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNumber}>{tokens.length}</Text>
-          <Text style={styles.statLabel}>Total Tokens</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: '#2563eb' }]}>{activeVisits.length}</Text>
-          <Text style={styles.statLabel}>Inside Campus</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={[styles.statNumber, { color: '#16a34a' }]}>{historyVisits.length}</Text>
-          <Text style={styles.statLabel}>Completed</Text>
-        </View>
-      </View>
-    </View>
+    </ScrollView>
   );
 
   // Render Newly Generated QR View
   const renderGenerateView = () => (
-    <ScrollView style={styles.viewSection} contentContainerStyle={styles.viewSectionContent}>
+    <ScrollView
+      style={styles.viewSection}
+      contentContainerStyle={styles.viewSectionContent}
+      showsVerticalScrollIndicator={true}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#2563eb']}
+          tintColor="#2563eb"
+        />
+      }
+    >
       <TouchableOpacity style={styles.backBtn} onPress={() => setCurrentTab('menu')}>
         <Text style={styles.backBtnText}>← Back to Admin Portal</Text>
       </TouchableOpacity>
@@ -147,7 +195,7 @@ export default function AdminPortal({ onLogout }) {
             status={latestGeneratedToken.status}
           />
           <TouchableOpacity style={styles.primaryActionBtn} onPress={handleGenerateNewQR}>
-            <Text style={styles.primaryActionText}>GENERATE ANOTHER QR TOKEN</Text>
+            <Text style={styles.primaryActionText}>⚡ GENERATE ANOTHER QR TOKEN</Text>
           </TouchableOpacity>
         </View>
       ) : null}

@@ -31,3 +31,8 @@ CREATE TABLE IF NOT EXISTS visits (
 CREATE INDEX IF NOT EXISTS idx_tokens_code ON visitor_tokens(token_code);
 CREATE INDEX IF NOT EXISTS idx_visits_token_code ON visits(token_code);
 CREATE INDEX IF NOT EXISTS idx_visits_status ON visits(status);
+
+-- Security & Permissions (Enable public access via anon key for Express backend)
+ALTER TABLE visitor_tokens DISABLE ROW LEVEL SECURITY;
+ALTER TABLE visits DISABLE ROW LEVEL SECURITY;
+

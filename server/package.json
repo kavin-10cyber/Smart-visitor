@@ -6,12 +6,14 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
-    "test": "node scripts/test_flow.js"
+    "test": "node scripts/test_flow.js",
+    "migrate": "node scripts/migrate_to_supabase.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4"
   }
 }

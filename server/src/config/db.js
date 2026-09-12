@@ -5,8 +5,8 @@ const path = require('path');
 
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+let supabaseUrl = (process.env.SUPABASE_URL || '').trim().replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '');
+const supabaseAnonKey = (process.env.SUPABASE_ANON_KEY || '').trim();
 
 let supabase = null;
 let isUsingSupabase = false;

@@ -10,6 +10,7 @@ import {
   FlatList,
   RefreshControl,
   Alert,
+  BackHandler,
 } from 'react-native';
 import QRScanner from '../components/QRScanner';
 import { api } from '../services/api';
@@ -56,9 +57,29 @@ export default function SecurityPortal({ onLogout }) {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData();
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     loadData();
   }, []);
+
+  // Handle Android back swipe/button to navigate back one screen
+  useEffect(() => {
+    const handleBackPress = () => {
+      if (screen !== 'home') {
+        setScreen('home');
+        return true;
+      }
+      return false;
+    };
+
+    const backSubscription = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    return () => backSubscription.remove();
+  }, [screen]);
 
   const formatTime = (isoString) => {
     if (!isoString) return '--:--';
@@ -163,7 +184,15 @@ export default function SecurityPortal({ onLogout }) {
   const renderHome = () => (
     <ScrollView
       style={styles.viewSection}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={loadData} />}
+      showsVerticalScrollIndicator={true}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#2563eb']}
+          tintColor="#2563eb"
+        />
+      }
     >
       <Text style={styles.portalTitle}>SECURITY PORTAL</Text>
       <Text style={styles.portalSub}>Campus Entrance Guard Desk</Text>
