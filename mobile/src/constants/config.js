@@ -1,7 +1,7 @@
 // Backend API Configuration
 // Wi-Fi Local IP allows standalone APK on phone to connect to computer over Wi-Fi
 // For USB debugging with adb reverse, localhost:5000 is also supported
-export const DEFAULT_API_HOST = 'http://10.10.190.232:5000';
+export const DEFAULT_API_HOST = 'http://10.221.17.146:5000';
 
 export const API_ENDPOINTS = {
   HEALTH: '/health',

@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "18.2.0",
     "react-native": "0.73.6",
+    "react-native-camera-kit": "^18.0.1",
     "react-native-qrcode-svg": "^6.3.12",
     "react-native-svg": "^14.1.0"
   },
