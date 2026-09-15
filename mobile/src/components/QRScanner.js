@@ -117,16 +117,20 @@ export default function QRScanner({
   const [showAllTokens, setShowAllTokens] = useState(false);
   const [badgeSearch, setBadgeSearch] = useState('');
 
+  // Defensive tokens array
+  const tokensSafe = Array.isArray(availableTokens) ? availableTokens : [];
+
   // Counts
-  const availableCount = availableTokens.filter((t) => t.status === 'AVAILABLE').length;
-  const inUseCount = availableTokens.filter((t) => t.status === 'IN USE').length;
+  const availableCount = tokensSafe.filter((t) => t && t.status === 'AVAILABLE').length;
+  const inUseCount = tokensSafe.filter((t) => t && t.status === 'IN USE').length;
 
   // Filter tokens for quick select
-  const filteredTokens = availableTokens.filter((t) => {
+  const filteredTokens = tokensSafe.filter((t) => {
+    if (!t) return false;
     if (selectedCategory === 'AVAILABLE' && t.status !== 'AVAILABLE') return false;
     if (selectedCategory === 'IN_USE' && t.status !== 'IN USE') return false;
     if (badgeSearch.trim()) {
-      return t.token_code.toLowerCase().includes(badgeSearch.trim().toLowerCase());
+      return (t.token_code || '').toLowerCase().includes(badgeSearch.trim().toLowerCase());
     }
     return true;
   });

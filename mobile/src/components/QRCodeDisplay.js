@@ -58,10 +58,19 @@ export default function QRCodeDisplay({ tokenCode, status = 'AVAILABLE', size = 
     if (!tokenCode) return;
     try {
       const url = getBadgeUrl(tokenCode);
-      await Linking.openURL(url);
+      const supported = await Linking.canOpenURL(url).catch(() => false);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        await Linking.openURL(getDownloadUrl(tokenCode));
+      }
     } catch (err) {
       console.error('Print view error:', err);
-      Alert.alert('Error', 'Failed to open badge printable view');
+      try {
+        await Linking.openURL(getDownloadUrl(tokenCode));
+      } catch (fallbackErr) {
+        Alert.alert('Error', 'Failed to open badge view');
+      }
     }
   };
 

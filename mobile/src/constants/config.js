@@ -1,15 +1,8 @@
-// Backend API Configuration
-// Wi-Fi Local IP allows standalone APK on phone to connect to computer over Wi-Fi
-// For USB debugging with adb reverse, localhost:5000 is also supported
-export const DEFAULT_API_HOST = 'http://10.221.17.146:5000';
+// Supabase Cloud Configuration
+// Direct PostgreSQL Cloud connection - no local backend server required!
+export const SUPABASE_URL = 'https://exvqmhwmpswggjwuzrvw.supabase.co';
+export const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4dnFtaHdtcHN3Z2dqd3V6cnZ3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxNzk3ODksImV4cCI6MjEwNDc1NTc4OX0.8d7cSraaox1q1JaFy7ey1a_hoprA5897lWBVqhd6E0w';
 
-export const API_ENDPOINTS = {
-  HEALTH: '/health',
-  LOGIN: '/auth/login',
-  TOKENS: '/tokens',
-  GENERATE_TOKEN: '/tokens/generate',
-  VERIFY_TOKEN: (code) => `/tokens/${encodeURIComponent(code)}`,
-  CHECK_IN: '/visits/check-in',
-  CHECK_OUT: '/visits/check-out',
-  VISITS: (search = '') => `/visits?search=${encodeURIComponent(search)}`,
-};
+// Retained for backward-compatibility with status displays
+export const DEFAULT_API_HOST = SUPABASE_URL;

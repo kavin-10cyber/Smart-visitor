@@ -337,31 +337,9 @@ export default function LoginScreen({ onLoginSuccess }) {
           </View>
 
           {/* Optional Server Config footer */}
-          <TouchableOpacity
-            style={styles.serverRow}
-            onPress={() => setShowServerConfig(!showServerConfig)}
-            activeOpacity={0.7}
-          >
-            <Text style={styles.serverText}>Server: {currentServerUrl}</Text>
-            <Text style={styles.serverEditBtn}>{showServerConfig ? 'Close' : 'Configure'}</Text>
-          </TouchableOpacity>
-
-          {showServerConfig && (
-            <View style={styles.serverEditBox}>
-              <TextInput
-                style={styles.serverInput}
-                value={currentServerUrl}
-                onChangeText={(text) => {
-                  setCurrentServerUrl(text);
-                  api.setBaseUrl(text);
-                }}
-                placeholder="e.g. http://10.10.190.232:5000"
-                placeholderTextColor="#94a3b8"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-          )}
+          <View style={styles.serverRow}>
+            <Text style={styles.serverText}>☁️ Cloud Database: Supabase Connected</Text>
+          </View>
         </ScrollView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
