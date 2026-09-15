@@ -78,9 +78,17 @@ npm install
 npm start
 ```
 
-In a separate terminal, launch on your Android emulator or connected device:
+In a separate terminal, launch on your target platform:
+
+**Android**:
 ```powershell
 npm run android
+```
+
+**iOS (macOS / Xcode)**:
+```bash
+cd ios && pod install && cd ..
+npm run ios
 ```
 
 ---

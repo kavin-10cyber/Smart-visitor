@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { CloseIcon } from '../AdminIcons';
 import styles from '../../styles/adminStyles';
@@ -45,8 +47,12 @@ export default function IssueTokenModal({
       transparent={true}
       onRequestClose={onClose}
     >
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalCard}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalHeaderTitle}>Issue Campus Pass</Text>
             <TouchableOpacity onPress={onClose} style={styles.modalCloseBtn}>
@@ -116,6 +122,7 @@ export default function IssueTokenModal({
           </ScrollView>
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

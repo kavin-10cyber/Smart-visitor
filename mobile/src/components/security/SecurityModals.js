@@ -2,6 +2,7 @@ import React from 'react';
 import {
   View, Text, Modal, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, SafeAreaView,
+  KeyboardAvoidingView, Platform,
 } from 'react-native';
 import QRScanner from '../QRScanner';
 import { ShieldIcon, CloseIcon } from '../AdminIcons';
@@ -64,69 +65,74 @@ export function CheckInModal({
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={s.modalBackdrop}>
-        <View style={s.modalCard}>
-          <View style={s.modalHeaderRow}>
-            <Text style={s.modalHeaderTitle}>Visitor Check-In Registration</Text>
-            <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
-              <CloseIcon size={20} color="#64748b" />
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView showsVerticalScrollIndicator={false}>
-            <Text style={s.formInputLabel}>Assigned Badge / QR Token *</Text>
-            <View style={s.tokenDisplayBox}>
-              <Text style={s.tokenDisplayText}>{displayToken}</Text>
-              <Text style={s.tokenDisplaySub}>{tokenCount} tokens available in gate fleet</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={s.modalBackdrop}>
+          <View style={s.modalCard}>
+            <View style={s.modalHeaderRow}>
+              <Text style={s.modalHeaderTitle}>Visitor Check-In Registration</Text>
+              <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
+                <CloseIcon size={20} color="#64748b" />
+              </TouchableOpacity>
             </View>
 
-            <Text style={s.formInputLabel}>Visitor Full Name *</Text>
-            <TextInput
-              style={s.formTextInput}
-              placeholder="e.g. Arun Kumar"
-              placeholderTextColor="#94a3b8"
-              value={regFullName}
-              onChangeText={setRegFullName}
-            />
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={s.formInputLabel}>Assigned Badge / QR Token *</Text>
+              <View style={s.tokenDisplayBox}>
+                <Text style={s.tokenDisplayText}>{displayToken}</Text>
+                <Text style={s.tokenDisplaySub}>{tokenCount} tokens available in gate fleet</Text>
+              </View>
 
-            <Text style={s.formInputLabel}>Mobile Number *</Text>
-            <TextInput
-              style={s.formTextInput}
-              placeholder="e.g. 9840122345"
-              placeholderTextColor="#94a3b8"
-              keyboardType="phone-pad"
-              value={regMobile}
-              onChangeText={setRegMobile}
-            />
+              <Text style={s.formInputLabel}>Visitor Full Name *</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. Arun Kumar"
+                placeholderTextColor="#94a3b8"
+                value={regFullName}
+                onChangeText={setRegFullName}
+              />
 
-            <Text style={s.formInputLabel}>Host Person / Destination Dept</Text>
-            <TextInput
-              style={s.formTextInput}
-              placeholder="e.g. Dr. Aris (Computer Science)"
-              placeholderTextColor="#94a3b8"
-              value={regHost}
-              onChangeText={setRegHost}
-            />
+              <Text style={s.formInputLabel}>Mobile Number *</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. 9840122345"
+                placeholderTextColor="#94a3b8"
+                keyboardType="phone-pad"
+                value={regMobile}
+                onChangeText={setRegMobile}
+              />
 
-            <Text style={s.formInputLabel}>Purpose of Visit</Text>
-            <TextInput
-              style={s.formTextInput}
-              placeholder="e.g. General Campus Visit"
-              placeholderTextColor="#94a3b8"
-              value={regPurpose}
-              onChangeText={setRegPurpose}
-            />
+              <Text style={s.formInputLabel}>Host Person / Destination Dept</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. Dr. Aris (Computer Science)"
+                placeholderTextColor="#94a3b8"
+                value={regHost}
+                onChangeText={setRegHost}
+              />
 
-            <TouchableOpacity style={s.submitCheckInBtn} onPress={onSubmit} disabled={submittingCheckIn}>
-              {submittingCheckIn ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Text style={s.submitCheckInBtnText}>Authorize Gate Pass & Open Barrier</Text>
-              )}
-            </TouchableOpacity>
-          </ScrollView>
+              <Text style={s.formInputLabel}>Purpose of Visit</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. General Campus Visit"
+                placeholderTextColor="#94a3b8"
+                value={regPurpose}
+                onChangeText={setRegPurpose}
+              />
+
+              <TouchableOpacity style={s.submitCheckInBtn} onPress={onSubmit} disabled={submittingCheckIn}>
+                {submittingCheckIn ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={s.submitCheckInBtnText}>Authorize Gate Pass & Open Barrier</Text>
+                )}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

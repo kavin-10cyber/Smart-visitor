@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   NativeModules,
+  Platform,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { getDownloadUrl, getBadgeUrl } from '../services/api';
@@ -28,10 +29,10 @@ export default function QRCodeDisplay({ tokenCode, status = 'AVAILABLE', size = 
             dataURL,
             `${tokenCode}-qrcode.png`
           );
-          Alert.alert(
-            '✅ Downloaded to Device',
-            `QR Code saved directly to your folder:\n\n📁 ${savedPath}\n\nYou can view it in your Files / Downloads app!`
-          );
+          const savedMsg = Platform.OS === 'ios'
+            ? `QR Code saved directly to your device:\n\n📁 ${savedPath}\n\nYou can view it in your Photos app!`
+            : `QR Code saved directly to your folder:\n\n📁 ${savedPath}\n\nYou can view it in your Files / Downloads app!`;
+          Alert.alert('✅ Downloaded to Device', savedMsg);
         } catch (err) {
           console.error('Direct save error:', err);
           // Fallback to browser download if native fails
