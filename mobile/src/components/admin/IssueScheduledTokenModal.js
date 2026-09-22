@@ -15,6 +15,7 @@ import {
   CheckMarkIcon,
   ArrowRightIcon,
   QRIcon,
+  CrownIcon,
 } from '../AdminIcons';
 import CalendarPicker, { formatDisplayDate } from './CalendarPicker';
 import styles from '../../styles/adminStyles';
@@ -23,12 +24,6 @@ const CATEGORIES = [
   { key: 'VIP', label: 'VIP / Guest' },
   { key: 'Contractor', label: 'Contractor' },
   { key: 'Utility', label: 'Utility / Maintenance' },
-];
-
-const GATES = [
-  'Gate 1 Entrance',
-  'Service Gate 2',
-  'VIP Gate 3 (Auditorium)',
 ];
 
 const TIME_WINDOWS = [
@@ -45,7 +40,7 @@ const POPULAR_HOSTS = [
   'Estate & Facilities Office',
 ];
 
-export default function IssueScheduledTokenModal({
+function IssueScheduledTokenModal({
   visible,
   onClose,
   availableTokens = [],
@@ -56,14 +51,9 @@ export default function IssueScheduledTokenModal({
   const [fullName, setFullName] = useState('');
   const [mobile, setMobile] = useState('');
   const [company, setCompany] = useState('');
-  const [vehicleNo, setVehicleNo] = useState('');
-
-  // Date state with clean default
-  const [expectedDate, setExpectedDate] = useState(() => formatDisplayDate(new Date()));
-
-  const [timeWindow, setTimeWindow] = useState('09:00 AM - 01:00 PM');
-  const [host, setHost] = useState('Dr. Amar Karthik - Placement Cell');
-  const [assignedGate, setAssignedGate] = useState('Gate 1 Entrance');
+  const [expectedDate, setExpectedDate] = useState('');
+  const [timeWindow, setTimeWindow] = useState('');
+  const [host, setHost] = useState('');
   const [purpose, setPurpose] = useState('');
   const [isVip, setIsVip] = useState(true);
   const [selectedTokenCode, setSelectedTokenCode] = useState('');
@@ -75,27 +65,10 @@ export default function IssueScheduledTokenModal({
     }
   }, [availableTokens, visible]);
 
-  // Adjust defaults when category switches
+  // Clean category switcher without overriding user input fields
   const handleCategorySelect = (newCat) => {
     setCategory(newCat);
-    if (newCat === 'VIP') {
-      setIsVip(true);
-      setAssignedGate('Gate 1 Entrance');
-      setPurpose('Keynote Speaker / VIP Guest');
-      setCompany('Government Official');
-    } else if (newCat === 'Contractor') {
-      setIsVip(false);
-      setAssignedGate('Service Gate 2');
-      setPurpose('ATM Cash Replenishment / Network Cabling');
-      setCompany('Diebold ATM Service');
-      setHost('Estate & Facilities Office');
-    } else {
-      setIsVip(false);
-      setAssignedGate('Service Gate 2');
-      setPurpose('HVAC Maintenance / Inspection');
-      setCompany('Schindler Facilities');
-      setHost('Estate & Facilities Office');
-    }
+    setIsVip(newCat === 'VIP');
   };
 
   const handleSubmit = () => {
@@ -105,11 +78,11 @@ export default function IssueScheduledTokenModal({
       full_name: fullName.trim(),
       mobile: mobile.trim(),
       company: company.trim(),
-      vehicle_no: vehicleNo.trim().toUpperCase(),
-      expected_date: expectedDate,
-      time_window: timeWindow,
-      address: host.trim() || 'Admin Office',
-      gate: assignedGate,
+      vehicle_no: '',
+      expected_date: expectedDate.trim() || 'Today',
+      time_window: timeWindow.trim() || '09:00 AM - 01:00 PM',
+      address: host.trim() || 'Dr. Amar Karthik - Placement Cell',
+      gate: 'Gate 1 Entrance',
       purpose: purpose.trim() || `${category} Visit`,
       is_vip: isVip,
       token_code: tokenToUse,
@@ -201,26 +174,16 @@ export default function IssueScheduledTokenModal({
                 />
               </View>
               <View style={styles.colHalf}>
-                <Text style={styles.formInputLabel}>Vehicle Number (Optional)</Text>
+                <Text style={styles.formInputLabel}>Company / Organization</Text>
                 <TextInput
                   style={styles.formTextInput}
-                  placeholder="e.g. TN 38 AB 1234"
+                  placeholder="e.g. Diebold / Tech Corp"
                   placeholderTextColor="#94a3b8"
-                  autoCapitalize="characters"
-                  value={vehicleNo}
-                  onChangeText={setVehicleNo}
+                  value={company}
+                  onChangeText={setCompany}
                 />
               </View>
             </View>
-
-            <Text style={styles.formInputLabel}>Company / Organization</Text>
-            <TextInput
-              style={styles.formTextInput}
-              placeholder="e.g. Diebold ATM Service or Government Official"
-              placeholderTextColor="#94a3b8"
-              value={company}
-              onChangeText={setCompany}
-            />
 
             {/* 3. Scheduling & Location Fields */}
             <Text style={styles.formSectionHeading}>Scheduling & Location</Text>
@@ -293,29 +256,6 @@ export default function IssueScheduledTokenModal({
               ))}
             </View>
 
-            <Text style={styles.formInputLabel}>Assigned Gate</Text>
-            <View style={styles.chipSelectRow}>
-              {GATES.map((g) => (
-                <TouchableOpacity
-                  key={g}
-                  style={[
-                    styles.chipSelectItem,
-                    assignedGate === g && styles.chipSelectItemActive,
-                  ]}
-                  onPress={() => setAssignedGate(g)}
-                >
-                  <Text
-                    style={[
-                      styles.chipSelectText,
-                      assignedGate === g && styles.chipSelectTextActive,
-                    ]}
-                  >
-                    {g}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
             {/* 4. Purpose & Priority Badges */}
             <Text style={styles.formSectionHeading}>Purpose & Priority</Text>
 
@@ -343,7 +283,10 @@ export default function IssueScheduledTokenModal({
                 {isVip && <CheckMarkIcon size={14} color="#ffffff" />}
               </View>
               <View style={styles.priorityLabelCol}>
-                <Text style={styles.priorityMainTitle}>👑 Mark as VIP Priority</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <CrownIcon size={14} color="#1d4ed8" />
+                  <Text style={styles.priorityMainTitle}>Mark as VIP Priority</Text>
+                </View>
                 <Text style={styles.prioritySubDescription}>
                   When toggled, highlights the record on the security guard app
                 </Text>
@@ -399,3 +342,6 @@ export default function IssueScheduledTokenModal({
     </Modal>
   );
 }
+
+export default React.memo(IssueScheduledTokenModal);
+

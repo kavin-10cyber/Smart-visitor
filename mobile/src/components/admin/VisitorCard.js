@@ -2,22 +2,26 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import {
   CheckOutIcon,
-  InfoIcon,
   PhoneIcon,
-  ArrowEnterIcon,
   CheckMarkIcon,
+  CrownIcon,
+  BuildingIcon,
+  ClockIcon,
+  CalendarIcon,
+  CancelCircleIcon,
+  ChevronRightIcon,
 } from '../AdminIcons';
 import styles from '../../styles/adminStyles';
 
-// Pastel avatar color pairs
+// Executive avatar color pairs
 const AVATAR_PALETTES = [
-  { bg: '#e0e7ff', text: '#3730a3' },
+  { bg: '#eff6ff', text: '#1d4ed8' },
+  { bg: '#f1f5f9', text: '#334155' },
   { bg: '#ede9fe', text: '#5b21b6' },
-  { bg: '#fce7f3', text: '#9d174d' },
+  { bg: '#f0fdf4', text: '#15803d' },
+  { bg: '#f8fafc', text: '#475569' },
+  { bg: '#fff7ed', text: '#c2410c' },
   { bg: '#e0f2fe', text: '#0369a1' },
-  { bg: '#dcfce7', text: '#15803d' },
-  { bg: '#fef3c7', text: '#b45309' },
-  { bg: '#ffedd5', text: '#c2410c' },
 ];
 
 export function getAvatarPalette(name = '') {
@@ -47,11 +51,17 @@ export function formatDisplayTime(isoString) {
 }
 
 /**
- * VisitorCard — a single visitor row in the campus manifest list.
- * Props:
- *   item, index, onCheckOut, onReschedule, onCancelToken, onDetails, onCall
+ * VisitorCard — Minimal, executive campus manifest visitor card.
+ *
+ * Features:
+ *  - Ultra-clean card face with zero unnecessary clutter
+ *  - Tapping the card opens the full visitor profile in a modal
+ *  - Single-color line icons (zero emojis)
+ *  - Clean light-gray border (#E5E7EB) and soft drop shadow
+ *  - Executive VIP micro-badge with royal blue left accent
+ *  - 3 equal-width outline buttons (Reschedule, Cancel, Contact) with flex: 1
  */
-export default function VisitorCard({
+function VisitorCard({
   item,
   index,
   onCheckOut,
@@ -60,33 +70,54 @@ export default function VisitorCard({
   onDetails,
   onCall,
 }) {
+  const visitorName = (
+    item?.full_name ||
+    item?.fullName ||
+    item?.name ||
+    item?.visitor_name ||
+    'Visitor Name'
+  ).trim() || 'Visitor Name';
+
   const isScheduled = item.status === 'SCHEDULED';
   const isInside = item.status === 'ACTIVE';
   const isVip = item.is_vip || item.category === 'VIP';
-  const palette = getAvatarPalette(item.full_name || 'Visitor');
-  const initials = getInitials(item.full_name);
-  const gate = item.gate || 'Gate 1 Entrance';
-  const purposeLabel = item.purpose || 'General Visit';
-  const hostLabel =
-    item.host || (item.address ? `${item.address}` : 'Dr. Amar Karthik (Placement Cell)');
+  const palette = getAvatarPalette(visitorName);
+  const initials = getInitials(visitorName);
+
+  const dateDisplay = isScheduled
+    ? (item.expected_date || 'Today')
+    : (item.check_in ? new Date(item.check_in).toLocaleDateString() : 'Today');
+
+  const timeDisplay = isScheduled
+    ? (item.time_window || '09:00 AM - 01:00 PM')
+    : formatDisplayTime(item.check_in);
+
+  const handleCardPress = () => {
+    if (onDetails) {
+      onDetails(item);
+    }
+  };
 
   return (
     <View
       key={item.id || item.token_code || index}
       style={[styles.visitorCard, isVip && styles.vipCardHighlight]}
     >
-      {/* Card Header Row */}
+      {/* ── 1. Top Bar: Token & VIP Micro-Badge + Status Pill ── */}
       <View style={styles.visitorCardTopRow}>
         <View style={styles.visitorCardLeftTags}>
           <View style={styles.tokenPill}>
             <Text style={styles.tokenPillText}>{item.token_code || 'V-000'}</Text>
           </View>
-          <Text style={styles.gateLocationText} numberOfLines={1}>
-            {gate}
-          </Text>
+          {isVip && (
+            <View style={styles.vipTagBadge}>
+              <CrownIcon size={12} color="#1d4ed8" />
+              <Text style={styles.vipTagBadgeText}>VIP GUEST</Text>
+            </View>
+          )}
         </View>
 
-        {/* Sub-status: SCHEDULED (Yellow Badge) vs INSIDE (Green Badge) vs CHECKED OUT */}
+        {/* Clean Status Pill with #E5E7EB Light Gray Border */}
         {isScheduled ? (
           <View style={[styles.statusPill, styles.statusPillScheduled]}>
             <View style={[styles.statusDot, styles.statusDotScheduled]} />
@@ -111,126 +142,130 @@ export default function VisitorCard({
         )}
       </View>
 
-      {/* Visitor Profile Info Row */}
-      <View style={styles.visitorInfoRow}>
+      {/* ── 2. Clickable Visitor Profile Summary (Opens Details Modal on click) ── */}
+      <TouchableOpacity
+        style={[styles.visitorInfoRowClickable, { width: '100%', alignSelf: 'stretch' }]}
+        activeOpacity={0.7}
+        onPress={handleCardPress}
+      >
         <View style={[styles.avatarBox, { backgroundColor: palette.bg }]}>
           <Text style={[styles.avatarText, { color: palette.text }]}>{initials}</Text>
         </View>
-        <View style={styles.visitorDetailsCol}>
-          <View style={styles.nameCategoryRow}>
-            <Text style={styles.visitorFullName} numberOfLines={1}>
-              {item.full_name || 'Visitor Name'}
-            </Text>
-            <View style={styles.purposeTag}>
-              <Text style={styles.purposeTagText} numberOfLines={1}>
-                {purposeLabel}
-              </Text>
-            </View>
-          </View>
 
-          <Text style={styles.hostText} numberOfLines={1}>
-            Host: <Text style={styles.hostBold}>{hostLabel}</Text>
+        <View style={styles.visitorDetailsCol}>
+          {/* Prominent, 100% visible visitor name */}
+          <Text style={styles.visitorFullName} numberOfLines={1} ellipsizeMode="tail">
+            {visitorName}
           </Text>
 
-          <View style={styles.metaSubRow}>
-            <View style={styles.metaItem}>
-              <ArrowEnterIcon size={12} color="#64748b" />
-              <Text style={styles.metaItemText}>
-                {isScheduled
-                  ? `Expected: ${item.expected_date || 'Today'}`
-                  : `In: ${formatDisplayTime(item.check_in)}`}
+          {/* Sub Row: Company + Date + Time */}
+          <View style={styles.compactSubRow}>
+            {item.company ? (
+              <View style={styles.compactMetaItem}>
+                <BuildingIcon size={12} color="#64748b" />
+                <Text style={styles.compactSubText} numberOfLines={1}>
+                  {item.company}
+                </Text>
+              </View>
+            ) : null}
+            <View style={styles.compactMetaItem}>
+              <CalendarIcon size={12} color="#64748b" />
+              <Text style={styles.compactSubText} numberOfLines={1}>
+                {dateDisplay}
               </Text>
             </View>
-            {item.mobile && (
-              <TouchableOpacity
-                style={styles.metaItem}
-                onPress={() => onCall && onCall(item.mobile)}
-              >
-                <PhoneIcon size={12} color="#64748b" />
-                <Text style={styles.metaItemTextLink}>+91 {item.mobile}</Text>
-              </TouchableOpacity>
-            )}
+            <View style={styles.compactMetaItem}>
+              <ClockIcon size={12} color="#64748b" />
+              <Text style={styles.compactSubText} numberOfLines={1}>
+                {timeDisplay}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Tags: VIP, Company, Vehicle, Time Window */}
-      {(item.company || item.vehicle_no || item.expected_date || isVip) ? (
-        <View style={styles.scheduledExtraRow}>
-          {isVip && (
-            <View style={styles.vipTagBadge}>
-              <Text style={styles.vipTagBadgeText}>👑 VIP GUEST</Text>
-            </View>
-          )}
-          {!!item.company && (
-            <View style={styles.companyTag}>
-              <Text style={styles.companyTagText}>🏢 {item.company}</Text>
-            </View>
-          )}
-          {!!item.vehicle_no && (
-            <View style={styles.vehicleTag}>
-              <Text style={styles.vehicleTagText}>🚗 {item.vehicle_no}</Text>
-            </View>
-          )}
-          {isScheduled && (
-            <View style={styles.scheduledDateTag}>
-              <Text style={styles.scheduledDateTagText}>
-                ⏰ {item.time_window || '09:00 AM - 01:00 PM'}
-              </Text>
-            </View>
-          )}
+        {/* Minimal Tap Target Arrow */}
+        <View style={styles.expandChevronBtn}>
+          <ChevronRightIcon size={14} color="#94a3b8" />
         </View>
-      ) : null}
+      </TouchableOpacity>
 
-      {/* Bottom Action Buttons:
-          - If SCHEDULED: Reschedule or Cancel Token button
-          - If INSIDE: Check Out button
-          - Plus Contact / Details */}
+      {/* ── 3. Bottom Action Row: 3 Equal-Width Clean Outline Buttons ── */}
       <View style={styles.visitorActionRow}>
         {isScheduled ? (
           <>
+            {/* 1. Reschedule Button (flex: 1) */}
             <TouchableOpacity
-              style={[styles.visitorActionBtn, styles.rescheduleBtn]}
+              style={styles.outlineActionBtn}
               onPress={() => onReschedule && onReschedule(item)}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
             >
-              <Text style={styles.rescheduleBtnText}>📅 Reschedule</Text>
+              <CalendarIcon size={14} color="#2563eb" />
+              <Text style={styles.outlineActionBtnText}>Reschedule</Text>
             </TouchableOpacity>
+
+            {/* 2. Cancel Button (flex: 1) */}
             <TouchableOpacity
-              style={[styles.visitorActionBtn, styles.cancelTokenBtn]}
+              style={styles.outlineActionBtnCancel}
               onPress={() => onCancelToken && onCancelToken(item)}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
             >
-              <Text style={styles.cancelTokenBtnText}>✕ Cancel Token</Text>
+              <CancelCircleIcon size={14} color="#dc2626" />
+              <Text style={styles.outlineActionBtnCancelText}>Cancel</Text>
+            </TouchableOpacity>
+
+            {/* 3. Contact / Details Button (flex: 1) */}
+            <TouchableOpacity
+              style={styles.outlineActionBtn}
+              onPress={handleCardPress}
+              activeOpacity={0.7}
+            >
+              <PhoneIcon size={14} color="#475569" />
+              <Text style={styles.outlineActionBtnText}>Contact</Text>
             </TouchableOpacity>
           </>
         ) : isInside ? (
-          <TouchableOpacity
-            style={[styles.visitorActionBtn, styles.checkOutBtn]}
-            onPress={() => onCheckOut(item)}
-            activeOpacity={0.8}
-          >
-            <CheckOutIcon size={16} color="#1e293b" />
-            <Text style={styles.checkOutBtnText}>Check Out</Text>
-          </TouchableOpacity>
-        ) : (
-          <View style={[styles.visitorActionBtn, styles.completedBtn]}>
-            <CheckMarkIcon size={16} color="#15803d" />
-            <Text style={styles.completedBtnText}>
-              {item.status === 'CANCELLED' ? 'Cancelled' : 'Completed'}
-            </Text>
-          </View>
-        )}
+          <>
+            <TouchableOpacity
+              style={[styles.outlineActionBtn, styles.checkOutBtn]}
+              onPress={() => onCheckOut && onCheckOut(item)}
+              activeOpacity={0.7}
+            >
+              <CheckOutIcon size={14} color="#1e293b" />
+              <Text style={styles.checkOutBtnText}>Check Out</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.visitorActionBtn, styles.detailsBtn]}
-          onPress={() => onDetails(item)}
-          activeOpacity={0.8}
-        >
-          <InfoIcon size={16} color="#1e40af" />
-          <Text style={styles.detailsBtnText}>Contact / Details</Text>
-        </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.outlineActionBtn}
+              onPress={handleCardPress}
+              activeOpacity={0.7}
+            >
+              <PhoneIcon size={14} color="#475569" />
+              <Text style={styles.outlineActionBtnText}>Contact</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <View style={[styles.outlineActionBtn, styles.completedBtn]}>
+              <CheckMarkIcon size={14} color="#15803d" />
+              <Text style={styles.completedBtnText}>
+                {item.status === 'CANCELLED' ? 'Cancelled' : 'Completed'}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.outlineActionBtn}
+              onPress={handleCardPress}
+              activeOpacity={0.7}
+            >
+              <PhoneIcon size={14} color="#475569" />
+              <Text style={styles.outlineActionBtnText}>Details</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </View>
   );
 }
+
+export default React.memo(VisitorCard);
+

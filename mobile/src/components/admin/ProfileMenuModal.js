@@ -7,7 +7,7 @@ import styles from '../../styles/adminStyles';
  * ProfileMenuModal — slide-up admin menu with nav shortcuts and logout.
  * Props: visible, onClose, onNavigate(tab), onRefresh, onLogout
  */
-export default function ProfileMenuModal({ visible, onClose, onNavigate, onRefresh, onLogout }) {
+function ProfileMenuModal({ visible, onClose, onNavigate, onRefresh, onLogout }) {
   return (
     <Modal
       visible={visible}
@@ -79,3 +79,6 @@ export default function ProfileMenuModal({ visible, onClose, onNavigate, onRefre
     </Modal>
   );
 }
+
+export default React.memo(ProfileMenuModal);
+

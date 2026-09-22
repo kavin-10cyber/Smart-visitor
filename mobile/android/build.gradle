@@ -18,4 +18,12 @@ buildscript {
     }
 }
 
+subprojects {
+    afterEvaluate { subproject ->
+        if (subproject.hasProperty("android")) {
+            subproject.android.buildToolsVersion = rootProject.ext.buildToolsVersion
+        }
+    }
+}
+
 apply plugin: "com.facebook.react.rootproject"

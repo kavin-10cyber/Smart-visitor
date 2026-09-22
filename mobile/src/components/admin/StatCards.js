@@ -9,7 +9,6 @@ import {
   CloseIcon,
   TrendingUpIcon,
   ClockIcon,
-  PlusCircleIcon,
 } from '../AdminIcons';
 import styles from '../../styles/adminStyles';
 
@@ -148,22 +147,10 @@ export function StatCards({
   );
 }
 
-/**
- * ManifestHeader — "Campus Manifest" section header with live count + Issue Token button
- */
-export function ManifestHeader({ activeVisitsCount, onIssueToken }) {
+export function ManifestHeader() {
   return (
     <View style={styles.sectionHeaderRow}>
-      <View style={styles.sectionTitleWithBadge}>
-        <Text style={styles.sectionTitle}>Campus Manifest</Text>
-        <View style={styles.liveCountBadge}>
-          <Text style={styles.liveCountBadgeText}>{activeVisitsCount || 3} Live</Text>
-        </View>
-      </View>
-      <TouchableOpacity style={styles.issueTokenBtn} onPress={onIssueToken}>
-        <PlusCircleIcon size={16} color="#2563eb" />
-        <Text style={styles.issueTokenBtnText}>Issue Token</Text>
-      </TouchableOpacity>
+      <Text style={styles.sectionTitle}>Campus Manifest</Text>
     </View>
   );
 }

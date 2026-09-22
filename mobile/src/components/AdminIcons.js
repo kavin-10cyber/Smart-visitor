@@ -177,6 +177,16 @@ export function QrTabIcon({ size = 20, color = '#64748b' }) {
   );
 }
 
+export function IssueTokenTabIcon({ size = 20, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx="12" cy="12" r="10" />
+      <Line x1="12" y1="8" x2="12" y2="16" />
+      <Line x1="8" y1="12" x2="16" y2="12" />
+    </Svg>
+  );
+}
+
 export function BarChartIcon({ size = 20, color = '#64748b' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -384,4 +394,103 @@ export function ChevronRightIcon({ size = 18, color = '#334155' }) {
     </Svg>
   );
 }
+
+export function CrownIcon({ size = 15, color = '#1d4ed8' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z" />
+      <Path d="M4 20h16" />
+    </Svg>
+  );
+}
+
+export function BuildingIcon({ size = 14, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Rect x="4" y="2" width="16" height="20" rx="2" />
+      <Line x1="9" y1="6" x2="9.01" y2="6" strokeWidth="2.5" />
+      <Line x1="15" y1="6" x2="15.01" y2="6" strokeWidth="2.5" />
+      <Line x1="9" y1="10" x2="9.01" y2="10" strokeWidth="2.5" />
+      <Line x1="15" y1="10" x2="15.01" y2="10" strokeWidth="2.5" />
+      <Line x1="9" y1="14" x2="9.01" y2="14" strokeWidth="2.5" />
+      <Line x1="15" y1="14" x2="15.01" y2="14" strokeWidth="2.5" />
+      <Path d="M10 22v-4h4v4" />
+    </Svg>
+  );
+}
+
+export function CarIcon({ size = 14, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M5 17h14" />
+      <Path d="M4 11l2-5h12l2 5" />
+      <Rect x="2" y="11" width="20" height="6" rx="2" />
+      <Circle cx="7" cy="17" r="2" />
+      <Circle cx="17" cy="17" r="2" />
+    </Svg>
+  );
+}
+
+export function MapPinIcon({ size = 14, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <Circle cx="12" cy="10" r="3" />
+    </Svg>
+  );
+}
+
+export function CancelCircleIcon({ size = 14, color = '#dc2626' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx="12" cy="12" r="10" />
+      <Line x1="15" y1="9" x2="9" y2="15" />
+      <Line x1="9" y1="9" x2="15" y2="15" />
+    </Svg>
+  );
+}
+
+export function UserIcon({ size = 14, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <Circle cx="12" cy="7" r="4" />
+    </Svg>
+  );
+}
+
+export function ChevronDownIcon({ size = 16, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <Polyline points="6 9 12 15 18 9" />
+    </Svg>
+  );
+}
+
+export function ChevronUpIcon({ size = 16, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+      <Polyline points="18 15 12 9 6 15" />
+    </Svg>
+  );
+}
+
+export function FilterIcon({ size = 16, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
+    </Svg>
+  );
+}
+export function ManifestTabIcon({ size = 20, color = '#64748b' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+      <Rect x="9" y="3" width="6" height="4" rx="1" />
+      <Line x1="9" y1="11" x2="15" y2="11" />
+      <Line x1="9" y1="15" x2="13" y2="15" />
+    </Svg>
+  );
+}
+
 

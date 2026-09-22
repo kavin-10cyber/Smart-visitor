@@ -8,7 +8,7 @@ import styles from '../../styles/adminStyles';
  * QRPreviewModal — shows the digital QR badge for a generated token.
  * Props: token (token object or null), onClose
  */
-export default function QRPreviewModal({ token, onClose }) {
+function QRPreviewModal({ token, onClose }) {
   return (
     <Modal
       visible={!!token}
@@ -45,3 +45,6 @@ export default function QRPreviewModal({ token, onClose }) {
     </Modal>
   );
 }
+
+export default React.memo(QRPreviewModal);
+

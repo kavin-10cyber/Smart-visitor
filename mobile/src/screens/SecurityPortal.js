@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,7 @@ import {
   AccessTabIcon,
   AlertsTabIcon,
   SettingsTabIcon,
+  CrownIcon,
 } from '../components/AdminIcons';
 
 // Extracted components & styles
@@ -40,6 +41,7 @@ import {
   VisitActionModal,
   OfficerModal,
 } from '../components/security/SecurityModals';
+import SecurityHeaderClock from '../components/common/SecurityHeaderClock';
 
 // ── Helpers ───────────────────────────────────────────────────
 function formatClockTime(date = new Date()) {
@@ -67,13 +69,6 @@ export default function SecurityPortal({ onLogout }) {
   // ── Dashboard Filters ────────────────────────────────────────
   const [selectedFilter, setSelectedFilter] = useState('INSIDE');
   const [searchQuery, setSearchQuery] = useState('');
-
-  // ── Live Clock ───────────────────────────────────────────────
-  const [currentClock, setCurrentClock] = useState(formatClockTime());
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentClock(formatClockTime()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   // ── Data ─────────────────────────────────────────────────────
   const [tokensList, setTokensList] = useState([]);
@@ -401,7 +396,7 @@ export default function SecurityPortal({ onLogout }) {
               key={item.id || item.token_code || idx}
               style={[
                 s.activityRowCard,
-                isVip && { borderColor: '#fde047', borderWidth: 1.5, backgroundColor: '#fefce8' },
+                isVip && { borderColor: '#E5E7EB', borderLeftWidth: 3.5, borderLeftColor: '#2563eb', backgroundColor: '#ffffff' },
               ]}
               activeOpacity={0.8}
               onPress={() => setSelectedVisitForAction(item)}
@@ -415,12 +410,13 @@ export default function SecurityPortal({ onLogout }) {
                     {item.full_name || 'Visitor Name'}
                   </Text>
                   {isVip && (
-                    <View style={{ backgroundColor: '#fde047', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, marginRight: 6 }}>
-                      <Text style={{ fontSize: 10, fontWeight: '800', color: '#854d0e' }}>👑 VIP</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#dbeafe', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, marginRight: 6 }}>
+                      <CrownIcon size={11} color="#1d4ed8" />
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#1d4ed8' }}>VIP</Text>
                     </View>
                   )}
-                  <View style={[s.checkedInPill, isScheduled && { backgroundColor: '#fef3c7' }]}>
-                    <Text style={[s.checkedInPillText, isScheduled && { color: '#b45309' }]}>
+                  <View style={[s.checkedInPill, isScheduled && { backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#E5E7EB' }]}>
+                    <Text style={[s.checkedInPillText, isScheduled && { color: '#475569' }]}>
                       {isScheduled ? 'Scheduled' : isInside ? 'Checked In' : 'Checked Out'}
                     </Text>
                   </View>
@@ -585,10 +581,7 @@ export default function SecurityPortal({ onLogout }) {
       <View style={s.topHeader}>
         <View style={s.headerLeftCol}>
           <View style={s.shieldLogoBox}><ShieldIcon size={20} color="#ffffff" /></View>
-          <View>
-            <Text style={s.headerTitle}>Dashboard</Text>
-            <Text style={s.headerTimestamp}>{currentClock}</Text>
-          </View>
+          <SecurityHeaderClock />
         </View>
         <TouchableOpacity style={s.profileAvatarBtn} onPress={() => setShowOfficerModal(true)} activeOpacity={0.8}>
           <UserTabIcon size={17} color="#ffffff" />

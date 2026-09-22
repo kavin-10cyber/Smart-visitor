@@ -117,10 +117,6 @@ export default function CalendarPicker({
   const firstDayIndex = new Date(calYear, calMonth, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
 
-  const isTodayActive = isSameDay(selectedDate, today);
-  const isTomorrowActive = isSameDay(selectedDate, tomorrow);
-  const isDayAfterActive = isSameDay(selectedDate, dayAfterTomorrow);
-
   return (
     <View style={styles.container}>
       {/* Label and Toggle Header */}
@@ -136,39 +132,6 @@ export default function CalendarPicker({
         >
           <Text style={styles.toggleBtnText}>
             {isExpanded ? 'Hide Calendar ▲' : 'Open Calendar ▼'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Quick Presets Row */}
-      <View style={styles.presetRow}>
-        <TouchableOpacity
-          style={[styles.presetChip, isTodayActive && styles.presetChipActive]}
-          onPress={() => handlePresetSelect(today)}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.presetChipText, isTodayActive && styles.presetChipTextActive]}>
-            Today ({MONTH_SHORT[today.getMonth()]} {today.getDate()})
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.presetChip, isTomorrowActive && styles.presetChipActive]}
-          onPress={() => handlePresetSelect(tomorrow)}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.presetChipText, isTomorrowActive && styles.presetChipTextActive]}>
-            Tomorrow ({MONTH_SHORT[tomorrow.getMonth()]} {tomorrow.getDate()})
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.presetChip, isDayAfterActive && styles.presetChipActive]}
-          onPress={() => handlePresetSelect(dayAfterTomorrow)}
-          activeOpacity={0.7}
-        >
-          <Text style={[styles.presetChipText, isDayAfterActive && styles.presetChipTextActive]}>
-            In 2 Days
           </Text>
         </TouchableOpacity>
       </View>
@@ -313,33 +276,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: '#2563eb',
-  },
-  presetRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 10,
-  },
-  presetChip: {
-    paddingHorizontal: 11,
-    paddingVertical: 7,
-    backgroundColor: '#f8fafc',
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-  },
-  presetChipActive: {
-    backgroundColor: '#eff6ff',
-    borderColor: '#2563eb',
-  },
-  presetChipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#475569',
-  },
-  presetChipTextActive: {
-    color: '#1d4ed8',
-    fontWeight: '800',
   },
   calendarCard: {
     backgroundColor: '#f8fafc',

@@ -14,7 +14,7 @@ import { CloseIcon } from '../AdminIcons';
 import CalendarPicker from './CalendarPicker';
 import styles from '../../styles/adminStyles';
 
-export default function RescheduleModal({
+function RescheduleModal({
   visible,
   visit,
   onClose,
@@ -99,3 +99,6 @@ export default function RescheduleModal({
     </Modal>
   );
 }
+
+export default React.memo(RescheduleModal);
+
