@@ -13,15 +13,13 @@ import {
 } from '../AdminIcons';
 import styles from '../../styles/adminStyles';
 
-// Executive avatar color pairs
+// Reference UI Pastel Avatar Color Pairs
 const AVATAR_PALETTES = [
-  { bg: '#eff6ff', text: '#1d4ed8' },
-  { bg: '#f1f5f9', text: '#334155' },
-  { bg: '#ede9fe', text: '#5b21b6' },
-  { bg: '#f0fdf4', text: '#15803d' },
-  { bg: '#f8fafc', text: '#475569' },
-  { bg: '#fff7ed', text: '#c2410c' },
-  { bg: '#e0f2fe', text: '#0369a1' },
+  { bg: '#FFE8D6', text: '#D97706' }, // Peach
+  { bg: '#F2EBFE', text: '#7C3AED' }, // Lavender / Purple
+  { bg: '#E0F2FE', text: '#0284C7' }, // Sky Blue
+  { bg: '#FFE4E8', text: '#E11D48' }, // Blush Pink
+  { bg: '#DCFCE7', text: '#15803D' }, // Mint Green
 ];
 
 export function getAvatarPalette(name = '') {
@@ -64,6 +62,7 @@ export function formatDisplayTime(isoString) {
 function VisitorCard({
   item,
   index,
+  onCheckInScheduled,
   onCheckOut,
   onReschedule,
   onCancelToken,
@@ -111,7 +110,7 @@ function VisitorCard({
           </View>
           {isVip && (
             <View style={styles.vipTagBadge}>
-              <CrownIcon size={12} color="#1d4ed8" />
+              <CrownIcon size={12} color="#5642DE" />
               <Text style={styles.vipTagBadgeText}>VIP GUEST</Text>
             </View>
           )}
@@ -136,7 +135,7 @@ function VisitorCard({
           <View style={[styles.statusPill, styles.statusPillDone]}>
             <View style={[styles.statusDot, styles.statusDotDone]} />
             <Text style={[styles.statusPillText, styles.statusPillTextDone]}>
-              {item.status === 'CANCELLED' ? 'CANCELLED' : 'CHECKED OUT'}
+              {item.status === 'CANCELLED' ? 'CANCELLED' : 'EXITED'}
             </Text>
           </View>
         )}
@@ -189,21 +188,31 @@ function VisitorCard({
         </View>
       </TouchableOpacity>
 
-      {/* ── 3. Bottom Action Row: 3 Equal-Width Clean Outline Buttons ── */}
+      {/* ── 3. Bottom Action Row: Clean Action Buttons ── */}
       <View style={styles.visitorActionRow}>
         {isScheduled ? (
           <>
-            {/* 1. Reschedule Button (flex: 1) */}
+            {/* 1. Check In Button */}
+            <TouchableOpacity
+              style={[styles.outlineActionBtn, { borderColor: '#16a34a', backgroundColor: '#f0fdf4' }]}
+              onPress={() => onCheckInScheduled && onCheckInScheduled(item)}
+              activeOpacity={0.7}
+            >
+              <CheckMarkIcon size={14} color="#16a34a" />
+              <Text style={[styles.outlineActionBtnText, { color: '#16a34a', fontWeight: '700' }]}>Check In</Text>
+            </TouchableOpacity>
+
+            {/* 2. Reschedule Button */}
             <TouchableOpacity
               style={styles.outlineActionBtn}
               onPress={() => onReschedule && onReschedule(item)}
               activeOpacity={0.7}
             >
-              <CalendarIcon size={14} color="#2563eb" />
+              <CalendarIcon size={14} color="#6C5CE7" />
               <Text style={styles.outlineActionBtnText}>Reschedule</Text>
             </TouchableOpacity>
 
-            {/* 2. Cancel Button (flex: 1) */}
+            {/* 3. Cancel Button */}
             <TouchableOpacity
               style={styles.outlineActionBtnCancel}
               onPress={() => onCancelToken && onCancelToken(item)}
@@ -211,16 +220,6 @@ function VisitorCard({
             >
               <CancelCircleIcon size={14} color="#dc2626" />
               <Text style={styles.outlineActionBtnCancelText}>Cancel</Text>
-            </TouchableOpacity>
-
-            {/* 3. Contact / Details Button (flex: 1) */}
-            <TouchableOpacity
-              style={styles.outlineActionBtn}
-              onPress={handleCardPress}
-              activeOpacity={0.7}
-            >
-              <PhoneIcon size={14} color="#475569" />
-              <Text style={styles.outlineActionBtnText}>Contact</Text>
             </TouchableOpacity>
           </>
         ) : isInside ? (
@@ -248,7 +247,7 @@ function VisitorCard({
             <View style={[styles.outlineActionBtn, styles.completedBtn]}>
               <CheckMarkIcon size={14} color="#15803d" />
               <Text style={styles.completedBtnText}>
-                {item.status === 'CANCELLED' ? 'Cancelled' : 'Completed'}
+                {item.status === 'CANCELLED' ? 'Cancelled' : 'Exited'}
               </Text>
             </View>
 

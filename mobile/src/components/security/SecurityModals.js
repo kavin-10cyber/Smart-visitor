@@ -14,27 +14,13 @@ import s from '../../styles/securityStyles';
  */
 export function ScannerModal({ visible, onClose, onScan, tokensList = [] }) {
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={s.scannerModalSafeArea}>
-        <View style={s.scannerModalHeader}>
-          <View style={s.scannerHeaderLeft}>
-            <View style={s.scannerShieldBox}>
-              <ShieldIcon size={16} color="#ffffff" />
-            </View>
-            <View>
-              <Text style={s.scannerModalTitle}>Scan Visitor QR Badge</Text>
-              <Text style={s.scannerModalSub}>Gate 1 Optical Scanner • Live</Text>
-            </View>
-          </View>
-          <TouchableOpacity
-            style={s.scannerModalCloseBtn}
-            onPress={onClose}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-          >
-            <CloseIcon size={20} color="#64748b" />
-          </TouchableOpacity>
-        </View>
-
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      statusBarTranslucent={false}
+    >
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F8FC' }}>
         <QRScanner
           onScan={onScan}
           availableTokens={tokensList}
@@ -137,66 +123,115 @@ export function CheckInModal({
   );
 }
 
+import QRCode from 'react-native-qrcode-svg';
+
 /**
- * VisitActionModal — visitor quick-actions modal (checkout / view).
- * Props: visit (object | null), onClose, onCheckOut
+ * VisitActionModal — visitor digital pass / ID Card modal (Screen 3 Reference).
+ * Props: visit (object | null), onClose, onCheckOut, onCheckInScheduled
  */
-export function VisitActionModal({ visit, onClose, onCheckOut }) {
+export function VisitActionModal({ visit, onClose, onCheckOut, onCheckInScheduled }) {
+  if (!visit) return null;
+
+  const initials = (visit.full_name || 'V')
+    .split(' ')
+    .map((n) => n[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+  const formattedDate = visit.check_in
+    ? new Date(visit.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+    : (visit.expected_date || 'Today');
+
+  const formattedTime = visit.check_in
+    ? new Date(visit.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
+    : (visit.time_window || 'Expected Arrival');
+
+  const passId = visit.id ? `VID-${visit.id.substring(0, 8).toUpperCase()}` : 'VID-CAMPUS-01';
+
   return (
-    <Modal visible={!!visit} animationType="fade" transparent onRequestClose={onClose}>
+    <Modal visible={!!visit} animationType="slide" transparent onRequestClose={onClose}>
       <View style={s.modalBackdrop}>
         <View style={s.modalCard}>
           <View style={s.modalHeaderRow}>
-            <Text style={s.modalHeaderTitle}>Visitor Gate Record</Text>
+            <Text style={s.modalHeaderTitle}>Visitor Digital Pass</Text>
             <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
-              <CloseIcon size={20} color="#64748b" />
+              <CloseIcon size={18} color="#6C5CE7" />
             </TouchableOpacity>
           </View>
 
-          {visit && (
-            <ScrollView showsVerticalScrollIndicator={false}>
-              <View style={s.actionHeroBox}>
-                <Text style={s.actionHeroName}>{visit.full_name}</Text>
-                <Text style={s.actionHeroToken}>
-                  Token: <Text style={s.actionTokenBold}>{visit.token_code}</Text>
-                </Text>
-                <View style={[s.actionStatusPill, visit.status === 'ACTIVE' ? s.statusActivePill : s.statusDonePill]}>
-                  <Text style={[s.actionStatusPillText, visit.status === 'ACTIVE' ? s.statusActiveText : s.statusDoneText]}>
-                    {visit.status === 'ACTIVE' ? 'CURRENTLY ON CAMPUS' : 'EXITED CAMPUS'}
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {/* Top Visitor Profile (Reference UI Screen 3) */}
+            <View style={s.modalProfileHeader}>
+              <View style={s.modalProfileAvatar}>
+                <Text style={s.modalProfileInitials}>{initials}</Text>
+              </View>
+              <Text style={s.modalProfileName}>{visit.full_name}</Text>
+              <Text style={s.modalProfileDate}>
+                {formattedDate} • {formattedTime} ({visit.expected_duration || '2 Hours'})
+              </Text>
+            </View>
+
+            {/* Signature Purple Digital ID Card (Reference UI Screen 3) */}
+            <View style={s.digitalIdCard}>
+              <View style={s.digitalIdTopRow}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                  <ShieldIcon size={16} color="#FFFFFF" />
+                  <Text style={s.digitalIdCardTitle}>Campus Pass ID Card</Text>
+                </View>
+                <View style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)', paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 }}>
+                  <Text style={{ color: '#FFFFFF', fontSize: 11, fontWeight: '800' }}>
+                    {visit.status === 'SCHEDULED' ? 'PASS ISSUED' : visit.status === 'ACTIVE' ? 'ACTIVE' : 'EXITED'}
                   </Text>
                 </View>
               </View>
 
-              <View style={s.actionDetailsList}>
-                <View style={s.actionDetailItem}>
-                  <Text style={s.actionDetailLabel}>Host Person / Dept</Text>
-                  <Text style={s.actionDetailVal}>{visit.address || 'Admin Office'}</Text>
+              <View style={s.digitalIdContentRow}>
+                <View style={s.digitalIdLeftCol}>
+                  <Text style={s.digitalIdFieldLabel}>Pass Number</Text>
+                  <Text style={s.digitalIdFieldValue}>{passId}</Text>
+
+                  <Text style={s.digitalIdFieldLabel}>Assigned Badge</Text>
+                  <Text style={[s.digitalIdFieldValue, { fontSize: 18, color: '#FFFFFF' }]}>{visit.token_code}</Text>
+
+                  <Text style={s.digitalIdFieldLabel}>Host / Destination</Text>
+                  <Text style={s.digitalIdFieldValue} numberOfLines={1}>{visit.address || 'Admin Office'}</Text>
+
+                  <Text style={s.digitalIdFieldLabel}>Purpose</Text>
+                  <Text style={s.digitalIdFieldValue} numberOfLines={1}>{visit.purpose || 'General Visit'}</Text>
                 </View>
-                <View style={s.actionDetailItem}>
-                  <Text style={s.actionDetailLabel}>Purpose</Text>
-                  <Text style={s.actionDetailVal}>{visit.purpose || 'General Visit'}</Text>
-                </View>
-                <View style={s.actionDetailItem}>
-                  <Text style={s.actionDetailLabel}>Entry Timestamp</Text>
-                  <Text style={s.actionDetailVal}>
-                    {visit.check_in
-                      ? new Date(visit.check_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })
-                      : '--:--'}
-                  </Text>
+
+                {/* Embedded Crisp QR Code */}
+                <View style={s.digitalIdQrBox}>
+                  <QRCode
+                    value={visit.token_code || 'V-001'}
+                    size={74}
+                    color="#14172C"
+                    backgroundColor="#FFFFFF"
+                  />
                 </View>
               </View>
+            </View>
 
-              {visit.status === 'ACTIVE' ? (
-                <TouchableOpacity style={s.actionCheckOutBigBtn} onPress={() => onCheckOut(visit)}>
-                  <Text style={s.actionCheckOutBigBtnText}>Check Out Visitor (Release Badge)</Text>
-                </TouchableOpacity>
-              ) : (
-                <View style={s.completedMessageBox}>
-                  <Text style={s.completedMessageText}>✓ Visit Completed and Badge Reclaimed</Text>
-                </View>
-              )}
-            </ScrollView>
-          )}
+            {/* Actions */}
+            {visit.status === 'SCHEDULED' ? (
+              <TouchableOpacity
+                style={[s.actionCheckOutBigBtn, { backgroundColor: '#16A34A' }]}
+                activeOpacity={0.85}
+                onPress={() => onCheckInScheduled && onCheckInScheduled(visit)}
+              >
+                <Text style={s.actionCheckOutBigBtnText}>Check In Visitor (Unlock Gate) ➔</Text>
+              </TouchableOpacity>
+            ) : visit.status === 'ACTIVE' ? (
+              <TouchableOpacity style={s.actionCheckOutBigBtn} activeOpacity={0.85} onPress={() => onCheckOut(visit)}>
+                <Text style={s.actionCheckOutBigBtnText}>Check Out Visitor (Release Badge) ↗</Text>
+              </TouchableOpacity>
+            ) : (
+              <View style={s.completedMessageBox}>
+                <Text style={s.completedMessageText}>✓ Visitor Exited Campus & Badge Returned to Available Pool</Text>
+              </View>
+            )}
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -248,6 +283,128 @@ export function OfficerModal({ visible, onClose, onSync, onLogout }) {
               </Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+/**
+ * FilterModal — bottom sheet modal containing visitor status filter options.
+ * Props: visible, onClose, selectedFilter, onSelectFilter, counts
+ */
+export function FilterModal({
+  visible,
+  onClose,
+  selectedFilter = 'ALL',
+  onSelectFilter,
+  counts = {},
+}) {
+  const filterOptions = [
+    {
+      key: 'ALL',
+      label: 'All Passes',
+      desc: 'All visitors logged today',
+      count: counts.all ?? 0,
+      color: '#6C5CE7',
+    },
+    {
+      key: 'ISSUED',
+      label: 'Issued Passes',
+      desc: 'Scheduled & awaiting check-in',
+      count: counts.issued ?? 0,
+      color: '#F59E0B',
+    },
+    {
+      key: 'INSIDE',
+      label: 'Inside Campus',
+      desc: 'Currently active visitors',
+      count: counts.inside ?? 0,
+      color: '#10B981',
+    },
+    {
+      key: 'EXITED',
+      label: 'Exited',
+      desc: 'Checked out visitors today',
+      count: counts.exited ?? 0,
+      color: '#64748B',
+    },
+    {
+      key: 'VIP',
+      label: 'VIP Passes',
+      desc: 'High priority & VIP visitors today',
+      count: counts.vip ?? 0,
+      color: '#D97706',
+    },
+  ];
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={s.modalBackdrop}>
+        <View style={s.modalCard}>
+          <View style={s.modalHeaderRow}>
+            <View>
+              <Text style={s.modalHeaderTitle}>Filter Visitors</Text>
+              <Text style={s.modalHeaderSub}>Today's activity logs</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
+              <CloseIcon size={20} color="#64748B" />
+            </TouchableOpacity>
+          </View>
+
+          <View style={s.filterOptionsList}>
+            {filterOptions.map((opt) => {
+              const isSelected = selectedFilter === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  style={[
+                    s.filterOptionRow,
+                    isSelected && s.filterOptionRowActive,
+                  ]}
+                  activeOpacity={0.75}
+                  onPress={() => {
+                    onSelectFilter(opt.key);
+                    onClose();
+                  }}
+                >
+                  <View style={s.filterOptionLeft}>
+                    <View style={[s.filterOptionDot, { backgroundColor: opt.color }]} />
+                    <View>
+                      <Text style={[s.filterOptionLabel, isSelected && s.filterOptionLabelActive]}>
+                        {opt.label}
+                      </Text>
+                      <Text style={s.filterOptionDesc}>{opt.desc}</Text>
+                    </View>
+                  </View>
+
+                  <View style={s.filterOptionRight}>
+                    <View style={[s.filterOptionCountBadge, isSelected && s.filterOptionCountBadgeActive]}>
+                      <Text style={[s.filterOptionCountText, isSelected && s.filterOptionCountTextActive]}>
+                        {opt.count}
+                      </Text>
+                    </View>
+                    <View style={[s.filterRadioCircle, isSelected && s.filterRadioCircleActive]}>
+                      {isSelected && <View style={s.filterRadioDot} />}
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {selectedFilter !== 'ALL' && (
+            <TouchableOpacity
+              style={s.filterResetBtn}
+              onPress={() => {
+                onSelectFilter('ALL');
+                onClose();
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={s.filterResetBtnText}>Reset to All Passes</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </Modal>

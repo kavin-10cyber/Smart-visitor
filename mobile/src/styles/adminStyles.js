@@ -3,24 +3,95 @@ import { StyleSheet, Platform } from 'react-native';
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F7F8FC',
   },
   screenContainer: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
   },
 
-  // Top Header
+  // ── Top Header (Reference UI Screen 1) ──────────────────────
   topHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f5f9',
+    paddingTop: Platform.OS === 'ios' ? 10 : 14,
+    paddingBottom: 14,
+    backgroundColor: '#F7F8FC',
   },
+  headerLeftCol: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  profileAvatarBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#6C5CE7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  profileAvatarText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  greetingCol: {
+    justifyContent: 'center',
+  },
+  greetingTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#14172C',
+    letterSpacing: -0.2,
+  },
+  greetingSub: {
+    fontSize: 12,
+    color: '#667085',
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  headerRightCol: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconCircleBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#EEF0F6',
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 2,
+    position: 'relative',
+  },
+  notificationRedDot: {
+    position: 'absolute',
+    top: 9,
+    right: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#E11D48',
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
+  },
+
+  // Legacy header aliases for compatibility
   headerLeftGroup: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -34,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -48,7 +119,7 @@ const styles = StyleSheet.create({
   systemStatusPillText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   headerCenterDot: {
     justifyContent: 'center',
@@ -78,19 +149,355 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  // Scroll Area
+  // ── Scroll Area ─────────────────────────────────────────────
   scrollArea: {
     flex: 1,
   },
   scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 110,
+  },
+
+  // ── Search Bar with Filter Slider (Reference UI) ───────────
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 90,
+    height: 50,
+    marginBottom: 18,
+    borderWidth: 1,
+    borderColor: '#EEF0F6',
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: '#14172C',
+    paddingVertical: 0,
+    marginLeft: 10,
+    fontWeight: '500',
+  },
+  searchFilterBtn: {
+    padding: 6,
+  },
+
+  // ── Featured Purple Hero Card (Screen 1 Reference) ──────────
+  heroCard: {
+    backgroundColor: '#6C5CE7',
+    borderRadius: 26,
+    padding: 22,
+    marginBottom: 22,
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    elevation: 7,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  heroDecorCircle1: {
+    position: 'absolute',
+    top: -40,
+    right: -40,
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  heroDecorCircle2: {
+    position: 'absolute',
+    bottom: -50,
+    left: -30,
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  heroTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  heroBadgeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  heroShieldIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroCategoryTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
+  },
+  heroCategorySub: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  heroArrowBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  heroContentRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginTop: 8,
+  },
+  heroInfoCol: {
+    flex: 1,
+  },
+  heroInfoLabel: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.75)',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  heroInfoValue: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginTop: 2,
+  },
+  heroInfoSub: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.85)',
+    marginTop: 4,
+    fontWeight: '500',
+  },
+  heroActionBtn: {
+    backgroundColor: '#141624',
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 22,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  heroActionBtnText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+
+  // ── Category Strip Section (Health & Wellness style) ────────
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+    marginTop: 4,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#14172C',
+    letterSpacing: -0.3,
+  },
+  sectionViewAll: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#6C5CE7',
+  },
+  categoryScrollRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+    width: '100%',
+  },
+  categoryCard: {
+    flex: 1,
+    height: 92,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  categoryIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  categoryLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  pageDotsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 20,
+  },
+  pageDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#E2E8F0',
+  },
+  pageDotActive: {
+    width: 18,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#6C5CE7',
+  },
+
+  // ── Filter Chips (Inside / Scheduled / VIP / All) ───────────
+  filterChipsRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 16,
+  },
+  filterChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EEF0F6',
+  },
+  filterChipActive: {
+    backgroundColor: '#6C5CE7',
+    borderColor: '#6C5CE7',
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  filterChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#667085',
+  },
+  filterChipTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '700',
+  },
+  filterCountBadge: {
+    backgroundColor: '#F4F0FF',
+    paddingHorizontal: 7,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  filterCountBadgeActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+  },
+  filterCountText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#6C5CE7',
+  },
+  filterCountTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // ── Bottom Navigation Bar with Curved FAB ───────────────────
+  bottomNavWrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#FFFFFF',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 10,
+    paddingBottom: Platform.OS === 'ios' ? 22 : 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F3F9',
+  },
+  bottomNavRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    height: 60,
+    paddingHorizontal: 8,
+  },
+  navTabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  navTabLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#94A3B8',
+  },
+  navTabLabelActive: {
+    color: '#6C5CE7',
+    fontWeight: '800',
+  },
+  navActiveDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#6C5CE7',
+    marginTop: 2,
+  },
+  centerFabContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  centerFabButton: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: '#6C5CE7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -28,
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.45,
+    shadowRadius: 16,
+    elevation: 8,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
   },
 
   // Top 2 Stat Cards Row
@@ -128,14 +535,14 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     justifyContent: 'center',
     alignItems: 'center',
   },
   statCardValue: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 10,
   },
   statPillTrend: {
@@ -198,7 +605,7 @@ const styles = StyleSheet.create({
   capacityValueBig: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   capacityValueMax: {
     fontSize: 15,
@@ -208,26 +615,26 @@ const styles = StyleSheet.create({
   },
   progressBarTrack: {
     height: 7,
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderRadius: 3.5,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     borderRadius: 3.5,
   },
 
   // Primary Action Button
   generatePrimaryBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 14,
-    shadowColor: '#2563eb',
+    shadowColor: '#6C5CE7',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -266,7 +673,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#0f172a',
+    color: '#14172C',
     paddingVertical: 0,
   },
 
@@ -285,8 +692,8 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
   filterChipActive: {
-    backgroundColor: '#0f172a',
-    borderColor: '#0f172a',
+    backgroundColor: '#14172C',
+    borderColor: '#14172C',
   },
   filterChipText: {
     fontSize: 12,
@@ -313,10 +720,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   liveCountBadge: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
@@ -324,7 +731,7 @@ const styles = StyleSheet.create({
   liveCountBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   issueTokenBtn: {
     flexDirection: 'row',
@@ -336,7 +743,7 @@ const styles = StyleSheet.create({
   issueTokenBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
 
   // Visitor Manifest Card
@@ -347,7 +754,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
     marginBottom: 14,
-    shadowColor: '#0f172a',
+    shadowColor: '#14172C',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -366,9 +773,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tokenPill: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderWidth: 1,
-    borderColor: '#dbeafe',
+    borderColor: '#E5DDFF',
     paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: 8,
@@ -376,7 +783,7 @@ const styles = StyleSheet.create({
   tokenPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#1d4ed8',
+    color: '#5642DE',
   },
   gateLocationText: {
     fontSize: 12,
@@ -479,7 +886,7 @@ const styles = StyleSheet.create({
   visitorFullName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
     letterSpacing: -0.2,
     marginBottom: 4,
   },
@@ -520,7 +927,7 @@ const styles = StyleSheet.create({
   },
   metaItemTextLink: {
     fontSize: 11,
-    color: '#2563eb',
+    color: '#6C5CE7',
     fontWeight: '600',
   },
 
@@ -553,7 +960,7 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -678,7 +1085,7 @@ const styles = StyleSheet.create({
     color: '#1E293B',
   },
   completedBtn: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
@@ -727,7 +1134,7 @@ const styles = StyleSheet.create({
   companyTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -743,7 +1150,7 @@ const styles = StyleSheet.create({
   vehicleTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -759,7 +1166,7 @@ const styles = StyleSheet.create({
   scheduledDateTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -775,9 +1182,9 @@ const styles = StyleSheet.create({
   vipTagBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderWidth: 1,
-    borderColor: '#dbeafe',
+    borderColor: '#E5DDFF',
     paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 6,
@@ -786,15 +1193,15 @@ const styles = StyleSheet.create({
   vipTagBadgeText: {
     fontSize: 10.5,
     fontWeight: '700',
-    color: '#1d4ed8',
+    color: '#5642DE',
     letterSpacing: 0.3,
   },
   vipCardHighlight: {
     borderColor: '#E5E7EB',
     borderLeftWidth: 3.5,
-    borderLeftColor: '#2563eb',
+    borderLeftColor: '#6C5CE7',
     backgroundColor: '#ffffff',
-    shadowColor: '#0f172a',
+    shadowColor: '#14172C',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -813,7 +1220,7 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 4,
   },
   emptyStateSub: {
@@ -843,7 +1250,7 @@ const styles = StyleSheet.create({
     color: '#64748b',
   },
   tabBarLabelActive: {
-    color: '#2563eb',
+    color: '#6C5CE7',
     fontWeight: '700',
   },
 
@@ -857,7 +1264,7 @@ const styles = StyleSheet.create({
   tabHeaderTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   tabHeaderSub: {
     fontSize: 12,
@@ -865,7 +1272,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   tabHeaderActionBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
@@ -901,7 +1308,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   qrBoxAvail: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
   },
   qrBoxInUse: {
     backgroundColor: '#fef3c7',
@@ -910,7 +1317,7 @@ const styles = StyleSheet.create({
   tokenListCode: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   tokenListSub: {
     fontSize: 11,
@@ -937,7 +1344,7 @@ const styles = StyleSheet.create({
   analyticsStatNumber: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#2563eb',
+    color: '#6C5CE7',
     marginBottom: 4,
   },
   analyticsStatLabel: {
@@ -956,7 +1363,7 @@ const styles = StyleSheet.create({
   analyticsSectionCardTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 12,
   },
   capacityBarLarge: {
@@ -970,7 +1377,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f59e0b',
   },
   capacityFillAvail: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
   },
   capacityLegendRow: {
     flexDirection: 'row',
@@ -1005,7 +1412,7 @@ const styles = StyleSheet.create({
   categoryPercent: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
   },
   categoryBar: {
     height: 6,
@@ -1032,7 +1439,7 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -1040,7 +1447,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 4,
   },
   profileRole: {
@@ -1074,7 +1481,7 @@ const styles = StyleSheet.create({
   profileSectionTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 10,
   },
   profileItemRow: {
@@ -1082,7 +1489,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#f8fafc',
+    borderBottomColor: '#F7F8FC',
   },
   profileItemKey: {
     fontSize: 12,
@@ -1091,11 +1498,11 @@ const styles = StyleSheet.create({
   profileItemVal: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
     maxWidth: '60%',
   },
   refreshSyncBtn: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -1104,7 +1511,7 @@ const styles = StyleSheet.create({
   refreshSyncBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   logoutFullBtn: {
     flexDirection: 'row',
@@ -1145,7 +1552,7 @@ const styles = StyleSheet.create({
   modalHeaderTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   modalCloseBtn: {
     padding: 4,
@@ -1173,7 +1580,7 @@ const styles = StyleSheet.create({
   modalVisitorName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   modalVisitorToken: {
     fontSize: 13,
@@ -1182,10 +1589,10 @@ const styles = StyleSheet.create({
   },
   tokenHighlight: {
     fontWeight: '800',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   modalInfoList: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
@@ -1201,7 +1608,7 @@ const styles = StyleSheet.create({
   modalVal: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
     marginTop: 2,
   },
   modalActionButtonsRow: {
@@ -1214,7 +1621,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     paddingVertical: 12,
     borderRadius: 12,
     gap: 6,
@@ -1260,7 +1667,7 @@ const styles = StyleSheet.create({
   },
   closeModalSimpleBtn: {
     marginTop: 18,
-    backgroundColor: '#0f172a',
+    backgroundColor: '#14172C',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 12,
@@ -1280,7 +1687,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   tokenSelectorBox: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
@@ -1288,7 +1695,7 @@ const styles = StyleSheet.create({
   tokenSelectorText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   tokenSelectorSub: {
     fontSize: 11,
@@ -1296,18 +1703,18 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   formTextInput: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 44,
     fontSize: 13,
-    color: '#0f172a',
+    color: '#14172C',
     marginBottom: 8,
   },
   submitIssueBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
@@ -1332,7 +1739,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1342,7 +1749,7 @@ const styles = StyleSheet.create({
   notifTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#0f172a',
+    color: '#14172C',
   },
   notifSub: {
     fontSize: 12,
@@ -1365,7 +1772,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#f8fafc',
+    borderBottomColor: '#F7F8FC',
   },
   menuItemText: {
     fontSize: 14,
@@ -1427,9 +1834,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   categoryTabItemActiveVip: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderWidth: 1,
-    borderColor: '#bfdbfe',
+    borderColor: '#DDD6FE',
   },
   categoryTabText: {
     fontSize: 12,
@@ -1438,10 +1845,10 @@ const styles = StyleSheet.create({
   },
   categoryTabTextActive: {
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   categoryTabTextActiveVip: {
-    color: '#1d4ed8',
+    color: '#5642DE',
   },
   // Two-column row
   twoColRow: {
@@ -1461,14 +1868,14 @@ const styles = StyleSheet.create({
   chipSelectItem: {
     paddingHorizontal: 12,
     paddingVertical: 7,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
   chipSelectItemActive: {
-    backgroundColor: '#eff6ff',
-    borderColor: '#3b82f6',
+    backgroundColor: '#F4F0FF',
+    borderColor: '#8B78FF',
   },
   chipSelectText: {
     fontSize: 12,
@@ -1476,14 +1883,14 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#1d4ed8',
+    color: '#5642DE',
     fontWeight: '800',
   },
   // Priority VIP Toggle
   priorityToggleBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 14,
@@ -1503,8 +1910,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
   },
   priorityCheckboxChecked: {
-    backgroundColor: '#2563eb',
-    borderColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
+    borderColor: '#6C5CE7',
   },
   priorityLabelCol: {
     flex: 1,
@@ -1521,7 +1928,7 @@ const styles = StyleSheet.create({
   },
   // Modal Actions
   sendPassPrimaryBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     borderRadius: 14,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -1529,7 +1936,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     marginTop: 8,
-    shadowColor: '#2563eb',
+    shadowColor: '#6C5CE7',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -1542,7 +1949,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   cancelModalSecondaryBtn: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     borderRadius: 14,
@@ -1559,7 +1966,7 @@ const styles = StyleSheet.create({
 
   // ── Calendar Component Styles ─────────────────────────────
   calendarCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F8FC',
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
@@ -1576,7 +1983,7 @@ const styles = StyleSheet.create({
   calendarMonthTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#0f172a',
+    color: '#14172C',
   },
   calendarNavBtn: {
     padding: 6,
@@ -1617,8 +2024,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarDaySelected: {
-    backgroundColor: '#2563eb',
-    shadowColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
+    shadowColor: '#6C5CE7',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -1626,7 +2033,7 @@ const styles = StyleSheet.create({
   },
   calendarDayToday: {
     borderWidth: 1.5,
-    borderColor: '#3b82f6',
+    borderColor: '#8B78FF',
   },
   calendarDayText: {
     fontSize: 13,
@@ -1638,7 +2045,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   calendarDayTextToday: {
-    color: '#2563eb',
+    color: '#6C5CE7',
     fontWeight: '800',
   },
   calendarDayTextDisabled: {
@@ -1648,7 +2055,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -1657,7 +2064,7 @@ const styles = StyleSheet.create({
   calendarSelectedBannerText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#1d4ed8',
+    color: '#5642DE',
   },
   calendarCloseLinkText: {
     fontSize: 11,

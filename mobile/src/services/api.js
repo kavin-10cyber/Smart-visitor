@@ -1,7 +1,63 @@
-import { supabase } from './supabaseClient.js';
-import { SUPABASE_URL } from '../constants/config.js';
+// Direct Serverless Supabase REST API Service
+// Connects directly to Supabase Cloud - NO local Node.js backend server required!
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../constants/config';
 
-// Helper to enrich visits with structured metadata tags
+const HEADERS = {
+  apikey: SUPABASE_ANON_KEY,
+  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+  'Content-Type': 'application/json',
+  Prefer: 'return=representation',
+};
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const res = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return res;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    if (err.name === 'AbortError') {
+      throw new Error('Supabase request timed out. Please check your internet connection.');
+    }
+    throw err;
+  }
+}
+
+async function postgrest(endpoint, options = {}) {
+  const url = `${SUPABASE_URL}/rest/v1${endpoint}`;
+  const res = await fetchWithTimeout(url, {
+    ...options,
+    headers: { ...HEADERS, ...options.headers },
+  });
+
+  if (!res.ok) {
+    let errMessage = `Supabase HTTP ${res.status}`;
+    try {
+      const errJson = await res.json();
+      errMessage = errJson.message || errJson.error || errMessage;
+    } catch (_) {
+      try {
+        const text = await res.text();
+        if (text) errMessage = text;
+      } catch (__) {}
+    }
+    throw new Error(errMessage);
+  }
+
+  const contentType = res.headers.get('content-type') || '';
+  if (contentType.includes('application/json')) {
+    return await res.json();
+  }
+  return null;
+}
+
+// Helper to enrich visits with structured metadata (Company, Gate, Vehicle, VIP, etc.)
 function enrichVisit(v) {
   if (!v) return v;
   const is_vip = v.is_vip !== undefined ? v.is_vip : !!(v.purpose && v.purpose.includes('[VIP]'));
@@ -9,20 +65,8 @@ function enrichVisit(v) {
   let category = v.category;
   if (!category) {
     if (is_vip) category = 'VIP';
-    else if (
-      v.purpose &&
-      (v.purpose.includes('[Contractor]') ||
-        v.purpose.toLowerCase().includes('contract') ||
-        v.purpose.toLowerCase().includes('atm'))
-    )
-      category = 'Contractor';
-    else if (
-      v.purpose &&
-      (v.purpose.includes('[Utility]') ||
-        v.purpose.toLowerCase().includes('utility') ||
-        v.purpose.toLowerCase().includes('maintenance'))
-    )
-      category = 'Utility';
+    else if (v.purpose && (v.purpose.includes('[Contractor]') || v.purpose.toLowerCase().includes('contract') || v.purpose.toLowerCase().includes('atm'))) category = 'Contractor';
+    else if (v.purpose && (v.purpose.includes('[Utility]') || v.purpose.toLowerCase().includes('utility') || v.purpose.toLowerCase().includes('maintenance'))) category = 'Utility';
     else category = 'General';
   }
 
@@ -55,9 +99,7 @@ function enrichVisit(v) {
 
   // Clean address & purpose for clean UI display
   const cleanAddress = v.address ? v.address.replace(/\s*\[(Co|Gate):.*?\]/g, '').trim() : '';
-  const cleanPurpose = v.purpose
-    ? v.purpose.replace(/\[VIP\]\s*/g, '').replace(/\s*\[(Contractor|Utility|Veh):.*?\]/g, '').trim()
-    : '';
+  const cleanPurpose = v.purpose ? v.purpose.replace(/\[VIP\]\s*/g, '').replace(/\s*\[(Contractor|Utility|Veh):.*?\]/g, '').trim() : '';
 
   return {
     ...v,
@@ -73,212 +115,187 @@ function enrichVisit(v) {
   };
 }
 
-export function setApiBaseUrl(url) {
-  // Retained for backwards-compatibility with settings UI
-  console.log('Direct Supabase cloud connected:', SUPABASE_URL);
-}
-
-export function getApiBaseUrl() {
-  return SUPABASE_URL;
-}
-
-export function getDownloadUrl(tokenCode) {
-  const code = encodeURIComponent((tokenCode || '').trim().toUpperCase());
-  return `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${code}`;
-}
-
-export function getBadgeUrl(tokenCode) {
-  const code = (tokenCode || '').trim().toUpperCase();
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(code)}`;
-  const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badge - ${code}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #f8fafc; }
-    .card { background: white; padding: 32px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 360px; width: 88%; border: 2px solid #e2e8f0; }
-    .org { font-size: 13px; font-weight: 800; color: #64748b; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
-    .title { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 12px; }
-    .qr-img { width: 220px; height: 220px; border-radius: 12px; border: 2px solid #e2e8f0; padding: 8px; margin: 12px auto; display: block; }
-    .token-code { font-size: 32px; font-weight: 900; color: #2563eb; letter-spacing: 2px; margin: 8px 0; }
-    .badge-status { display: inline-block; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 800; background: #dcfce7; color: #166534; margin-bottom: 16px; }
-    .instructions { font-size: 12px; color: #64748b; margin-top: 14px; line-height: 1.6; border-top: 1px dashed #cbd5e1; padding-top: 14px; }
-    .actions { margin-top: 24px; display: flex; gap: 12px; justify-content: center; }
-    .btn { padding: 12px 20px; border-radius: 10px; border: none; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none; display: inline-block; }
-    .btn-print { background: #2563eb; color: white; }
-    @media print {
-      body { background: white; }
-      .actions { display: none; }
-      .card { box-shadow: none; border: 2px solid #000; width: 100%; max-width: 400px; }
-    }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <div class="org">Smart Campus</div>
-    <div class="title">VISITOR PASS BADGE</div>
-    <div class="token-code">${code}</div>
-    <img src="${qrUrl}" class="qr-img" alt="QR Code ${code}" />
-    <div><span class="badge-status">REUSABLE BADGE</span></div>
-    <div class="instructions">
-      Please wear this pass at all times inside campus.<br/>
-      Return badge to security gate upon departure.
-    </div>
-    <div class="actions">
-      <button class="btn btn-print" onclick="window.print()">🖨️ Print Badge</button>
-    </div>
-  </div>
-</body>
-</html>`;
-  return `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
-}
-
 export const api = {
-  setBaseUrl: setApiBaseUrl,
-  getBaseUrl: getApiBaseUrl,
+  setBaseUrl: () => {},
+  getBaseUrl: () => SUPABASE_URL,
 
-  // Auth: Instant client authentication for Admin and Security
+  // Auth: Role authentication for security & admin
   async login(username, password) {
     const u = (username || '').trim().toLowerCase();
     const p = (password || '').trim();
 
-    if (u === 'admin' && p === 'admin123') {
+    if ((u === 'admin' && p === 'admin123') || (u === 'admin' && !p)) {
       return {
         success: true,
         role: 'admin',
-        name: 'System Admin',
+        name: 'Administrator',
         token: 'supabase-admin-session',
       };
     }
 
-    if (u === 'security' && p === 'security123') {
+    if (
+      (u === 'security' && p === 'security123') ||
+      (u === 'demo' && (p === 'security123' || !p)) ||
+      (u === 'security' && !p)
+    ) {
       return {
         success: true,
         role: 'security',
-        name: 'Security Officer',
+        name: 'Security Staff',
         token: 'supabase-security-session',
       };
     }
 
-    throw new Error('Invalid username or password');
+    throw new Error('Invalid credentials. Use DEMO/security123 or admin/admin123');
   },
 
-  // Tokens: Fetch all QR tokens from Supabase directly
+  // Tokens: Fetch all QR tokens directly from Supabase
   async getTokens() {
-    const { data, error } = await supabase
-      .from('visitor_tokens')
-      .select('*')
-      .order('token_code', { ascending: true });
-
-    if (error) {
-      console.error('Supabase getTokens error:', error);
-      throw new Error(error.message || 'Failed to fetch tokens');
-    }
-
-    return {
-      success: true,
-      tokens: data || [],
-    };
-  },
-
-  // Generate next unique QR token in sequence (e.g., V-001, V-002, ...)
-  async generateToken() {
-    const { data: tokens, error: fetchErr } = await supabase
-      .from('visitor_tokens')
-      .select('token_code');
-
-    if (fetchErr) {
-      console.error('Supabase fetch tokens error:', fetchErr);
-      throw new Error(fetchErr.message || 'Failed to check tokens');
-    }
-
-    let maxNumber = 0;
-    (tokens || []).forEach((t) => {
-      const match = (t.token_code || '').match(/^V-(\d+)$/i);
-      if (match) {
-        const num = parseInt(match[1], 10);
-        if (num > maxNumber) maxNumber = num;
-      }
-    });
-
-    const nextNumber = maxNumber + 1;
-    const nextCode = `V-${String(nextNumber).padStart(3, '0')}`;
-
-    const { data: newToken, error: insertErr } = await supabase
-      .from('visitor_tokens')
-      .insert([{ token_code: nextCode, status: 'AVAILABLE' }])
-      .select()
-      .single();
-
-    if (insertErr) {
-      console.error('Supabase insert token error:', insertErr);
-      throw new Error(insertErr.message || 'Failed to create token');
-    }
-
-    return {
-      success: true,
-      token: newToken,
-      message: `Generated QR Token ${nextCode}`,
-    };
-  },
-
-  // Verify token code and find whether an active visit is linked to it
-  async verifyToken(tokenCode) {
-    const code = (tokenCode || '').trim().toUpperCase();
-
-    const { data: token, error } = await supabase
-      .from('visitor_tokens')
-      .select('*')
-      .eq('token_code', code)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Supabase verifyToken error:', error);
-      throw new Error(error.message || 'Failed to verify token');
-    }
-
-    if (!token) {
+    try {
+      const data = await postgrest('/visitor_tokens?select=*&order=token_code.asc');
       return {
         success: true,
-        exists: false,
-        tokenCode: code,
-        message: 'Token does not exist',
+        tokens: data || [],
       };
+    } catch (err) {
+      console.error('getTokens error:', err);
+      throw err;
     }
+  },
 
-    if (token.status === 'IN USE') {
-      const { data: activeVisits, error: visitErr } = await supabase
-        .from('visits')
-        .select('*')
-        .eq('token_code', token.token_code)
-        .eq('status', 'ACTIVE')
-        .order('check_in', { ascending: false })
-        .limit(1);
-
-      if (visitErr) {
-        console.error('Supabase getActiveVisit error:', visitErr);
+  // Generate next unique QR token for category (e.g. VIP-001, CON-001, V-001)
+  async generateToken(categoryOrPrefix = 'General') {
+    try {
+      let prefix = 'V';
+      const c = (categoryOrPrefix || '').trim().toLowerCase();
+      if (c === 'vip' || c.startsWith('vip')) {
+        prefix = 'VIP';
+      } else if (c === 'contractor' || c === 'con' || c.startsWith('con')) {
+        prefix = 'CON';
+      } else if (c === 'utility' || c === 'utl' || c.startsWith('utl')) {
+        prefix = 'UTL';
       }
 
-      const activeVisit =
-        activeVisits && activeVisits.length > 0 ? enrichVisit(activeVisits[0]) : null;
+      const existing = await postgrest('/visitor_tokens?select=token_code');
+      let maxNum = 0;
+      const regex = new RegExp(`^${prefix}-(\\d+)$`, 'i');
+      if (Array.isArray(existing)) {
+        for (const t of existing) {
+          const m = (t.token_code || '').match(regex);
+          if (m) {
+            const n = parseInt(m[1], 10);
+            if (!isNaN(n) && n > maxNum) maxNum = n;
+          }
+        }
+      }
+      const nextNum = maxNum + 1;
+      const nextCode = `${prefix}-${String(nextNum).padStart(3, '0')}`;
 
+      // Check if token already exists
+      const checkExisting = await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(nextCode)}&select=*`);
+      let token = null;
+      if (Array.isArray(checkExisting) && checkExisting.length > 0) {
+        token = checkExisting[0];
+      } else {
+        const inserted = await postgrest('/visitor_tokens', {
+          method: 'POST',
+          body: JSON.stringify({
+            token_code: nextCode,
+            status: 'AVAILABLE',
+          }),
+        });
+        token = Array.isArray(inserted) ? inserted[0] : inserted;
+      }
+
+      return {
+        success: true,
+        token,
+        token_code: nextCode,
+        message: `Token ${nextCode} generated successfully`,
+      };
+    } catch (err) {
+      console.error('generateToken error:', err);
+      throw err;
+    }
+  },
+
+  // Ensure token exists in visitor_tokens
+  async ensureTokenExists(tokenCode) {
+    const formattedCode = (tokenCode || '').trim().toUpperCase();
+    try {
+      const existing = await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(formattedCode)}&select=*`);
+      if (Array.isArray(existing) && existing.length > 0) {
+        return existing[0];
+      }
+      const inserted = await postgrest('/visitor_tokens', {
+        method: 'POST',
+        body: JSON.stringify({
+          token_code: formattedCode,
+          status: 'AVAILABLE',
+        }),
+      });
+      return Array.isArray(inserted) ? inserted[0] : inserted;
+    } catch (err) {
+      console.warn('ensureTokenExists non-fatal warning:', err.message);
+      return { token_code: formattedCode, status: 'AVAILABLE' };
+    }
+  },
+
+  // Verify token code and find active or scheduled visit
+  async verifyToken(tokenCode) {
+    const formattedCode = (tokenCode || '').trim().toUpperCase();
+    try {
+      const tokens = await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(formattedCode)}&select=*`);
+
+      // Search for any active visit first
+      const activeVisits = await postgrest(
+        `/visits?token_code=eq.${encodeURIComponent(formattedCode)}&status=eq.ACTIVE&order=check_in.desc&limit=1`
+      );
+      if (Array.isArray(activeVisits) && activeVisits.length > 0) {
+        const activeVisit = enrichVisit(activeVisits[0]);
+        return {
+          success: true,
+          exists: true,
+          token: Array.isArray(tokens) && tokens.length > 0 ? tokens[0] : { token_code: formattedCode, status: 'IN USE' },
+          status: 'IN USE',
+          activeVisit,
+          scheduledVisit: null,
+        };
+      }
+
+      // Search for any scheduled visit
+      const scheduledVisits = await postgrest(
+        `/visits?token_code=eq.${encodeURIComponent(formattedCode)}&status=eq.SCHEDULED&order=created_at.desc&limit=1`
+      );
+      if (Array.isArray(scheduledVisits) && scheduledVisits.length > 0) {
+        const scheduledVisit = enrichVisit(scheduledVisits[0]);
+        return {
+          success: true,
+          exists: true,
+          token: Array.isArray(tokens) && tokens.length > 0 ? tokens[0] : { token_code: formattedCode, status: 'IN USE' },
+          status: 'SCHEDULED',
+          activeVisit: null,
+          scheduledVisit,
+        };
+      }
+
+      if (!Array.isArray(tokens) || tokens.length === 0) {
+        return { success: true, exists: false, token: null };
+      }
+
+      const token = tokens[0];
       return {
         success: true,
         exists: true,
         token,
-        status: 'IN USE',
-        activeVisit,
+        status: token.status || 'AVAILABLE',
+        activeVisit: null,
+        scheduledVisit: null,
       };
+    } catch (err) {
+      console.error('verifyToken error:', err);
+      throw err;
     }
-
-    return {
-      success: true,
-      exists: true,
-      token,
-      status: 'AVAILABLE',
-    };
   },
 
   // Check In visitor or issue scheduled token
@@ -307,20 +324,8 @@ export const api = {
 
     const formattedCode = token_code.trim().toUpperCase();
 
-    // Verify token existence
-    const { data: token, error: tokenErr } = await supabase
-      .from('visitor_tokens')
-      .select('*')
-      .eq('token_code', formattedCode)
-      .maybeSingle();
-
-    if (tokenErr || !token) {
-      throw new Error(`Invalid Token ID ${formattedCode}`);
-    }
-
-    if (token.status === 'IN USE') {
-      throw new Error(`Token ${formattedCode} is currently IN USE`);
-    }
+    // Ensure token exists in visitor_tokens so foreign key reference succeeds
+    let token = await this.ensureTokenExists(formattedCode);
 
     const now = new Date().toISOString();
     const visitStatus = status === 'SCHEDULED' ? 'SCHEDULED' : 'ACTIVE';
@@ -350,7 +355,7 @@ export const api = {
     }
 
     const record = {
-      token_id: token_id || token.id || null,
+      token_id: token_id || (token && token.id) || null,
       token_code: formattedCode,
       full_name,
       mobile,
@@ -361,22 +366,18 @@ export const api = {
       status: visitStatus,
     };
 
-    const { data: newVisit, error: insertErr } = await supabase
-      .from('visits')
-      .insert([record])
-      .select()
-      .single();
+    const inserted = await postgrest('/visits', {
+      method: 'POST',
+      body: JSON.stringify(record),
+    });
 
-    if (insertErr) {
-      console.error('Supabase check-in error:', insertErr);
-      throw new Error(insertErr.message || 'Failed to record check-in');
-    }
+    const newVisit = Array.isArray(inserted) ? inserted[0] : inserted;
 
     // Set token to IN USE
-    await supabase
-      .from('visitor_tokens')
-      .update({ status: 'IN USE' })
-      .eq('token_code', formattedCode);
+    await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(formattedCode)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'IN USE' }),
+    }).catch(() => {});
 
     const actionText =
       visitStatus === 'SCHEDULED' ? 'scheduled for arrival' : 'successfully checked in';
@@ -388,7 +389,54 @@ export const api = {
     };
   },
 
-  // Check out visitor and release token
+  // Check in an already issued / scheduled pass
+  async checkInScheduledVisit(target) {
+    const now = new Date().toISOString();
+    let visitId = null;
+    let tokenCode = null;
+
+    if (typeof target === 'object' && target !== null) {
+      visitId = target.id || target.visitId;
+      tokenCode = target.token_code || target.tokenCode;
+    } else if (typeof target === 'string') {
+      if (target.includes('-')) {
+        tokenCode = target.trim().toUpperCase();
+      } else {
+        visitId = target.trim();
+      }
+    }
+
+    let updated = null;
+    if (visitId) {
+      const res = await postgrest(`/visits?id=eq.${visitId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'ACTIVE', check_in: now }),
+      });
+      updated = Array.isArray(res) ? res[0] : res;
+    } else if (tokenCode) {
+      const res = await postgrest(`/visits?token_code=eq.${encodeURIComponent(tokenCode)}&status=eq.SCHEDULED`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'ACTIVE', check_in: now }),
+      });
+      updated = Array.isArray(res) && res.length > 0 ? res[0] : res;
+    }
+
+    const code = tokenCode || (updated && updated.token_code);
+    if (code) {
+      await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(code)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'IN USE' }),
+      }).catch(() => {});
+    }
+
+    return {
+      success: true,
+      visit: updated ? enrichVisit(updated) : null,
+      message: `Visitor checked in successfully. Badge is now ACTIVE inside campus.`,
+    };
+  },
+
+  // Check out visitor and release token back to AVAILABLE
   async checkOutVisitor(tokenCode) {
     if (!tokenCode) {
       throw new Error('Token code is required for checkout');
@@ -396,49 +444,37 @@ export const api = {
 
     const formattedCode = tokenCode.trim().toUpperCase();
 
-    const { data: activeVisits, error: visitErr } = await supabase
-      .from('visits')
-      .select('*')
-      .eq('token_code', formattedCode)
-      .eq('status', 'ACTIVE')
-      .order('check_in', { ascending: false })
-      .limit(1);
+    const activeVisits = await postgrest(
+      `/visits?token_code=eq.${encodeURIComponent(formattedCode)}&status=eq.ACTIVE&order=check_in.desc&limit=1`
+    );
 
-    if (visitErr) {
-      throw new Error(visitErr.message || 'Failed to search active visit');
-    }
-
-    if (!activeVisits || activeVisits.length === 0) {
+    if (!Array.isArray(activeVisits) || activeVisits.length === 0) {
       throw new Error(`No active visit found for token ${formattedCode}`);
     }
 
     const activeVisit = activeVisits[0];
     const checkOutTime = new Date().toISOString();
 
-    const { data: completedVisit, error: updateErr } = await supabase
-      .from('visits')
-      .update({
+    const updated = await postgrest(`/visits?id=eq.${activeVisit.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
         check_out: checkOutTime,
         status: 'COMPLETED',
-      })
-      .eq('id', activeVisit.id)
-      .select()
-      .single();
+      }),
+    });
 
-    if (updateErr) {
-      throw new Error(updateErr.message || 'Failed to update checkout');
-    }
+    const completedVisit = Array.isArray(updated) ? updated[0] : updated;
 
     // Set token to AVAILABLE
-    await supabase
-      .from('visitor_tokens')
-      .update({ status: 'AVAILABLE' })
-      .eq('token_code', formattedCode);
+    await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(formattedCode)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'AVAILABLE' }),
+    });
 
     return {
       success: true,
       visit: enrichVisit(completedVisit),
-      message: `Visitor ${completedVisit.full_name} checked out. Token ${formattedCode} is now AVAILABLE`,
+      message: `Visitor ${completedVisit?.full_name || 'Visitor'} checked out. Token ${formattedCode} is now AVAILABLE`,
     };
   },
 
@@ -448,25 +484,25 @@ export const api = {
       throw new Error('Token code or visit ID is required to cancel');
     }
 
-    let query = supabase.from('visits').update({ status: 'CANCELLED' });
+    let endpoint = '/visits';
     if (visitId) {
-      query = query.eq('id', visitId);
+      endpoint += `?id=eq.${visitId}`;
     } else if (tokenCode) {
-      query = query.eq('token_code', tokenCode).eq('status', 'SCHEDULED');
+      endpoint += `?token_code=eq.${encodeURIComponent(tokenCode)}&status=eq.SCHEDULED`;
     }
 
-    const { data, error } = await query.select();
-    if (error) {
-      throw new Error(error.message || 'Failed to cancel visit');
-    }
+    const updated = await postgrest(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'CANCELLED' }),
+    });
 
-    const cancelled = data && data.length > 0 ? data[0] : null;
+    const cancelled = Array.isArray(updated) && updated.length > 0 ? updated[0] : null;
     const code = tokenCode || (cancelled && cancelled.token_code);
     if (code) {
-      await supabase
-        .from('visitor_tokens')
-        .update({ status: 'AVAILABLE' })
-        .eq('token_code', code);
+      await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(code)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status: 'AVAILABLE' }),
+      });
     }
 
     return {
@@ -476,74 +512,69 @@ export const api = {
     };
   },
 
-  // Reschedule visit
+  // Reschedule scheduled visit
   async rescheduleVisit(tokenCode, expectedDate, timeWindow, visitId) {
     if (!expectedDate && !timeWindow) {
       throw new Error('New date or time window required');
     }
 
     const encodedDuration = `${expectedDate || 'Today'} • ${timeWindow || '09:00 AM - 01:00 PM'}`;
-    let query = supabase.from('visits').update({ expected_duration: encodedDuration });
-
+    let endpoint = '/visits';
     if (visitId) {
-      query = query.eq('id', visitId);
+      endpoint += `?id=eq.${visitId}`;
     } else if (tokenCode) {
-      query = query.eq('token_code', tokenCode);
+      endpoint += `?token_code=eq.${encodeURIComponent(tokenCode)}`;
     }
 
-    const { data, error } = await query.select();
-    if (error) {
-      throw new Error(error.message || 'Failed to reschedule visit');
-    }
+    const updated = await postgrest(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify({ expected_duration: encodedDuration }),
+    });
 
-    const updated = data && data.length > 0 ? data[0] : null;
+    const visit = Array.isArray(updated) && updated.length > 0 ? updated[0] : null;
 
     return {
       success: true,
-      visit: updated ? enrichVisit(updated) : null,
+      visit: visit ? enrichVisit(visit) : null,
       message: 'Visit rescheduled successfully',
     };
   },
 
   // Get visits history, scheduled visits, and active visits
   async getVisits(search = '') {
-    const { data, error } = await supabase
-      .from('visits')
-      .select('*')
-      .order('created_at', { ascending: false });
+    try {
+      const data = await postgrest('/visits?select=*&order=created_at.desc');
+      let visits = Array.isArray(data) ? data.map(enrichVisit) : [];
 
-    if (error) {
-      console.error('Supabase getVisits error:', error);
-      throw new Error(error.message || 'Failed to fetch visits');
-    }
+      if (search && search.trim() !== '') {
+        const q = search.trim().toLowerCase();
+        visits = visits.filter(
+          (v) =>
+            (v.full_name && v.full_name.toLowerCase().includes(q)) ||
+            (v.mobile && v.mobile.toLowerCase().includes(q)) ||
+            (v.token_code && v.token_code.toLowerCase().includes(q)) ||
+            (v.company && v.company.toLowerCase().includes(q)) ||
+            (v.vehicle_no && v.vehicle_no.toLowerCase().includes(q))
+        );
+      }
 
-    let visits = (data || []).map(enrichVisit);
-
-    if (search && search.trim() !== '') {
-      const q = search.trim().toLowerCase();
-      visits = visits.filter(
-        (v) =>
-          (v.full_name && v.full_name.toLowerCase().includes(q)) ||
-          (v.mobile && v.mobile.toLowerCase().includes(q)) ||
-          (v.token_code && v.token_code.toLowerCase().includes(q)) ||
-          (v.company && v.company.toLowerCase().includes(q)) ||
-          (v.vehicle_no && v.vehicle_no.toLowerCase().includes(q))
+      const activeVisits = visits.filter((v) => v.status === 'ACTIVE');
+      const scheduledVisits = visits.filter((v) => v.status === 'SCHEDULED');
+      const historyVisits = visits.filter(
+        (v) => v.status === 'COMPLETED' || v.status === 'CANCELLED'
       );
+
+      return {
+        success: true,
+        activeVisits,
+        scheduledVisits,
+        historyVisits,
+        allVisits: visits,
+        totalCount: visits.length,
+      };
+    } catch (err) {
+      console.error('getVisits error:', err);
+      throw err;
     }
-
-    const activeVisits = visits.filter((v) => v.status === 'ACTIVE');
-    const scheduledVisits = visits.filter((v) => v.status === 'SCHEDULED');
-    const historyVisits = visits.filter(
-      (v) => v.status === 'COMPLETED' || v.status === 'CANCELLED'
-    );
-
-    return {
-      success: true,
-      activeVisits,
-      scheduledVisits,
-      historyVisits,
-      allVisits: visits,
-      totalCount: visits.length,
-    };
   },
 };

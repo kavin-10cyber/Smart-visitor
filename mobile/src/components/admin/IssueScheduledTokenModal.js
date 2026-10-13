@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -16,8 +16,10 @@ import {
   ArrowRightIcon,
   QRIcon,
   CrownIcon,
+  WrenchIcon,
 } from '../AdminIcons';
 import CalendarPicker, { formatDisplayDate } from './CalendarPicker';
+import { api } from '../../services/api';
 import styles from '../../styles/adminStyles';
 
 const CATEGORIES = [
@@ -57,22 +59,44 @@ function IssueScheduledTokenModal({
   const [purpose, setPurpose] = useState('');
   const [isVip, setIsVip] = useState(true);
   const [selectedTokenCode, setSelectedTokenCode] = useState('');
+  const [generatingToken, setGeneratingToken] = useState(false);
 
-  // Auto-pick token when modal becomes visible or available tokens change
-  useEffect(() => {
-    if (availableTokens.length > 0 && !selectedTokenCode) {
-      setSelectedTokenCode(availableTokens[0].token_code);
+  // Generate a dedicated QR code for the specific category (VIP, Contractor, Utility)
+  const generateDedicatedToken = useCallback(async (cat) => {
+    setGeneratingToken(true);
+    try {
+      const res = await api.generateToken(cat);
+      if (res?.success && res.token_code) {
+        setSelectedTokenCode(res.token_code);
+      }
+    } catch (err) {
+      console.warn('Dedicated token generation fallback:', err.message);
+      // Fallback deterministic prefix generator
+      const prefix = cat === 'VIP' ? 'VIP' : cat === 'Contractor' ? 'CON' : 'UTL';
+      const randomSuffix = String(Math.floor(100 + Math.random() * 900));
+      setSelectedTokenCode(`${prefix}-${randomSuffix}`);
+    } finally {
+      setGeneratingToken(false);
     }
-  }, [availableTokens, visible]);
+  }, []);
 
-  // Clean category switcher without overriding user input fields
+  // When modal opens or category changes, generate a separate QR for VIPs & Contractors
+  useEffect(() => {
+    if (visible) {
+      generateDedicatedToken(category);
+    }
+  }, [visible]);
+
+  // Clean category switcher with dedicated QR token generation
   const handleCategorySelect = (newCat) => {
     setCategory(newCat);
     setIsVip(newCat === 'VIP');
+    generateDedicatedToken(newCat);
   };
 
   const handleSubmit = () => {
-    const tokenToUse = selectedTokenCode || (availableTokens[0]?.token_code ?? 'V-001');
+    const fallbackPrefix = category === 'VIP' ? 'VIP' : category === 'Contractor' ? 'CON' : 'V';
+    const tokenToUse = selectedTokenCode || `${fallbackPrefix}-001`;
     onSubmit({
       category,
       full_name: fullName.trim(),
@@ -284,7 +308,7 @@ function IssueScheduledTokenModal({
               </View>
               <View style={styles.priorityLabelCol}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <CrownIcon size={14} color="#1d4ed8" />
+                  <CrownIcon size={14} color="#5642DE" />
                   <Text style={styles.priorityMainTitle}>Mark as VIP Priority</Text>
                 </View>
                 <Text style={styles.prioritySubDescription}>
@@ -294,19 +318,65 @@ function IssueScheduledTokenModal({
             </TouchableOpacity>
 
             {/* 5. Assigned QR Token Fleet */}
-            <Text style={styles.formSectionHeading}>Assigned QR Badge</Text>
-            <View style={styles.tokenSelectorBox}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 16, marginBottom: 8 }}>
+              <Text style={[styles.formSectionHeading, { marginTop: 0, marginBottom: 0 }]}>Dedicated QR Pass</Text>
+              <TouchableOpacity
+                onPress={() => generateDedicatedToken(category)}
+                disabled={generatingToken}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}
+              >
+                {generatingToken ? (
+                  <ActivityIndicator size="small" color="#6C5CE7" />
+                ) : (
+                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#6C5CE7' }}>↻ Regenerate QR</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            <View style={[
+              styles.tokenSelectorBox,
+              category === 'VIP' && { borderColor: '#FECDD3', backgroundColor: '#FFF1F2' },
+              category === 'Contractor' && { borderColor: '#FED7AA', backgroundColor: '#FFF7ED' },
+            ]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Text style={styles.tokenSelectorText}>
-                  {selectedTokenCode || (availableTokens[0]?.token_code ?? 'None Available')}
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                  <QRIcon size={20} color={category === 'VIP' ? '#E11D48' : category === 'Contractor' ? '#D97706' : '#6C5CE7'} />
+                  <Text style={[
+                    styles.tokenSelectorText,
+                    category === 'VIP' && { color: '#E11D48' },
+                    category === 'Contractor' && { color: '#D97706' },
+                  ]}>
+                    {selectedTokenCode || `${category === 'VIP' ? 'VIP' : category === 'Contractor' ? 'CON' : 'V'}-001`}
+                  </Text>
+                </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <QRIcon size={18} color="#2563eb" />
-                  <Text style={{ fontSize: 12, fontWeight: '700', color: '#2563eb' }}>AUTO ASSIGNED</Text>
+                  {category === 'VIP' ? (
+                    <>
+                      <CrownIcon size={14} color="#E11D48" />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: '#E11D48' }}>DEDICATED VIP QR</Text>
+                    </>
+                  ) : category === 'Contractor' ? (
+                    <>
+                      <WrenchIcon size={14} color="#D97706" />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: '#D97706' }}>CONTRACTOR QR</Text>
+                    </>
+                  ) : (
+                    <>
+                      <QRIcon size={14} color="#6C5CE7" />
+                      <Text style={{ fontSize: 11, fontWeight: '800', color: '#6C5CE7' }}>SEPARATE PASS QR</Text>
+                    </>
+                  )}
                 </View>
               </View>
-              <Text style={styles.tokenSelectorSub}>
-                {tokenCount} tokens ready for assignment in fleet
+              <Text style={[
+                styles.tokenSelectorSub,
+                category === 'VIP' && { color: '#9F1239' },
+                category === 'Contractor' && { color: '#9A3412' },
+              ]}>
+                {category === 'VIP'
+                  ? 'Separate VIP QR token generated specifically for executive/guest access'
+                  : category === 'Contractor'
+                  ? 'Dedicated contractor pass QR generated for vendor & facility teams'
+                  : 'Separate QR token generated for scheduled access'}
               </Text>
             </View>
 

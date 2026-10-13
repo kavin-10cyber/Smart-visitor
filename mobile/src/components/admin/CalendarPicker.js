@@ -122,7 +122,7 @@ export default function CalendarPicker({
       {/* Label and Toggle Header */}
       <View style={styles.labelRow}>
         <View style={styles.labelWithIcon}>
-          <CalendarIcon size={15} color="#2563eb" />
+          <CalendarIcon size={15} color="#6C5CE7" />
           <Text style={styles.label}>{label}</Text>
         </View>
         <TouchableOpacity
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
   toggleBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   calendarCard: {
     backgroundColor: '#f8fafc',
@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dayBtnSelected: {
-    backgroundColor: '#2563eb',
-    shadowColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
+    shadowColor: '#6C5CE7',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
     shadowRadius: 4,
@@ -357,8 +357,8 @@ const styles = StyleSheet.create({
   },
   dayBtnToday: {
     borderWidth: 1.5,
-    borderColor: '#2563eb',
-    backgroundColor: '#eff6ff',
+    borderColor: '#6C5CE7',
+    backgroundColor: '#F4F0FF',
   },
   dayText: {
     fontSize: 13,
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   dayTextToday: {
-    color: '#2563eb',
+    color: '#6C5CE7',
     fontWeight: '800',
   },
   dayTextPast: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 9,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
   },
   summaryText: {
     fontSize: 12,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   doneBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   manualInput: {
     backgroundColor: '#f8fafc',

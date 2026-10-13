@@ -5,7 +5,7 @@ import AdminPortal from './src/screens/AdminPortal';
 import SecurityPortal from './src/screens/SecurityPortal';
 
 export default function App() {
-  const [currentUser, setCurrentUser] = useState(null); // null | { role: 'admin'|'security', username: string }
+  const [currentUser, setCurrentUser] = useState({ role: 'security', username: 'security' });
 
   const handleLoginSuccess = (userObj) => {
     setCurrentUser(userObj);

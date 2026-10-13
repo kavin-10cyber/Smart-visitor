@@ -493,4 +493,137 @@ export function ManifestTabIcon({ size = 20, color = '#64748b' }) {
   );
 }
 
+export function FilterSlidersIcon({ size = 18, color = '#667085' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Line x1="4" y1="21" x2="4" y2="14" />
+      <Line x1="4" y1="10" x2="4" y2="3" />
+      <Line x1="12" y1="21" x2="12" y2="12" />
+      <Line x1="12" y1="8" x2="12" y2="3" />
+      <Line x1="20" y1="21" x2="20" y2="16" />
+      <Line x1="20" y1="12" x2="20" y2="3" />
+      <Line x1="1" y1="14" x2="7" y2="14" />
+      <Line x1="9" y1="8" x2="15" y2="8" />
+      <Line x1="17" y1="16" x2="23" y2="16" />
+    </Svg>
+  );
+}
+
+export function ArrowUpRightIcon({ size = 18, color = '#FFFFFF' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <Line x1="7" y1="17" x2="17" y2="7" />
+      <Polyline points="7 7 17 7 17 17" />
+    </Svg>
+  );
+}
+
+export function PlusIcon({ size = 22, color = '#FFFFFF' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+      <Line x1="12" y1="5" x2="12" y2="19" />
+      <Line x1="5" y1="12" x2="19" y2="12" />
+    </Svg>
+  );
+}
+
+export function QrNavIcon({ size = 26, color = '#FFFFFF' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      {/* Top-Left Finder */}
+      <Rect x="3" y="3" width="7" height="7" rx="1.5" strokeWidth="2" />
+      <Rect x="5" y="5" width="3" height="3" fill={color} stroke="none" />
+
+      {/* Top-Right Finder */}
+      <Rect x="14" y="3" width="7" height="7" rx="1.5" strokeWidth="2" />
+      <Rect x="16" y="5" width="3" height="3" fill={color} stroke="none" />
+
+      {/* Bottom-Left Finder */}
+      <Rect x="3" y="14" width="7" height="7" rx="1.5" strokeWidth="2" />
+      <Rect x="5" y="16" width="3" height="3" fill={color} stroke="none" />
+
+      {/* Bottom-Right Data matrix dots */}
+      <Rect x="14" y="14" width="3" height="3" rx="0.5" fill={color} stroke="none" />
+      <Rect x="18" y="14" width="3" height="3" rx="0.5" fill={color} stroke="none" />
+      <Rect x="14" y="18" width="3" height="3" rx="0.5" fill={color} stroke="none" />
+      <Rect x="18" y="18" width="3" height="3" rx="0.5" fill={color} stroke="none" />
+
+      {/* Timing and alignment lines */}
+      <Line x1="10.5" y1="4" x2="10.5" y2="8" strokeWidth="1.8" />
+      <Line x1="10.5" y1="13" x2="10.5" y2="20" strokeWidth="1.8" />
+      <Line x1="4" y1="10.5" x2="8" y2="10.5" strokeWidth="1.8" />
+      <Line x1="13" y1="10.5" x2="20" y2="10.5" strokeWidth="1.8" />
+    </Svg>
+  );
+}
+
+export function HeartIcon({ size = 20, color = '#E11D48' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth="1.5">
+      <Path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </Svg>
+  );
+}
+
+export function WrenchIcon({ size = 20, color = '#D97706' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+    </Svg>
+  );
+}
+
+export function HomeTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <Polyline points="9 22 9 12 15 12 15 22" />
+    </Svg>
+  );
+}
+
+export function ShieldTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </Svg>
+  );
+}
+
+export function CardsTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Rect x="2" y="5" width="20" height="14" rx="2" />
+      <Line x1="2" y1="10" x2="22" y2="10" />
+    </Svg>
+  );
+}
+
+export function ChartTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Line x1="18" y1="20" x2="18" y2="10" />
+      <Line x1="12" y1="20" x2="12" y2="4" />
+      <Line x1="6" y1="20" x2="6" y2="14" />
+    </Svg>
+  );
+}
+
+export function FlashlightIcon({ size = 20, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+    </Svg>
+  );
+}
+
+export function FlashlightOffIcon({ size = 20, color = '#667085' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+      <Line x1="2" y1="2" x2="22" y2="22" strokeWidth="2.2" />
+    </Svg>
+  );
+}
+
 

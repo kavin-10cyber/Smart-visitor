@@ -6,3 +6,7 @@ export const SUPABASE_ANON_KEY =
 
 // Retained for backward-compatibility with status displays
 export const DEFAULT_API_HOST = SUPABASE_URL;
+
+export const CANDIDATE_API_HOSTS = [
+  SUPABASE_URL,
+];

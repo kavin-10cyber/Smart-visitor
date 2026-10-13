@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,24 +13,22 @@ import {
 import { api } from '../services/api';
 import {
   ShieldIcon,
-  UserTabIcon,
-  QrScanCornerIcon,
-  SearchIcon,
+  BellIcon,
   CloseIcon,
-  ArrowRightIcon,
-  UsersIcon,
-  BadgePassIcon,
-  CheckCircleIcon,
-  FlagIcon,
+  ArrowUpRightIcon,
+  PlusIcon,
+  QrNavIcon,
+  CrownIcon,
+  WrenchIcon,
+  BuildingIcon,
+  HomeTabIcon,
+  ManifestTabIcon,
+  ShieldTabIcon,
+  UserTabIcon,
   AlertTriangleIcon,
   CheckOutIcon,
   LogoutIcon,
-  GridIcon,
-  LogsTabIcon,
-  AccessTabIcon,
-  AlertsTabIcon,
-  SettingsTabIcon,
-  CrownIcon,
+  FilterSlidersIcon,
 } from '../components/AdminIcons';
 
 // Extracted components & styles
@@ -40,15 +38,8 @@ import {
   CheckInModal,
   VisitActionModal,
   OfficerModal,
+  FilterModal,
 } from '../components/security/SecurityModals';
-import SecurityHeaderClock from '../components/common/SecurityHeaderClock';
-
-// ── Helpers ───────────────────────────────────────────────────
-function formatClockTime(date = new Date()) {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const timeStr = date.toTimeString().split(' ')[0];
-  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()} | ${timeStr}`;
-}
 
 function formatDisplayTime(isoString) {
   if (!isoString) return '--:--';
@@ -61,16 +52,48 @@ function formatDisplayTime(isoString) {
   }
 }
 
-// ── Component ─────────────────────────────────────────────────
+function isSameDay(date1, date2) {
+  return (
+    date1.getFullYear() === date2.getFullYear() &&
+    date1.getMonth() === date2.getMonth() &&
+    date1.getDate() === date2.getDate()
+  );
+}
+
+function isTodayVisit(v) {
+  if (!v) return false;
+  // Active visits currently inside the campus are relevant to today
+  if (v.status === 'ACTIVE') return true;
+
+  const now = new Date();
+
+  // If scheduled for Today
+  if (v.expected_date === 'Today') return true;
+  if (v.expected_date) {
+    const d = new Date(v.expected_date);
+    if (!isNaN(d.getTime()) && isSameDay(d, now)) return true;
+  }
+
+  // Check check_in, check_out, or created_at timestamps
+  const timestamps = [v.check_in, v.check_out, v.created_at].filter(Boolean);
+  for (const t of timestamps) {
+    const d = new Date(t);
+    if (!isNaN(d.getTime()) && isSameDay(d, now)) return true;
+  }
+
+  return false;
+}
+
 export default function SecurityPortal({ onLogout }) {
-  // ── Navigation ──────────────────────────────────────────────
+  // Navigation
   const [activeTab, setActiveTab] = useState('dashboard');
 
-  // ── Dashboard Filters ────────────────────────────────────────
-  const [selectedFilter, setSelectedFilter] = useState('INSIDE');
+  // Filters & Search
+  const [selectedFilter, setSelectedFilter] = useState('ALL');
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // ── Data ─────────────────────────────────────────────────────
+  // Data
   const [tokensList, setTokensList] = useState([]);
   const [activeVisits, setActiveVisits] = useState([]);
   const [scheduledVisits, setScheduledVisits] = useState([]);
@@ -78,45 +101,84 @@ export default function SecurityPortal({ onLogout }) {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  // ── Modals ───────────────────────────────────────────────────
+  // Modals
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
   const [showOfficerModal, setShowOfficerModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedVisitForAction, setSelectedVisitForAction] = useState(null);
 
-  // ── Check-In Form ────────────────────────────────────────────
+  // Check-In Form State
   const [regFullName, setRegFullName] = useState('');
   const [regMobile, setRegMobile] = useState('');
   const [regHost, setRegHost] = useState('');
   const [regPurpose, setRegPurpose] = useState('General Visit');
   const [regTokenCode, setRegTokenCode] = useState('');
-  const [regDuration] = useState('2 Hours');
   const [submittingCheckIn, setSubmittingCheckIn] = useState(false);
 
-  // ── Derived ──────────────────────────────────────────────────
+  // Derived counts
   const availableTokens = useMemo(
     () => tokensList.filter((t) => t.status === 'AVAILABLE'),
     [tokensList]
   );
-  const totalTodayCount = activeVisits.length + scheduledVisits.length + historyVisits.length;
 
-  const activeVipVisit = useMemo(
-    () => [...activeVisits, ...scheduledVisits].find((v) => v.is_vip || v.category === 'VIP'),
-    [activeVisits, scheduledVisits]
+  // Only today's visitor logs
+  const todayActive = useMemo(() => activeVisits, [activeVisits]);
+  const todayScheduled = useMemo(() => scheduledVisits.filter(isTodayVisit), [scheduledVisits]);
+  const todayHistory = useMemo(() => historyVisits.filter(isTodayVisit), [historyVisits]);
+  const todayTotalCount = todayActive.length + todayScheduled.length + todayHistory.length;
+
+  const todayVipCount = useMemo(
+    () => [...todayActive, ...todayScheduled, ...todayHistory].filter(
+      (v) => v.is_vip || v.category === 'VIP' || v.purpose?.toLowerCase().includes('vip')
+    ).length,
+    [todayActive, todayScheduled, todayHistory]
   );
+
+  const filterCounts = useMemo(
+    () => ({
+      all: todayTotalCount,
+      issued: todayScheduled.length,
+      inside: todayActive.length,
+      exited: todayHistory.length,
+      vip: todayVipCount,
+    }),
+    [todayTotalCount, todayScheduled.length, todayActive.length, todayHistory.length, todayVipCount]
+  );
+
+  const selectedFilterName = useMemo(() => {
+    switch (selectedFilter) {
+      case 'ISSUED': return 'Issued Passes';
+      case 'INSIDE': return 'Inside Campus';
+      case 'EXITED': return 'Exited';
+      case 'VIP': return 'VIP Passes';
+      default: return 'All Passes';
+    }
+  }, [selectedFilter]);
 
   const recentActivities = useMemo(() => {
     let list = [];
     if (selectedFilter === 'INSIDE') {
-      list = activeVisits;
-    } else if (selectedFilter === 'EXPECTED') {
-      list = scheduledVisits.length > 0 ? scheduledVisits : activeVisits.filter((v) => v.purpose?.toLowerCase().includes('interview'));
+      list = todayActive;
+    } else if (selectedFilter === 'EXPECTED' || selectedFilter === 'ISSUED') {
+      list = todayScheduled;
+    } else if (selectedFilter === 'EXITED') {
+      list = todayHistory;
     } else if (selectedFilter === 'VIP') {
-      list = [...activeVisits, ...scheduledVisits, ...historyVisits].filter(
-        (v) => v.is_vip || v.category === 'VIP' || v.purpose?.toLowerCase().includes('vip') || v.address?.toLowerCase().includes('vip')
+      list = [...todayActive, ...todayScheduled, ...todayHistory].filter(
+        (v) => v.is_vip || v.category === 'VIP' || v.purpose?.toLowerCase().includes('vip')
       );
     } else {
-      list = [...activeVisits, ...scheduledVisits, ...historyVisits];
+      list = [...todayActive, ...todayScheduled, ...todayHistory];
+    }
+
+    if (selectedCategory) {
+      list = list.filter((v) => {
+        if (selectedCategory === 'VIP') return v.is_vip || v.category === 'VIP';
+        if (selectedCategory === 'Contractor') return v.category === 'Contractor' || v.purpose?.toLowerCase().includes('contract');
+        if (selectedCategory === 'General') return v.category === 'General';
+        return true;
+      });
     }
 
     if (!searchQuery.trim()) return list;
@@ -126,13 +188,12 @@ export default function SecurityPortal({ onLogout }) {
         item.full_name?.toLowerCase().includes(q) ||
         item.mobile?.toLowerCase().includes(q) ||
         item.token_code?.toLowerCase().includes(q) ||
-        item.company?.toLowerCase().includes(q) ||
         item.address?.toLowerCase().includes(q) ||
         item.purpose?.toLowerCase().includes(q)
     );
-  }, [activeVisits, scheduledVisits, historyVisits, selectedFilter, searchQuery]);
+  }, [todayActive, todayScheduled, todayHistory, selectedFilter, selectedCategory, searchQuery]);
 
-  // ── Data Loading ─────────────────────────────────────────────
+  // Data Loading
   const loadData = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
@@ -154,21 +215,32 @@ export default function SecurityPortal({ onLogout }) {
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
-  const onRefresh = async () => { setRefreshing(true); await loadData(true); };
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadData(true);
+  };
 
-  // ── Handlers ─────────────────────────────────────────────────
+  // Handlers
   const handleScanSuccess = async (tokenCode) => {
     setShowScannerModal(false);
     setLoading(true);
     try {
       const res = await api.verifyToken(tokenCode);
-      if (!res.exists) {
+      if (!res.exists && !res.activeVisit && !res.scheduledVisit) {
         Alert.alert('Invalid QR Token', `Badge "${tokenCode}" is not registered in the system.`);
         return;
       }
-      if (res.status === 'IN USE' && res.activeVisit) {
+      if (res.scheduledVisit) {
+        setSelectedVisitForAction(res.scheduledVisit);
+      } else if (res.status === 'IN USE' && res.activeVisit) {
         setSelectedVisitForAction(res.activeVisit);
       } else {
         setRegTokenCode(tokenCode);
@@ -179,7 +251,28 @@ export default function SecurityPortal({ onLogout }) {
         setShowCheckInModal(true);
       }
     } catch {
-      Alert.alert('Verification Failed', 'Could not verify token with server');
+      Alert.alert('Verification Failed', 'Could not verify token with Supabase Cloud');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckInScheduled = async (visit) => {
+    try {
+      setLoading(true);
+      const res = await api.checkInScheduledVisit(visit);
+      if (res.success) {
+        Alert.alert(
+          'Pass Checked In 🔓',
+          `Badge ${visit.token_code} issued to ${visit.full_name}.\nGate 1 turnstile barrier unlocked.`
+        );
+        setSelectedVisitForAction(null);
+        await loadData(true);
+      } else {
+        Alert.alert('Check-In Error', res.message || 'Could not check in visitor');
+      }
+    } catch (e) {
+      Alert.alert('Error', e.message || 'Failed to check in visitor');
     } finally {
       setLoading(false);
     }
@@ -187,38 +280,35 @@ export default function SecurityPortal({ onLogout }) {
 
   const handleCheckInSubmit = async () => {
     if (!regFullName.trim() || !regMobile.trim()) {
-      Alert.alert('Required Fields', 'Please enter visitor full name and mobile number.');
+      Alert.alert('Required Fields', 'Please enter visitor name and mobile number.');
       return;
     }
-    let tokenToAssign = regTokenCode.trim().toUpperCase();
-    if (!tokenToAssign) {
-      if (availableTokens.length > 0) {
-        tokenToAssign = availableTokens[0].token_code;
-      } else {
-        Alert.alert('No Available Tokens', 'All QR badges are currently in use.');
-        return;
-      }
+    const tokenToUse = regTokenCode || (availableTokens[0] ? availableTokens[0].token_code : null);
+    if (!tokenToUse) {
+      Alert.alert('No Badges Available', 'All badges are currently in use. Please check out an active visitor first.');
+      return;
     }
+
     setSubmittingCheckIn(true);
     try {
       const res = await api.checkInVisitor({
-        token_code: tokenToAssign,
+        token_code: tokenToUse,
         full_name: regFullName.trim(),
         mobile: regMobile.trim(),
-        address: regHost.trim() || 'Admin Office',
-        purpose: regPurpose.trim() || 'General Visit',
-        expected_duration: regDuration,
+        address: regHost.trim() || 'Campus Host',
+        purpose: regPurpose || 'General Visit',
+        status: 'ACTIVE',
+        gate: 'Gate 1 Entrance',
       });
       if (res.success) {
-        Alert.alert('✅ Pass Issued', `Visitor ${regFullName} cleared at Gate 1 with badge ${tokenToAssign}`);
         setShowCheckInModal(false);
-        setRegFullName(''); setRegMobile(''); setRegHost(''); setRegTokenCode('');
-        loadData(true);
+        Alert.alert('Pass Issued Successfully', `Badge ${tokenToUse} issued to ${regFullName.trim()}.\nGate 1 barrier unlocked.`);
+        await loadData(true);
       } else {
-        Alert.alert('Check-In Error', res.message || 'Could not check in visitor');
+        Alert.alert('Check-In Error', res.message || 'Could not issue pass.');
       }
-    } catch (err) {
-      Alert.alert('Error', err.message || 'Check-in request failed');
+    } catch (e) {
+      Alert.alert('Error', e.message || 'Failed to submit check-in to Supabase Cloud');
     } finally {
       setSubmittingCheckIn(false);
     }
@@ -226,8 +316,8 @@ export default function SecurityPortal({ onLogout }) {
 
   const handleCheckOutConfirm = async (visit) => {
     Alert.alert(
-      'Confirm Exit',
-      `Check out visitor ${visit.full_name} and release badge ${visit.token_code}?`,
+      'Confirm Check-Out',
+      `Check out visitor ${visit.full_name} and release badge #${visit.token_code}?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -237,7 +327,7 @@ export default function SecurityPortal({ onLogout }) {
             try {
               const res = await api.checkOutVisitor(visit.token_code);
               if (res.success) {
-                Alert.alert('Exit Recorded', `Badge ${visit.token_code} is now AVAILABLE for recycling.`);
+                Alert.alert('Exit Recorded', `Badge ${visit.token_code} is now AVAILABLE.`);
                 setSelectedVisitForAction(null);
                 loadData(true);
               } else {
@@ -259,222 +349,240 @@ export default function SecurityPortal({ onLogout }) {
       contentContainerStyle={s.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2563eb']} tintColor="#2563eb" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
       }
     >
-      {/* Hero Check-In Card */}
-      <View style={s.heroCheckInCard}>
-        <View style={s.heroCardHeaderRow}>
-          <View style={s.heroCardTitleLeft}>
-            <View style={s.blueDot} />
-            <Text style={s.heroCardTitle}>New Visitor Check-In</Text>
-          </View>
-          <View style={s.scannerReadyBadge}>
-            <View style={s.greenDot} />
-            <Text style={s.scannerReadyText}>SCANNER READY</Text>
-          </View>
-        </View>
+      {/* Featured Vibrant Purple Hero Card (Reference UI Screen 1) */}
+      <View style={s.heroCard}>
+        <View style={s.heroDecorCircle1} />
+        <View style={s.heroDecorCircle2} />
 
-        <TouchableOpacity style={s.scanCodeBtn} activeOpacity={0.85} onPress={() => setShowScannerModal(true)}>
-          <View style={s.scanCodeIconCircle}>
-            <QrScanCornerIcon size={20} color="#ffffff" />
-          </View>
-          <Text style={s.scanCodeBtnText}>SCAN ID / QR CODE</Text>
-          <ArrowRightIcon size={17} color="#ffffff" />
-        </TouchableOpacity>
-
-        <View style={s.searchBarBox}>
-          <SearchIcon size={17} color="#64748b" />
-          <TextInput
-            style={s.searchBarInput}
-            placeholder="Search Visitor Name or Phone"
-            placeholderTextColor="#94a3b8"
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <CloseIcon size={16} color="#94a3b8" />
-            </TouchableOpacity>
-          )}
-        </View>
-      </View>
-
-      {/* Stats Row */}
-      <View style={s.metricsRow}>
-        <View style={s.metricCard}>
-          <View style={s.metricHeaderRow}>
-            <Text style={s.metricTitlePresent}>PRESENT</Text>
-            <View style={s.metricIconBox}><UsersIcon size={18} color="#2563eb" /></View>
-          </View>
-          <View style={s.metricNumberRow}>
-            <Text style={s.metricNumberBold}>{activeVisits.length || 14}</Text>
-            <View style={s.trendTagPill}>
-              <Text style={s.trendTagText}>📈 +{Math.max(1, activeVisits.length || 3)}</Text>
+        <View style={s.heroTopRow}>
+          <View style={s.heroBadgeRow}>
+            <View style={s.heroShieldIconBox}>
+              <ShieldIcon size={20} color="#FFFFFF" />
+            </View>
+            <View>
+              <Text style={s.heroCategoryTitle}>Campus Pass Control</Text>
+              <Text style={s.heroCategorySub}>Gate 1 Entrance • Priority Access</Text>
             </View>
           </View>
-          <Text style={s.metricSubtitle}>Visitors on Campus</Text>
-        </View>
-
-        <View style={s.metricCard}>
-          <View style={s.metricHeaderRow}>
-            <Text style={s.metricTitleLogged}>LOGGED</Text>
-            <View style={s.metricIconBox}><BadgePassIcon size={18} color="#15803d" /></View>
-          </View>
-          <View style={s.metricNumberRow}>
-            <Text style={[s.metricNumberBold, { color: '#15803d' }]}>{totalTodayCount || 38}</Text>
-            <View style={s.percentTagPill}><Text style={s.percentTagText}>100%</Text></View>
-          </View>
-          <Text style={s.metricSubtitle}>Total Arrivals Today</Text>
-        </View>
-      </View>
-
-      {/* Filter Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.filterChipsRow}>
-        {[
-          { key: 'INSIDE', label: 'Currently Inside', count: activeVisits.length || 14 },
-          { key: 'EXPECTED', label: 'Expected', count: 24 },
-          { key: 'VIP', label: 'VIP Pre-approved', count: null },
-          { key: 'ALL', label: `All Logs (${totalTodayCount})`, count: null },
-        ].map(({ key, label, count }) => (
           <TouchableOpacity
-            key={key}
-            style={[s.filterChip, selectedFilter === key && s.filterChipActive]}
-            onPress={() => setSelectedFilter(key)}
+            style={s.heroArrowBtn}
+            activeOpacity={0.8}
+            onPress={() => setShowScannerModal(true)}
           >
-            <Text style={[s.filterChipText, selectedFilter === key && s.filterChipTextActive]}>{label}</Text>
-            {count !== null && (
-              <View style={[s.filterCountBadge, selectedFilter === key && s.filterCountBadgeActive]}>
-                <Text style={[s.filterCountText, selectedFilter === key && s.filterCountTextActive]}>{count}</Text>
-              </View>
-            )}
+            <ArrowUpRightIcon size={18} color="#FFFFFF" />
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        </View>
 
-      {/* Security Notice Banner */}
-      <View style={s.securityNoticeCard}>
-        <View style={s.securityNoticeTop}>
-          <View style={s.securityNoticeLeft}>
-            <View style={s.alertIconBox}><AlertTriangleIcon size={16} color="#991b1b" /></View>
-            <Text style={s.securityNoticeTitle}>SECURITY NOTICE</Text>
+        <View style={s.heroContentRow}>
+          <View style={s.heroInfoCol}>
+            <Text style={s.heroInfoLabel}>Active Campus Passes</Text>
+            <Text style={s.heroInfoValue}>{activeVisits.length} Visitors Inside</Text>
+            <Text style={s.heroInfoSub}>
+              {availableTokens.length} Badges Available • {todayTotalCount} Total Today
+            </Text>
           </View>
-          <View style={s.priorityBadge}><Text style={s.priorityBadgeText}>GATE 1 PRIORITY</Text></View>
-        </View>
-        <Text style={s.securityNoticeBody}>
-          <Text style={s.boldNotice}>VIP Arrival: </Text>
-          {activeVipVisit
-            ? `${activeVipVisit.full_name} (${activeVipVisit.company || 'VIP Guest'}) cleared for ${activeVipVisit.address || 'Main Auditorium'} with Badge #${activeVipVisit.token_code}. Priority status confirmed.`
-            : 'Dr. Sarah Jenkins cleared for Main Auditorium (ETA 5m). Watchlist check confirmed safe.'}
-        </Text>
-      </View>
 
-      {/* Recent Activity Header */}
-      <View style={s.activityHeaderRow}>
-        <Text style={s.activityHeaderTitle}>Recent Check-In Activity</Text>
-        <View style={s.liveFeedBadge}>
-          <View style={s.greenDot} />
-          <Text style={s.liveFeedText}>LIVE FEED</Text>
+          <TouchableOpacity
+            style={s.heroQrHighlightWrapper}
+            activeOpacity={0.85}
+            onPress={() => setShowScannerModal(true)}
+          >
+            <View style={s.heroQrHalo}>
+              <View style={s.heroQrFabButton}>
+                <QrNavIcon size={26} color="#6C5CE7" />
+              </View>
+            </View>
+            <Text style={s.heroQrTagText}>SCAN QR</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Activity List */}
-      {recentActivities.length === 0 ? (
-        <View style={s.emptyStateBox}>
-          <Text style={s.emptyStateTitle}>No visitor activity recorded</Text>
-          <Text style={s.emptyStateSub}>Check in a visitor above or tap Scan ID</Text>
-        </View>
-      ) : (
-        recentActivities.map((item, idx) => {
-          const hostLabel = item.host || item.address || 'Dr. Aris (EE Dept)';
-          const badgeNumber = item.token_code || `V-0${idx + 1}`;
-          const isInside = item.status === 'ACTIVE';
-          const isScheduled = item.status === 'SCHEDULED';
-          const isVip = item.is_vip || item.category === 'VIP' || (item.purpose && item.purpose.toLowerCase().includes('vip'));
+      {/* Category Strip Section */}
+      <View style={s.sectionHeaderRow}>
+        <Text style={s.sectionTitle}>Visitor Categories</Text>
+      </View>
+
+      <View style={s.categoryScrollRow}>
+        {[
+          { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
+          { key: 'Contractor', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
+          { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+        ].map(({ key, label, Icon, bg, text, border }) => {
+          const isSelected = selectedCategory === key;
           return (
             <TouchableOpacity
-              key={item.id || item.token_code || idx}
+              key={key}
               style={[
-                s.activityRowCard,
-                isVip && { borderColor: '#E5E7EB', borderLeftWidth: 3.5, borderLeftColor: '#2563eb', backgroundColor: '#ffffff' },
+                s.categoryCard,
+                { backgroundColor: isSelected ? text : bg, borderColor: border },
               ]}
+              onPress={() => setSelectedCategory(isSelected ? null : key)}
               activeOpacity={0.8}
-              onPress={() => setSelectedVisitForAction(item)}
             >
-              <View style={s.activityCheckCircle}>
-                <CheckCircleIcon size={18} color={isInside ? '#15803d' : isScheduled ? '#f59e0b' : '#64748b'} />
+              <View style={[s.categoryIconBox, { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#FFFFFF' }]}>
+                <Icon size={20} color={isSelected ? '#FFFFFF' : text} />
               </View>
-              <View style={s.activityContentCol}>
-                <View style={s.activityNameRow}>
-                  <Text style={s.activityVisitorName} numberOfLines={1}>
-                    {item.full_name || 'Visitor Name'}
-                  </Text>
-                  {isVip && (
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 3, backgroundColor: '#eff6ff', borderWidth: 1, borderColor: '#dbeafe', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, marginRight: 6 }}>
-                      <CrownIcon size={11} color="#1d4ed8" />
-                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#1d4ed8' }}>VIP</Text>
-                    </View>
-                  )}
-                  <View style={[s.checkedInPill, isScheduled && { backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#E5E7EB' }]}>
-                    <Text style={[s.checkedInPillText, isScheduled && { color: '#475569' }]}>
-                      {isScheduled ? 'Scheduled' : isInside ? 'Checked In' : 'Checked Out'}
-                    </Text>
+              <Text style={[s.categoryLabel, { color: isSelected ? '#FFFFFF' : text }]}>{label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* Quick Actions / Recent Visitors Header with Filter Logo */}
+      <View style={s.sectionHeaderRow}>
+        <View style={s.sectionTitleRow}>
+          <Text style={s.sectionTitle}>Recent Visitors</Text>
+          <Text style={s.sectionSubtitle}>Today</Text>
+        </View>
+
+        <View style={s.sectionHeaderActions}>
+          <TouchableOpacity
+            style={[s.filterIconButton, selectedFilter !== 'ALL' && s.filterIconButtonActive]}
+            activeOpacity={0.8}
+            onPress={() => setShowFilterModal(true)}
+          >
+            <FilterSlidersIcon
+              size={18}
+              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+            />
+            {selectedFilter !== 'ALL' && <View style={s.filterActiveDot} />}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => setActiveTab('logs')} activeOpacity={0.7}>
+            <Text style={s.sectionViewAll}>See All ({todayTotalCount})</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Active Filter Indicator Bar */}
+      {selectedFilter !== 'ALL' && (
+        <View style={s.activeFilterBar}>
+          <Text style={s.activeFilterLabel}>
+            Filtered: <Text style={s.activeFilterName}>{selectedFilterName}</Text>
+          </Text>
+          <TouchableOpacity onPress={() => setSelectedFilter('ALL')} activeOpacity={0.7}>
+            <Text style={s.clearFilterText}>Clear Filter ✕</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Visitors List Items (Reference UI style) */}
+      {recentActivities.length === 0 ? (
+        <View style={s.emptyStateBox}>
+          <Text style={s.emptyStateTitle}>No visitors found</Text>
+          <Text style={s.emptyStateSub}>
+            {searchQuery ? `No matches for "${searchQuery}"` : 'No visitor records in this category.'}
+          </Text>
+        </View>
+      ) : (
+        recentActivities.slice(0, 10).map((visit, index) => {
+          const initials = (visit.full_name || 'V')
+            .split(' ')
+            .map((n) => n[0])
+            .slice(0, 2)
+            .join('')
+            .toUpperCase();
+
+          const pastelColors = [
+            { bg: '#FFE8D6', text: '#D97706' },
+            { bg: '#F2EBFE', text: '#7C3AED' },
+            { bg: '#E0F2FE', text: '#0284C7' },
+            { bg: '#FFE4E8', text: '#E11D48' },
+          ];
+          const colorTheme = pastelColors[index % pastelColors.length];
+
+          const isScheduled = visit.status === 'SCHEDULED';
+          const isInside = visit.status === 'ACTIVE';
+
+          return (
+            <TouchableOpacity
+              key={visit.id || visit.token_code || index}
+              style={s.visitorCard}
+              activeOpacity={0.85}
+              onPress={() => setSelectedVisitForAction(visit)}
+            >
+              <View style={[s.visitorIconBox, { backgroundColor: colorTheme.bg }]}>
+                <Text style={[s.visitorInitials, { color: colorTheme.text }]}>{initials}</Text>
+              </View>
+
+              <View style={s.visitorInfoCol}>
+                <View style={s.visitorNameRow}>
+                  <Text style={s.visitorNameText}>{visit.full_name}</Text>
+                  <View style={[s.badgeTokenPill, { backgroundColor: '#F4F0FF' }]}>
+                    <Text style={[s.badgeTokenText, { color: '#6C5CE7' }]}>{visit.token_code}</Text>
                   </View>
                 </View>
-                <Text style={s.activitySubDetail} numberOfLines={1}>
-                  {item.gate || 'Gate 1 Turnstile'} • Host: {hostLabel} • #{badgeNumber}
-                  {item.company ? ` • ${item.company}` : ''}
+                <Text style={s.visitorSubDetail} numberOfLines={1}>
+                  {visit.address || 'Admin Office'} • {visit.purpose || 'Campus Visit'}
                 </Text>
               </View>
-              <Text style={s.activityTimestamp}>
-                {isScheduled ? (item.time_window ? item.time_window.split('-')[0].trim() : 'Scheduled') : formatDisplayTime(item.check_in)}
-              </Text>
+
+              <View style={s.visitorStatusCol}>
+                <View style={[
+                  s.statusPill,
+                  isScheduled
+                    ? { backgroundColor: '#FEF3C7' }
+                    : isInside
+                    ? { backgroundColor: '#DCFCE7' }
+                    : { backgroundColor: '#F1F5F9' }
+                ]}>
+                  <View style={[
+                    s.statusDot,
+                    isScheduled
+                      ? { backgroundColor: '#F59E0B' }
+                      : isInside
+                      ? { backgroundColor: '#22C55E' }
+                      : { backgroundColor: '#94A3B8' }
+                  ]} />
+                  <Text style={[
+                    s.statusPillText,
+                    isScheduled
+                      ? { color: '#B45309' }
+                      : isInside
+                      ? { color: '#166534' }
+                      : { color: '#475569' }
+                  ]}>
+                    {isScheduled ? 'Issued' : isInside ? 'Inside' : 'Exited'}
+                  </Text>
+                </View>
+                <Text style={s.visitorTimeText}>
+                  {isScheduled
+                    ? (visit.time_window || visit.expected_date || 'Expected')
+                    : formatDisplayTime(visit.check_in)}
+                </Text>
+              </View>
             </TouchableOpacity>
           );
         })
       )}
-
-      {/* Turnstile Status */}
-      <View style={s.turnstileStatusCard}>
-        <View style={s.turnstileLeft}>
-          <View style={s.turnstileFlagBox}><FlagIcon size={18} color="#2563eb" /></View>
-          <View>
-            <Text style={s.turnstileTitle}>Gate 1 Physical Turnstiles</Text>
-            <Text style={s.turnstileSubtitle}>Relay: Online • Latency: 18ms</Text>
-          </View>
-        </View>
-        <View style={s.greenPulseDot} />
-      </View>
     </ScrollView>
   );
 
   const renderLogsTab = () => (
-    <ScrollView
-      style={s.scrollArea}
-      contentContainerStyle={s.scrollContent}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-    >
-      <Text style={s.tabHeadingTitle}>Gate Audit Logs</Text>
-      <Text style={s.tabHeadingSub}>All entry and exit events processed at this station</Text>
+    <ScrollView style={s.scrollArea} contentContainerStyle={s.scrollContent}>
+      <Text style={s.tabHeadingTitle}>Gate Manifest Logs</Text>
+      <Text style={s.tabHeadingSub}>All visitor entry & exit passes</Text>
 
-      {[...activeVisits, ...historyVisits].map((v) => (
+      {[...activeVisits, ...scheduledVisits, ...historyVisits].map((v, i) => (
         <TouchableOpacity
-          key={v.id || v.token_code}
+          key={v.id || i}
           style={s.logCardItem}
+          activeOpacity={0.85}
           onPress={() => setSelectedVisitForAction(v)}
         >
           <View style={s.logCardLeft}>
             <Text style={s.logCardToken}>{v.token_code}</Text>
             <View>
               <Text style={s.logCardName}>{v.full_name}</Text>
-              <Text style={s.logCardSub}>
-                In: {formatDisplayTime(v.check_in)} • Out: {formatDisplayTime(v.check_out)}
-              </Text>
+              <Text style={s.logCardSub}>{v.address || 'Admin Office'} • {v.purpose || 'Visit'}</Text>
             </View>
           </View>
-          <View style={[s.statusBadgeSmall, v.status === 'ACTIVE' ? s.badgeActive : s.badgeDone]}>
-            <Text style={[s.statusBadgeSmallText, v.status === 'ACTIVE' ? s.textActive : s.textDone]}>
-              {v.status === 'ACTIVE' ? 'INSIDE' : 'EXITED'}
+          <View style={[s.statusPill, { backgroundColor: v.status === 'ACTIVE' ? '#DCFCE7' : '#F1F5F9' }]}>
+            <Text style={[s.statusPillText, { color: v.status === 'ACTIVE' ? '#166534' : '#475569' }]}>
+              {v.status}
             </Text>
           </View>
         </TouchableOpacity>
@@ -484,57 +592,34 @@ export default function SecurityPortal({ onLogout }) {
 
   const renderAccessTab = () => (
     <ScrollView style={s.scrollArea} contentContainerStyle={s.scrollContent}>
-      <Text style={s.tabHeadingTitle}>Gate Access Control</Text>
-      <Text style={s.tabHeadingSub}>Manual barrier unlock and badge scanning</Text>
+      <Text style={s.tabHeadingTitle}>Gate Turnstile Access</Text>
+      <Text style={s.tabHeadingSub}>Gate 1 Entrance Terminal Control</Text>
 
-      <TouchableOpacity style={s.bigScannerActionBtn} onPress={() => setShowScannerModal(true)}>
-        <QrScanCornerIcon size={32} color="#ffffff" />
-        <Text style={s.bigScannerActionBtnText}>Launch Camera QR Scanner</Text>
-      </TouchableOpacity>
+      <View style={s.turnstileCard}>
+        <View style={s.turnstileLeft}>
+          <View style={s.turnstileIconBox}>
+            <ShieldIcon size={20} color="#6C5CE7" />
+          </View>
+          <View>
+            <Text style={s.turnstileTitle}>Turnstile Gate 1</Text>
+            <Text style={s.turnstileSubtitle}>Optical Scanner & Barrier Relay Active</Text>
+          </View>
+        </View>
+        <View style={[s.statusPill, { backgroundColor: '#DCFCE7' }]}>
+          <View style={[s.statusDot, { backgroundColor: '#22C55E' }]} />
+          <Text style={[s.statusPillText, { color: '#166534' }]}>ONLINE</Text>
+        </View>
+      </View>
 
       <View style={s.gateControlCard}>
-        <Text style={s.gateControlTitle}>Manual Barrier Trigger</Text>
-        <Text style={s.gateControlSub}>Emergency or authorized manual override</Text>
+        <Text style={s.gateControlTitle}>Manual Emergency Gate Release</Text>
+        <Text style={s.gateControlSub}>Momentarily release turnstile magnetic lock for 10 seconds.</Text>
         <TouchableOpacity
           style={s.unlockTurnstileBtn}
-          onPress={() => Alert.alert('Turnstile Relay', 'Turnstile Gate 1 unlocked for 10 seconds.')}
+          onPress={() => Alert.alert('Turnstile Relay', 'Turnstile Gate 1 barrier unlocked for 10 seconds.')}
         >
-          <Text style={s.unlockTurnstileBtnText}>🔓 Momentary Gate Unlock (10s)</Text>
+          <Text style={s.unlockTurnstileBtnText}>🔓 Unlock Gate Barrier (10s)</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
-  );
-
-  const renderAlertsTab = () => (
-    <ScrollView style={s.scrollArea} contentContainerStyle={s.scrollContent}>
-      <Text style={s.tabHeadingTitle}>Security Station Alerts</Text>
-      <Text style={s.tabHeadingSub}>Live security notices and watchlist checks</Text>
-
-      <View style={s.securityNoticeCard}>
-        <View style={s.securityNoticeTop}>
-          <View style={s.securityNoticeLeft}>
-            <AlertTriangleIcon size={16} color="#991b1b" />
-            <Text style={s.securityNoticeTitle}>SECURITY NOTICE</Text>
-          </View>
-          <View style={s.priorityBadge}><Text style={s.priorityBadgeText}>GATE 1 PRIORITY</Text></View>
-        </View>
-        <Text style={s.securityNoticeBody}>
-          <Text style={s.boldNotice}>VIP Arrival: </Text>
-          Dr. Sarah Jenkins cleared for Main Auditorium (ETA 5m). Watchlist check confirmed safe.
-        </Text>
-      </View>
-
-      <View style={[s.securityNoticeCard, { backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }]}>
-        <View style={s.securityNoticeTop}>
-          <View style={s.securityNoticeLeft}>
-            <CheckOutIcon size={16} color="#15803d" />
-            <Text style={[s.securityNoticeTitle, { color: '#15803d' }]}>WATCHLIST CLEAR</Text>
-          </View>
-          <Text style={{ fontSize: 11, color: '#64748b' }}>Updated 10m ago</Text>
-        </View>
-        <Text style={[s.securityNoticeBody, { color: '#166534' }]}>
-          Campus Security Database is synced with national watchlist. No flagged individuals detected today.
-        </Text>
       </View>
     </ScrollView>
   );
@@ -542,17 +627,18 @@ export default function SecurityPortal({ onLogout }) {
   const renderSettingsTab = () => (
     <ScrollView style={s.scrollArea} contentContainerStyle={s.scrollContent}>
       <Text style={s.tabHeadingTitle}>Station Settings</Text>
-      <Text style={s.tabHeadingSub}>Gate 1 Entrance Terminal</Text>
+      <Text style={s.tabHeadingSub}>Gate 1 Entrance Security Terminal</Text>
 
       <View style={s.settingsSection}>
         {[
-          { label: 'Station ID', val: 'GATE-01-DESK' },
-          { label: 'Guard On Duty', val: 'Security Officer (DEMO)' },
-          { label: 'Turnstile Status', val: 'Online (Relay OK)', green: true },
-        ].map(({ label, val, green }) => (
+          { label: 'Security Station', val: 'GATE-01-DESK' },
+          { label: 'Guard Station', val: 'Security Staff (DEMO)' },
+          { label: 'Cloud Database', val: 'Supabase PostgreSQL' },
+          { label: 'System Mode', val: 'Direct Cloud (Serverless)' },
+        ].map(({ label, val }) => (
           <View key={label} style={s.settingsRow}>
             <Text style={s.settingsLabel}>{label}</Text>
-            <Text style={[s.settingsValue, green && { color: '#15803d' }]}>{val}</Text>
+            <Text style={s.settingsValue}>{val}</Text>
           </View>
         ))}
       </View>
@@ -566,54 +652,109 @@ export default function SecurityPortal({ onLogout }) {
           ]);
         }}
       >
-        <LogoutIcon size={18} color="#ef4444" />
+        <LogoutIcon size={18} color="#E11D48" />
         <Text style={s.logoutBtnFullText}>Sign Out from Security Desk</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 
-  // ── Main Render ───────────────────────────────────────────────
+  // ── Main Layout ───────────────────────────────────────────────
   return (
     <SafeAreaView style={s.mainContainer}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FC" />
 
-      {/* Top Header */}
+      {/* Top Header (Matching Screen 1 of Reference) */}
       <View style={s.topHeader}>
         <View style={s.headerLeftCol}>
-          <View style={s.shieldLogoBox}><ShieldIcon size={20} color="#ffffff" /></View>
-          <SecurityHeaderClock />
+          <TouchableOpacity style={s.profileAvatarBox} onPress={() => setShowOfficerModal(true)} activeOpacity={0.8}>
+            <Text style={s.profileAvatarText}>SO</Text>
+          </TouchableOpacity>
+          <View style={s.greetingCol}>
+            <Text style={s.greetingTitle}>Hello, Security Officer!</Text>
+            <Text style={s.greetingSub}>Gate 1 Station • Campus-Go</Text>
+          </View>
         </View>
-        <TouchableOpacity style={s.profileAvatarBtn} onPress={() => setShowOfficerModal(true)} activeOpacity={0.8}>
-          <UserTabIcon size={17} color="#ffffff" />
-        </TouchableOpacity>
+
+        <View style={s.headerRightCol}>
+          <TouchableOpacity
+            style={s.iconCircleBtn}
+            onPress={() => Alert.alert('Station Alerts', 'Campus security database is clear. No active alerts.')}
+          >
+            <BellIcon size={19} color="#14172C" />
+            <View style={s.notificationRedDot} />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Tab Content */}
+      {/* Tab Screen Content */}
       <View style={s.screenContainer}>
         {activeTab === 'dashboard' && renderDashboardTab()}
         {activeTab === 'logs' && renderLogsTab()}
         {activeTab === 'access' && renderAccessTab()}
-        {activeTab === 'alerts' && renderAlertsTab()}
         {activeTab === 'settings' && renderSettingsTab()}
       </View>
 
-      {/* Bottom 5-Tab Navigation */}
-      <View style={s.bottomTabBar}>
-        {[
-          { key: 'dashboard', label: 'Dashboard', Icon: GridIcon },
-          { key: 'logs', label: 'Logs', Icon: LogsTabIcon },
-          { key: 'access', label: 'Access', Icon: AccessTabIcon },
-          { key: 'alerts', label: 'Alerts', Icon: AlertsTabIcon },
-          { key: 'settings', label: 'Settings', Icon: SettingsTabIcon },
-        ].map(({ key, label, Icon }) => (
-          <TouchableOpacity key={key} style={s.tabItem} onPress={() => setActiveTab(key)} activeOpacity={0.8}>
-            <Icon size={21} color={activeTab === key ? '#2563eb' : '#64748b'} />
-            <Text style={[s.tabLabel, activeTab === key && s.tabLabelActive]}>{label}</Text>
+      {/* Modern Curved Bottom Navigation Bar with Center Elevated FAB (Reference UI) */}
+      <View style={s.bottomNavWrapper}>
+        <View style={s.bottomNavRow}>
+          {/* Tab 1: Home / Dashboard */}
+          <TouchableOpacity
+            style={s.navTabItem}
+            onPress={() => setActiveTab('dashboard')}
+            activeOpacity={0.8}
+          >
+            <HomeTabIcon size={22} color={activeTab === 'dashboard' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[s.navTabLabel, activeTab === 'dashboard' && s.navTabLabelActive]}>Home</Text>
+            {activeTab === 'dashboard' && <View style={s.navActiveDot} />}
           </TouchableOpacity>
-        ))}
+
+          {/* Tab 2: Passes / Logs */}
+          <TouchableOpacity
+            style={s.navTabItem}
+            onPress={() => setActiveTab('logs')}
+            activeOpacity={0.8}
+          >
+            <ManifestTabIcon size={22} color={activeTab === 'logs' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[s.navTabLabel, activeTab === 'logs' && s.navTabLabelActive]}>Passes</Text>
+            {activeTab === 'logs' && <View style={s.navActiveDot} />}
+          </TouchableOpacity>
+
+          {/* Center Elevated FAB: Scan / New Pass */}
+          <View style={s.centerFabContainer}>
+            <TouchableOpacity
+              style={s.centerFabButton}
+              activeOpacity={0.85}
+              onPress={() => setShowScannerModal(true)}
+            >
+              <QrNavIcon size={26} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Tab 3: Access / Turnstile */}
+          <TouchableOpacity
+            style={s.navTabItem}
+            onPress={() => setActiveTab('access')}
+            activeOpacity={0.8}
+          >
+            <ShieldTabIcon size={22} color={activeTab === 'access' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[s.navTabLabel, activeTab === 'access' && s.navTabLabelActive]}>Access</Text>
+            {activeTab === 'access' && <View style={s.navActiveDot} />}
+          </TouchableOpacity>
+
+          {/* Tab 4: Settings / Profile */}
+          <TouchableOpacity
+            style={s.navTabItem}
+            onPress={() => setActiveTab('settings')}
+            activeOpacity={0.8}
+          >
+            <UserTabIcon size={22} color={activeTab === 'settings' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[s.navTabLabel, activeTab === 'settings' && s.navTabLabelActive]}>Profile</Text>
+            {activeTab === 'settings' && <View style={s.navActiveDot} />}
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* ── Modals ────────────────────────────────────────────── */}
+      {/* Modals */}
       <ScannerModal
         visible={showScannerModal}
         onClose={() => setShowScannerModal(false)}
@@ -638,6 +779,7 @@ export default function SecurityPortal({ onLogout }) {
         visit={selectedVisitForAction}
         onClose={() => setSelectedVisitForAction(null)}
         onCheckOut={handleCheckOutConfirm}
+        onCheckInScheduled={handleCheckInScheduled}
       />
 
       <OfficerModal
@@ -650,6 +792,14 @@ export default function SecurityPortal({ onLogout }) {
             { text: 'Log Out', style: 'destructive', onPress: onLogout },
           ]);
         }}
+      />
+
+      <FilterModal
+        visible={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        selectedFilter={selectedFilter}
+        onSelectFilter={setSelectedFilter}
+        counts={filterCounts}
       />
     </SafeAreaView>
   );

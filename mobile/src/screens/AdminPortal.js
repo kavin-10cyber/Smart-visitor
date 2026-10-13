@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import { api } from '../services/api';
 import {
-  MenuIcon,
   BellIcon,
   QRIcon,
   GridIcon,
@@ -28,11 +27,20 @@ import {
   CloseIcon,
   FilterIcon,
   ManifestTabIcon,
+  FilterSlidersIcon,
+  ArrowUpRightIcon,
+  PlusIcon,
+  QrNavIcon,
+  CrownIcon,
+  WrenchIcon,
+  BuildingIcon,
+  HomeTabIcon,
+  ShieldTabIcon,
+  TotalPassIcon,
 } from '../components/AdminIcons';
 
 // Extracted components
 import VisitorCard from '../components/admin/VisitorCard';
-import { ManifestHeader } from '../components/admin/StatCards';
 import VisitorDetailsModal from '../components/admin/VisitorDetailsModal';
 import QRPreviewModal from '../components/admin/QRPreviewModal';
 import IssueScheduledTokenModal from '../components/admin/IssueScheduledTokenModal';
@@ -43,7 +51,14 @@ import LiveHeaderClock from '../components/common/LiveHeaderClock';
 
 // Styles & helpers
 import styles from '../styles/adminStyles';
-import { getAvatarPalette, getInitials } from '../components/admin/VisitorCard';
+
+function ManifestHeader() {
+  return (
+    <View style={styles.sectionHeaderRow}>
+      <Text style={styles.sectionTitle}>Campus Manifest</Text>
+    </View>
+  );
+}
 
 export default function AdminPortal({ onLogout }) {
   // ── Navigation ──────────────────────────────────────────────
@@ -136,7 +151,9 @@ export default function AdminPortal({ onLogout }) {
     let list = [];
     if (selectedFilter === 'ACTIVE') {
       list = activeVisits;
-    } else if (selectedFilter === 'HISTORY') {
+    } else if (selectedFilter === 'SCHEDULED') {
+      list = scheduledVisits;
+    } else if (selectedFilter === 'EXITED' || selectedFilter === 'HISTORY') {
       list = historyVisits;
     } else if (selectedFilter === 'VIP') {
       list = allVisitsCombined.filter(
@@ -156,6 +173,16 @@ export default function AdminPortal({ onLogout }) {
           (v.purpose && v.purpose.toLowerCase().includes('utility')) ||
           (v.purpose && v.purpose.toLowerCase().includes('maintenance')) ||
           (v.purpose && v.purpose.toLowerCase().includes('delivery'))
+      );
+    } else if (selectedFilter === 'GENERAL') {
+      list = allVisitsCombined.filter(
+        (v) =>
+          v.category === 'General' ||
+          (!v.is_vip && v.category !== 'VIP' && v.category !== 'Contractor')
+      );
+    } else if (selectedFilter === 'VEHICLES') {
+      list = allVisitsCombined.filter(
+        (v) => v.vehicle_no || (v.purpose && v.purpose.toLowerCase().includes('veh'))
       );
     } else {
       list = allVisitsCombined;
@@ -196,7 +223,13 @@ export default function AdminPortal({ onLogout }) {
     }
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    loadData();
+    const interval = setInterval(() => {
+      loadData(true);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -247,6 +280,20 @@ export default function AdminPortal({ onLogout }) {
         },
       ]
     );
+  }, []);
+
+  const handleCheckInScheduled = useCallback(async (visit) => {
+    try {
+      const res = await api.checkInScheduledVisit(visit);
+      if (res.success) {
+        Alert.alert('Check-In Recorded', `Pass ${visit.token_code} checked in. ${visit.full_name} is now INSIDE campus.`);
+        loadData(true);
+      } else {
+        Alert.alert('Check-In Failed', res.message || 'Could not check in scheduled pass');
+      }
+    } catch (err) {
+      Alert.alert('Check-In Error', err.message || 'Failed to check in pass');
+    }
   }, []);
 
   const handleIssueScheduledSubmit = useCallback(async (formData) => {
@@ -445,74 +492,140 @@ export default function AdminPortal({ onLogout }) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2563eb']} tintColor="#2563eb" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
       }
     >
-      {/* Top Stats Row */}
-      <View style={styles.topStatsRow}>
-        <View style={styles.statCardHalf}>
-          <View style={styles.statCardHeader}>
-            <Text style={styles.statCardTitle}>INSIDE CAMPUS</Text>
-            <View style={styles.statIconContainer} />
-          </View>
-          <Text style={styles.statCardValue}>{activeVisits.length || 32}</Text>
-        </View>
-        <View style={styles.statCardHalf}>
-          <View style={styles.statCardHeader}>
-            <Text style={styles.statCardTitle}>TOTAL TODAY</Text>
-            <View style={styles.statIconContainer} />
-          </View>
-          <Text style={styles.statCardValue}>{totalTodayCount > 0 ? totalTodayCount : 147}</Text>
-        </View>
-      </View>
-
-      <View style={styles.capacityCard}>
-        <View style={styles.capacityCardHeader}>
-          <Text style={styles.capacityCardTitle}>AVAILABLE QR</Text>
-        </View>
-        <View style={styles.capacityValueRow}>
-          <Text style={styles.capacityValueBig}>{availableCount > 0 ? availableCount : 68}</Text>
-          <Text style={styles.capacityValueMax}>/{totalTokensCount > 0 ? totalTokensCount : 100}</Text>
-        </View>
-        <View style={styles.progressBarTrack}>
-          <View style={[styles.progressBarFill, { width: `${availableCount > 0 ? capacityPercent : 68}%` }]} />
-        </View>
-      </View>
-
-      <TouchableOpacity
-        style={styles.generatePrimaryBtn}
-        activeOpacity={0.88}
-        onPress={handleGenerateNewQR}
-        disabled={generatingToken}
-      >
-        {generatingToken ? (
-          <ActivityIndicator color="#ffffff" size="small" />
+      {/* Search Bar with Filter Sliders Icon (Reference UI) */}
+      <View style={styles.searchContainer}>
+        <SearchIcon size={18} color="#6C5CE7" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search visitor, badge, mobile..."
+          placeholderTextColor="#94A3B8"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 ? (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.searchFilterBtn}>
+            <CloseIcon size={16} color="#94A3B8" />
+          </TouchableOpacity>
         ) : (
-          <Text style={styles.generateBtnText}>+ Generate New QR Token</Text>
+          <TouchableOpacity
+            style={styles.searchFilterBtn}
+            onPress={() => setSelectedFilter('ALL')}
+          >
+            <FilterSlidersIcon size={18} color="#667085" />
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
+      </View>
 
-      {/* Quick-access Manifest summary on Dashboard */}
-      <View style={navStyles.dashManifestBanner}>
-        <View style={navStyles.dashManifestBannerLeft}>
-          <ManifestTabIcon size={18} color="#2563eb" />
-          <Text style={navStyles.dashManifestBannerTitle}>Today's Campus Manifest</Text>
-          <View style={navStyles.dashManifestBannerBadge}>
-            <Text style={navStyles.dashManifestBannerBadgeText}>{allVisitsCombined.length || 0}</Text>
+      {/* Featured Vibrant Purple Hero Card (Reference UI Screen 1) */}
+      <View style={styles.heroCard}>
+        <View style={styles.heroDecorCircle1} />
+        <View style={styles.heroDecorCircle2} />
+
+        <View style={styles.heroTopRow}>
+          <View style={styles.heroBadgeRow}>
+            <View style={styles.heroShieldIconBox}>
+              <TotalPassIcon size={20} color="#FFFFFF" />
+            </View>
+            <View>
+              <Text style={styles.heroCategoryTitle}>Campus Pass Control</Text>
+              <Text style={styles.heroCategorySub}>Executive Command • Real-time Sync</Text>
+            </View>
           </View>
+          <TouchableOpacity
+            style={styles.heroArrowBtn}
+            activeOpacity={0.8}
+            onPress={() => setShowIssueTokenModal(true)}
+          >
+            <ArrowUpRightIcon size={18} color="#FFFFFF" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => setActiveNavTab('manifest')}
-          style={navStyles.dashManifestBannerBtn}
-          activeOpacity={0.8}
-        >
-          <Text style={navStyles.dashManifestBannerBtnText}>View All →</Text>
+
+        <View style={styles.heroContentRow}>
+          <View style={styles.heroInfoCol}>
+            <Text style={styles.heroInfoLabel}>Active Campus Passes</Text>
+            <Text style={styles.heroInfoValue}>{activeVisits.length} Visitors Inside</Text>
+            <Text style={styles.heroInfoSub}>
+              {availableCount} Badges Available • {totalTodayCount} Total Today
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            style={styles.heroActionBtn}
+            activeOpacity={0.85}
+            onPress={() => setShowIssueTokenModal(true)}
+          >
+            <Text style={styles.heroActionBtnText}>+ Issue Pass</Text>
+            <ArrowUpRightIcon size={14} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Category Strip Section */}
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Visitor Categories</Text>
+      </View>
+
+      <View style={styles.categoryScrollRow}>
+        {[
+          { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
+          { key: 'CONTRACTORS', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
+          { key: 'GENERAL', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+        ].map(({ key, label, Icon, bg, text, border }) => {
+          const isSelected = selectedFilter === key;
+          return (
+            <TouchableOpacity
+              key={key}
+              style={[
+                styles.categoryCard,
+                { backgroundColor: isSelected ? text : bg, borderColor: border },
+              ]}
+              onPress={() => setSelectedFilter(isSelected ? 'ALL' : key)}
+              activeOpacity={0.8}
+            >
+              <View style={[styles.categoryIconBox, { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#FFFFFF' }]}>
+                <Icon size={20} color={isSelected ? '#FFFFFF' : text} />
+              </View>
+              <Text style={[styles.categoryLabel, { color: isSelected ? '#FFFFFF' : text }]}>{label}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+
+      {/* Quick Actions / Recent Visitors Header */}
+      <View style={styles.sectionHeaderRow}>
+        <Text style={styles.sectionTitle}>Recent Visitors</Text>
+        <TouchableOpacity onPress={() => setActiveNavTab('manifest')}>
+          <Text style={styles.sectionViewAll}>See All ({totalTodayCount})</Text>
         </TouchableOpacity>
       </View>
 
-      {renderSearchAndFilterBlock()}
-
-      <ManifestHeader />
+      {/* Filter Chips */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterChipsRow}>
+        {[
+          { key: 'ACTIVE', label: 'Inside', count: activeVisits.length },
+          { key: 'SCHEDULED', label: 'Issued Passes', count: scheduledVisits.length },
+          { key: 'EXITED', label: 'Exited', count: historyVisits.length },
+          { key: 'VIP', label: 'VIP Pass', count: filterCounts.vip },
+          { key: 'ALL', label: 'All Cards', count: allVisitsCombined.length },
+        ].map(({ key, label, count }) => (
+          <TouchableOpacity
+            key={key}
+            style={[styles.filterChip, selectedFilter === key && styles.filterChipActive]}
+            onPress={() => setSelectedFilter(key)}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.filterChipText, selectedFilter === key && styles.filterChipTextActive]}>{label}</Text>
+            {count !== null && (
+              <View style={[styles.filterCountBadge, selectedFilter === key && styles.filterCountBadgeActive]}>
+                <Text style={[styles.filterCountText, selectedFilter === key && styles.filterCountTextActive]}>{count}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
 
       {filteredVisits.length === 0 ? (
         <View style={styles.emptyState}>
@@ -522,11 +635,12 @@ export default function AdminPortal({ onLogout }) {
           </Text>
         </View>
       ) : (
-        filteredVisits.map((item, index) => (
+        filteredVisits.slice(0, 10).map((item, index) => (
           <VisitorCard
             key={item.id || item.token_code || index}
             item={item}
             index={index}
+            onCheckInScheduled={handleCheckInScheduled}
             onCheckOut={handleCheckOut}
             onReschedule={setRescheduleTarget}
             onCancelToken={handleCancelToken}
@@ -545,7 +659,7 @@ export default function AdminPortal({ onLogout }) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2563eb']} tintColor="#2563eb" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
       }
     >
       {/* Header */}
@@ -568,7 +682,7 @@ export default function AdminPortal({ onLogout }) {
           { label: 'Active', count: activeVisits.length, color: '#22c55e', bg: '#dcfce7' },
           { label: 'Scheduled', count: scheduledVisits.length, color: '#f59e0b', bg: '#fef3c7' },
           { label: 'Completed', count: historyVisits.length, color: '#64748b', bg: '#f1f5f9' },
-          { label: 'VIP', count: filterCounts.vip, color: '#2563eb', bg: '#eff6ff' },
+          { label: 'VIP', count: filterCounts.vip, color: '#6C5CE7', bg: '#F4F0FF' },
         ].map(({ label, count, color, bg }) => (
           <View key={label} style={[navStyles.manifestSummaryChip, { backgroundColor: bg }]}>
             <Text style={[navStyles.manifestSummaryCount, { color }]}>{count}</Text>
@@ -774,29 +888,32 @@ export default function AdminPortal({ onLogout }) {
   // ── Main Render ───────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FC" />
 
-      {/* Top Header */}
+      {/* Top Header (Matching Screen 1 of Reference) */}
       <View style={styles.topHeader}>
-        <View style={styles.headerLeftGroup}>
-          {/* Live date & time (isolated high-perf component) */}
-          <LiveHeaderClock />
+        <View style={styles.headerLeftCol}>
+          <TouchableOpacity
+            style={styles.profileAvatarBox}
+            onPress={() => setShowProfileModal(true)}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.profileAvatarText}>AD</Text>
+          </TouchableOpacity>
+          <View style={styles.greetingCol}>
+            <Text style={styles.greetingTitle}>Hello, Administrator!</Text>
+            <Text style={styles.greetingSub}>Campus Visitor Portal • Super Admin</Text>
+          </View>
         </View>
 
-        <View style={styles.headerRightGroup}>
+        <View style={styles.headerRightCol}>
           <TouchableOpacity
-            style={styles.headerIconBtn}
+            style={styles.iconCircleBtn}
             onPress={() => setShowNotificationsModal(true)}
-            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            activeOpacity={0.8}
           >
-            <BellIcon size={21} color="#334155" />
-            {/* Show badge only when there are real alerts */}
-            {hasNotificationAlerts && (
-              <View style={styles.notificationBadge} />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.headerAvatarBtn} onPress={() => setShowProfileModal(true)}>
-            <UserTabIcon size={16} color="#ffffff" />
+            <BellIcon size={19} color="#14172C" />
+            {hasNotificationAlerts && <View style={styles.notificationRedDot} />}
           </TouchableOpacity>
         </View>
       </View>
@@ -810,50 +927,77 @@ export default function AdminPortal({ onLogout }) {
         {activeNavTab === 'profile' && renderProfileTab()}
       </View>
 
-      {/* ── Modern Floating Pill Bottom Navigation Bar ────────── */}
-      <View style={navStyles.navWrapper}>
-        <View style={navStyles.navContainer}>
-          {[
-            { key: 'dashboard', label: 'Dashboard', Icon: GridIcon },
-            { key: 'manifest', label: 'Manifest', Icon: ManifestTabIcon },
-            { key: 'issue_token', label: 'Issue Pass', Icon: IssueTokenTabIcon, isAction: true },
-            { key: 'tokens', label: 'QR Tokens', Icon: QrTabIcon },
-            { key: 'analytics', label: 'Analytics', Icon: BarChartIcon },
-          ].map(({ key, label, Icon, isAction }) => {
-            const isActive = key === 'issue_token' ? showIssueTokenModal : activeNavTab === key;
-            return (
-              <TouchableOpacity
-                key={key}
-                style={[navStyles.navItem, isAction && navStyles.navItemAction]}
-                onPress={() => {
-                  if (key === 'issue_token') {
-                    setShowIssueTokenModal(true);
-                  } else {
-                    setActiveNavTab(key);
-                    setSearchQuery('');
-                    setShowFilters(false);
-                  }
-                }}
-                activeOpacity={0.8}
-              >
-                {isAction ? (
-                  // Centre floating action button
-                  <View style={navStyles.navActionCircle}>
-                    <Icon size={22} color="#ffffff" />
-                  </View>
-                ) : (
-                  <>
-                    <View style={[navStyles.navIconWrap, isActive && navStyles.navIconWrapActive]}>
-                      <Icon size={20} color={isActive ? '#2563eb' : '#94a3b8'} />
-                    </View>
-                    <Text style={[navStyles.navLabel, isActive && navStyles.navLabelActive]}>
-                      {label}
-                    </Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+      {/* ── Modern Curved Bottom Navigation Bar with Center Elevated FAB (Reference UI) ── */}
+      <View style={styles.bottomNavWrapper}>
+        <View style={styles.bottomNavRow}>
+          {/* Tab 1: Home / Dashboard */}
+          <TouchableOpacity
+            style={styles.navTabItem}
+            onPress={() => {
+              setActiveNavTab('dashboard');
+              setSearchQuery('');
+              setSelectedFilter('ALL');
+            }}
+            activeOpacity={0.8}
+          >
+            <HomeTabIcon size={22} color={activeNavTab === 'dashboard' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[styles.navTabLabel, activeNavTab === 'dashboard' && styles.navTabLabelActive]}>Home</Text>
+            {activeNavTab === 'dashboard' && <View style={styles.navActiveDot} />}
+          </TouchableOpacity>
+
+          {/* Tab 2: Manifest */}
+          <TouchableOpacity
+            style={styles.navTabItem}
+            onPress={() => {
+              setActiveNavTab('manifest');
+              setSearchQuery('');
+              setSelectedFilter('ALL');
+            }}
+            activeOpacity={0.8}
+          >
+            <ManifestTabIcon size={22} color={activeNavTab === 'manifest' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[styles.navTabLabel, activeNavTab === 'manifest' && styles.navTabLabelActive]}>Manifest</Text>
+            {activeNavTab === 'manifest' && <View style={styles.navActiveDot} />}
+          </TouchableOpacity>
+
+          {/* Center Elevated FAB: Issue Pass / Token */}
+          <View style={styles.centerFabContainer}>
+            <TouchableOpacity
+              style={styles.centerFabButton}
+              activeOpacity={0.85}
+              onPress={() => setShowIssueTokenModal(true)}
+            >
+              <QrNavIcon size={26} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Tab 3: Tokens */}
+          <TouchableOpacity
+            style={styles.navTabItem}
+            onPress={() => {
+              setActiveNavTab('tokens');
+              setSearchQuery('');
+            }}
+            activeOpacity={0.8}
+          >
+            <QrTabIcon size={22} color={activeNavTab === 'tokens' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[styles.navTabLabel, activeNavTab === 'tokens' && styles.navTabLabelActive]}>Tokens</Text>
+            {activeNavTab === 'tokens' && <View style={styles.navActiveDot} />}
+          </TouchableOpacity>
+
+          {/* Tab 4: Analytics */}
+          <TouchableOpacity
+            style={styles.navTabItem}
+            onPress={() => {
+              setActiveNavTab('analytics');
+              setSearchQuery('');
+            }}
+            activeOpacity={0.8}
+          >
+            <BarChartIcon size={22} color={activeNavTab === 'analytics' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[styles.navTabLabel, activeNavTab === 'analytics' && styles.navTabLabelActive]}>Analytics</Text>
+            {activeNavTab === 'analytics' && <View style={styles.navActiveDot} />}
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -953,8 +1097,8 @@ const searchFilterStyles = {
     position: 'relative',
   },
   filterBtnActive: {
-    backgroundColor: '#eff6ff',
-    borderColor: '#bfdbfe',
+    backgroundColor: '#F4F0FF',
+    borderColor: '#E5DDFF',
   },
   filterActiveDot: {
     position: 'absolute',
@@ -963,7 +1107,7 @@ const searchFilterStyles = {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
   },
   divider: {
     height: 1,
@@ -989,8 +1133,8 @@ const searchFilterStyles = {
     borderColor: 'transparent',
   },
   chipActive: {
-    backgroundColor: '#eff6ff',
-    borderColor: '#2563eb',
+    backgroundColor: '#F4F0FF',
+    borderColor: '#6C5CE7',
   },
   chipText: {
     fontSize: 11,
@@ -998,7 +1142,7 @@ const searchFilterStyles = {
     color: '#64748b',
   },
   chipTextActive: {
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   chipCount: {
     backgroundColor: '#e2e8f0',
@@ -1010,7 +1154,7 @@ const searchFilterStyles = {
     paddingHorizontal: 4,
   },
   chipCountActive: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: '#E5DDFF',
   },
   chipCountText: {
     fontSize: 9,
@@ -1018,7 +1162,7 @@ const searchFilterStyles = {
     color: '#64748b',
   },
   chipCountTextActive: {
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
 };
 
@@ -1052,20 +1196,20 @@ const navStyles = {
     color: '#0f172a',
   },
   dashManifestBannerBadge: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#bfdbfe',
+    borderColor: '#E5DDFF',
   },
   dashManifestBannerBadgeText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   dashManifestBannerBtn: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6C5CE7',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -1094,23 +1238,23 @@ const navStyles = {
     fontWeight: '500',
   },
   manifestTabCountBox: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 6,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#bfdbfe',
+    borderColor: '#E5DDFF',
   },
   manifestTabCountNum: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#2563eb',
+    color: '#6C5CE7',
   },
   manifestTabCountLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#3b82f6',
+    color: '#6C5CE7',
     textTransform: 'uppercase',
   },
   manifestSummaryRow: {
@@ -1171,17 +1315,17 @@ const navStyles = {
     justifyContent: 'center',
   },
   navActionCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#2563eb',
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#6C5CE7',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: -20,
-    shadowColor: '#2563eb',
+    marginTop: -24,
+    shadowColor: '#6C5CE7',
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
+    shadowOpacity: 0.4,
+    shadowRadius: 12,
     elevation: 8,
   },
   navIconWrap: {
@@ -1193,15 +1337,15 @@ const navStyles = {
     marginBottom: 2,
   },
   navIconWrapActive: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: '#F4F0FF',
   },
   navLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: '#94A3B8',
   },
   navLabelActive: {
-    color: '#2563eb',
-    fontWeight: '700',
+    color: '#6C5CE7',
+    fontWeight: '800',
   },
 };

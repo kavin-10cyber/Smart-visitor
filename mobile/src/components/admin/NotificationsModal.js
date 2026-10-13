@@ -67,8 +67,8 @@ function NotificationsModal({
           id: `vip_${v.id || v.token_code}`,
           type: 'vip',
           icon: 'crown',
-          iconBg: '#eff6ff',
-          iconColor: '#1d4ed8',
+          iconBg: '#F4F0FF',
+          iconColor: '#5642DE',
           title: `VIP Guest Active — ${name}`,
           sub: v.company ? `${v.company} · Badge ${v.token_code}` : `Badge ${v.token_code} · Currently inside campus`,
           time: v.check_in
@@ -148,8 +148,8 @@ function NotificationsModal({
         id: 'upcoming_sched',
         type: 'info',
         icon: 'clock',
-        iconBg: '#eff6ff',
-        iconColor: '#2563eb',
+        iconBg: '#F4F0FF',
+        iconColor: '#6C5CE7',
         title: `${futureScheduled.length} Upcoming Pre-Approved Pass${futureScheduled.length > 1 ? 'es' : ''}`,
         sub: futureScheduled
           .slice(0, 2)
