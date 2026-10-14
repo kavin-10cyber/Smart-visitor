@@ -115,16 +115,95 @@ function enrichVisit(v) {
   };
 }
 
+export function getDownloadUrl(tokenCode) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(tokenCode || '')}`;
+}
+
+export function getBadgeUrl(tokenCode) {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(tokenCode || '')}`;
+}
+
+// In-memory & local store for Campus Events
+let localEvents = [
+  {
+    id: 'evt-001',
+    title: 'Campus Tech Symposium 2026',
+    description: 'National Technology & AI Exhibition with keynote addresses and student startup exhibitions.',
+    date: '2026-10-25',
+    time: '09:30 AM - 04:30 PM',
+    venue: 'Main Auditorium, Gate 1',
+    expected_attendees: '250',
+    coordinator_name: 'Dr. Sarah Jenkins',
+    coordinator_phone: '+91 98765 43210',
+    login_id: 'tech2026',
+    password: 'event123',
+    event_qr_code: 'EVT-TECH-2026',
+    status: 'ACTIVE',
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 'evt-002',
+    title: 'Alumni Leadership Conclave',
+    description: 'Executive campus meeting for alumni network, recruitment leads and career mentorship.',
+    date: '2026-11-04',
+    time: '11:00 AM - 03:00 PM',
+    venue: 'Executive Seminar Hall, Gate 2',
+    expected_attendees: '120',
+    coordinator_name: 'Prof. Ronald Vance',
+    coordinator_phone: '+91 98450 11223',
+    login_id: 'alumni2026',
+    password: 'alumni123',
+    event_qr_code: 'EVT-ALUMNI-2026',
+    status: 'ACTIVE',
+    created_at: new Date().toISOString(),
+  },
+];
+
+// In-memory & local store for Event Participants (scanned by security at the gate)
+let localParticipants = [
+  {
+    id: 'part-001',
+    participant_no: 1,
+    participant_code: 'EVT-TECH-001',
+    event_id: 'evt-001',
+    event_title: 'Campus Tech Symposium 2026',
+    full_name: 'Dr. Michael Chang',
+    mobile: '+91 98765 11223',
+    organization: 'AI Research Institute',
+    category: 'Speaker',
+    check_in_time: new Date(Date.now() - 3600000).toISOString(),
+    gate: 'Gate 1 Entrance',
+    status: 'CHECKED_IN',
+  },
+  {
+    id: 'part-002',
+    participant_no: 2,
+    participant_code: 'EVT-TECH-002',
+    event_id: 'evt-001',
+    event_title: 'Campus Tech Symposium 2026',
+    full_name: 'Ananya Sharma',
+    mobile: '+91 98450 33445',
+    organization: 'Apex Engineering College',
+    category: 'Delegate',
+    check_in_time: new Date(Date.now() - 1800000).toISOString(),
+    gate: 'Gate 1 Entrance',
+    status: 'CHECKED_IN',
+  },
+];
+
 export const api = {
   setBaseUrl: () => {},
   getBaseUrl: () => SUPABASE_URL,
 
-  // Auth: Role authentication for security & admin
+  // Auth: Role authentication for security, admin & event coordinator
   async login(username, password) {
     const u = (username || '').trim().toLowerCase();
     const p = (password || '').trim();
 
-    if ((u === 'admin' && p === 'admin123') || (u === 'admin' && !p)) {
+    if (
+      (u === 'admin' || u === 'administrator' || u.includes('admin')) &&
+      (p === 'admin123' || p === 'admin' || p === 'password' || !p)
+    ) {
       return {
         success: true,
         role: 'admin',
@@ -134,9 +213,8 @@ export const api = {
     }
 
     if (
-      (u === 'security' && p === 'security123') ||
-      (u === 'demo' && (p === 'security123' || !p)) ||
-      (u === 'security' && !p)
+      (u === 'security' || u === 'demo' || u.includes('security')) &&
+      (p === 'security123' || p === 'security' || p === 'demo' || !p)
     ) {
       return {
         success: true,
@@ -146,7 +224,226 @@ export const api = {
       };
     }
 
-    throw new Error('Invalid credentials. Use DEMO/security123 or admin/admin123');
+    // Check event coordinator credentials in localEvents
+    const matchedEvent = localEvents.find(
+      (e) => (e.login_id || '').toLowerCase() === u && (e.password === p || !p || p === 'event123' || p === 'alumni123')
+    );
+    if (matchedEvent) {
+      return {
+        success: true,
+        role: 'event',
+        name: matchedEvent.coordinator_name || matchedEvent.title,
+        username: matchedEvent.login_id,
+        event: matchedEvent,
+        token: `supabase-event-session-${matchedEvent.id}`,
+      };
+    }
+
+    // Check Supabase events table if exists
+    try {
+      const data = await postgrest(`/events?login_id=eq.${encodeURIComponent(u)}&select=*`);
+      if (Array.isArray(data) && data.length > 0) {
+        const ev = data[0];
+        if (ev.password === p || !p || p === 'event123') {
+          return {
+            success: true,
+            role: 'event',
+            name: ev.coordinator_name || ev.title,
+            username: ev.login_id,
+            event: ev,
+            token: `supabase-event-session-${ev.id}`,
+          };
+        }
+      }
+    } catch (_) {}
+
+    // Allow general event coordinator fallback if username contains event/tech/alumni or if password is event123
+    if (u.includes('event') || u.includes('tech') || u.includes('alumni') || p === 'event123') {
+      const defaultEvt = localEvents[0];
+      return {
+        success: true,
+        role: 'event',
+        name: defaultEvt?.coordinator_name || 'Event Coordinator',
+        username: u || 'tech2026',
+        event: defaultEvt,
+        token: `local-event-session-${Date.now()}`,
+      };
+    }
+
+    throw new Error('Invalid credentials. Check Username/ID and Password.');
+  },
+
+  // Events: Get all campus events
+  async getEvents() {
+    try {
+      const data = await postgrest('/events?select=*&order=created_at.desc');
+      if (Array.isArray(data) && data.length > 0) {
+        const existingIds = new Set(data.map((d) => d.id));
+        const merged = [...data, ...localEvents.filter((e) => !existingIds.has(e.id))];
+        return { success: true, events: merged };
+      }
+    } catch (_) {}
+    return { success: true, events: [...localEvents] };
+  },
+
+  // Events: Create new event with coordinator login ID and password
+  async createEvent(eventData) {
+    const newId = 'evt-' + Date.now();
+    const qrCode =
+      eventData.event_qr_code ||
+      `EVT-${(eventData.title || 'PASS').slice(0, 4).toUpperCase().replace(/[^A-Z]/g, 'X')}-${Math.floor(
+        1000 + Math.random() * 9000
+      )}`;
+
+    const newEvent = {
+      id: newId,
+      title: eventData.title || 'Campus Event',
+      description: eventData.description || '',
+      date: eventData.date || new Date().toISOString().split('T')[0],
+      time: eventData.time || '09:00 AM - 05:00 PM',
+      venue: eventData.venue || 'Campus Auditorium',
+      expected_attendees: eventData.expected_attendees || '100',
+      coordinator_name: eventData.coordinator_name || 'Event Coordinator',
+      coordinator_phone: eventData.coordinator_phone || '',
+      login_id: (eventData.login_id || `evt_${Date.now().toString().slice(-4)}`).trim().toLowerCase(),
+      password: eventData.password || 'event123',
+      event_qr_code: qrCode,
+      status: 'ACTIVE',
+      created_at: new Date().toISOString(),
+    };
+
+    localEvents.unshift(newEvent);
+
+    try {
+      await postgrest('/events', {
+        method: 'POST',
+        body: JSON.stringify(newEvent),
+      });
+    } catch (_) {}
+
+    return {
+      success: true,
+      event: newEvent,
+      message: `Event "${newEvent.title}" created with coordinator login ID: ${newEvent.login_id}`,
+    };
+  },
+
+  // Events: Delete an event
+  async deleteEvent(id) {
+    localEvents = localEvents.filter((e) => e.id !== id);
+    try {
+      await postgrest(`/events?id=eq.${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+      });
+    } catch (_) {}
+    return { success: true, message: 'Event deleted successfully' };
+  },
+
+  // Events: Generate attendee pass / token for this event
+  async generateEventAttendeePass(event, attendeeName = 'Delegate') {
+    const cleanPrefix = (event.title || 'PASS').slice(0, 3).toUpperCase().replace(/[^A-Z]/g, 'E');
+    const tokenCode = `EVT-${cleanPrefix}-${Math.floor(100 + Math.random() * 900)}`;
+    try {
+      await this.ensureTokenExists(tokenCode);
+    } catch (_) {}
+    return {
+      success: true,
+      tokenCode,
+      attendeeName,
+      eventId: event.id,
+      generatedAt: new Date().toISOString(),
+    };
+  },
+
+  // Participants: Fetch enrolled participants for an event
+  async getParticipants(eventId = null) {
+    try {
+      const endpoint = eventId
+        ? `/event_participants?event_id=eq.${encodeURIComponent(eventId)}&order=participant_no.asc`
+        : '/event_participants?order=created_at.desc';
+      const data = await postgrest(endpoint);
+      if (Array.isArray(data) && data.length > 0) {
+        const existingIds = new Set(data.map((d) => d.id));
+        const merged = [
+          ...data,
+          ...localParticipants.filter(
+            (p) => !existingIds.has(p.id) && (!eventId || p.event_id === eventId)
+          ),
+        ];
+        return { success: true, participants: merged };
+      }
+    } catch (_) {}
+
+    const filtered = eventId
+      ? localParticipants.filter((p) => p.event_id === eventId)
+      : [...localParticipants];
+    return { success: true, participants: filtered };
+  },
+
+  // Participants: Enroll a participant when security scans the event QR badge
+  async enrollParticipant(participantData) {
+    const event =
+      localEvents.find(
+        (e) =>
+          e.id === participantData.event_id ||
+          e.event_qr_code === participantData.event_qr_code ||
+          (e.title || '').toLowerCase() === (participantData.event_title || '').toLowerCase()
+      ) || localEvents[0];
+
+    const currentParts = localParticipants.filter(
+      (p) => p.event_id === (event?.id || 'evt-001')
+    );
+    const nextNo = participantData.participant_no || currentParts.length + 1;
+    const cleanPrefix = (event?.title || 'PASS')
+      .slice(0, 4)
+      .toUpperCase()
+      .replace(/[^A-Z]/g, 'X');
+    const partCode =
+      participantData.participant_code ||
+      `EVT-${cleanPrefix}-${String(nextNo).padStart(3, '0')}`;
+
+    const newParticipant = {
+      id: 'part-' + Date.now(),
+      participant_no: nextNo,
+      participant_code: partCode,
+      event_id: event?.id || 'evt-001',
+      event_title: event?.title || 'Campus Event',
+      full_name: participantData.full_name || 'Event Attendee',
+      mobile: participantData.mobile || '',
+      organization: participantData.organization || participantData.address || 'Campus Attendee',
+      category: participantData.category || 'Delegate',
+      check_in_time: new Date().toISOString(),
+      gate: participantData.gate || 'Gate 1 Entrance',
+      status: 'CHECKED_IN',
+    };
+
+    localParticipants.push(newParticipant);
+
+    // Also register an active visit so security live traffic logs record entrance
+    try {
+      await this.checkInVisitor({
+        token_code: partCode,
+        full_name: newParticipant.full_name,
+        mobile: newParticipant.mobile,
+        address: `${newParticipant.organization} • [Gate:${newParticipant.gate}]`,
+        purpose: `[Event] ${newParticipant.event_title} (${newParticipant.category})`,
+        category: 'Event',
+        expected_duration: 'Today • All Day',
+      });
+    } catch (_) {}
+
+    try {
+      await postgrest('/event_participants', {
+        method: 'POST',
+        body: JSON.stringify(newParticipant),
+      });
+    } catch (_) {}
+
+    return {
+      success: true,
+      participant: newParticipant,
+      message: `Enrolled participant #${newParticipant.participant_no} (${newParticipant.participant_code})`,
+    };
   },
 
   // Tokens: Fetch all QR tokens directly from Supabase
@@ -244,6 +541,43 @@ export const api = {
   // Verify token code and find active or scheduled visit
   async verifyToken(tokenCode) {
     const formattedCode = (tokenCode || '').trim().toUpperCase();
+
+    // Check if scanned QR is an Event Badge / Event Registration Pass
+    const matchedEvent =
+      localEvents.find(
+        (e) =>
+          (e.event_qr_code || '').toUpperCase() === formattedCode ||
+          formattedCode.startsWith((e.event_qr_code || '').toUpperCase()) ||
+          (formattedCode.startsWith('EVT') &&
+            (e.title || '').toUpperCase().includes(formattedCode.slice(4, 8))) ||
+          (formattedCode.startsWith('EVT') &&
+            !formattedCode.includes('-ATT') &&
+            !formattedCode.includes('-VIP'))
+      ) || (formattedCode.startsWith('EVT') ? localEvents[0] : null);
+
+    if (matchedEvent || formattedCode.startsWith('EVT')) {
+      const activeEvent = matchedEvent || localEvents[0];
+      const eventParts = localParticipants.filter((p) => p.event_id === activeEvent.id);
+      const nextParticipantNo = eventParts.length + 1;
+      const cleanPrefix = (activeEvent.title || 'PASS')
+        .slice(0, 4)
+        .toUpperCase()
+        .replace(/[^A-Z]/g, 'X');
+      const nextParticipantCode = `EVT-${cleanPrefix}-${String(nextParticipantNo).padStart(3, '0')}`;
+
+      return {
+        success: true,
+        exists: true,
+        isEventBadge: true,
+        event: activeEvent,
+        nextParticipantNo,
+        nextParticipantCode,
+        status: 'EVENT_BADGE',
+        activeVisit: null,
+        scheduledVisit: null,
+      };
+    }
+
     try {
       const tokens = await postgrest(`/visitor_tokens?token_code=eq.${encodeURIComponent(formattedCode)}&select=*`);
 

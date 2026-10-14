@@ -9,8 +9,10 @@ import {
   Alert,
   StatusBar,
   SafeAreaView,
+  Linking,
 } from 'react-native';
 import { api } from '../services/api';
+import VisitorCard from '../components/admin/VisitorCard';
 import {
   ShieldIcon,
   BellIcon,
@@ -39,6 +41,7 @@ import s from '../styles/securityStyles';
 import {
   ScannerModal,
   CheckInModal,
+  EventEnrollModal,
   VisitActionModal,
   OfficerModal,
   FilterModal,
@@ -164,6 +167,9 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
   // Modals
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [showCheckInModal, setShowCheckInModal] = useState(false);
+  const [showEventEnrollModal, setShowEventEnrollModal] = useState(false);
+  const [eventEnrollData, setEventEnrollData] = useState(null);
+  const [eventCategory, setEventCategory] = useState('Delegate');
   const [showOfficerModal, setShowOfficerModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedVisitForAction, setSelectedVisitForAction] = useState(null);
@@ -417,6 +423,22 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
     setLoading(true);
     try {
       const res = await api.verifyToken(tokenCode);
+
+      // Event Badge: Open Event Attendee Enrollment with auto-incremented ID
+      if (res?.isEventBadge) {
+        setEventEnrollData({
+          event: res.event,
+          participantNo: res.nextParticipantNo,
+          participantCode: res.nextParticipantCode,
+        });
+        setRegFullName('');
+        setRegMobile('');
+        setRegHost(res.event?.venue || 'Campus Auditorium');
+        setEventCategory('Delegate');
+        setShowEventEnrollModal(true);
+        return;
+      }
+
       if (!res.exists && !res.activeVisit && !res.scheduledVisit) {
         Alert.alert('Invalid QR Token', `Badge "${tokenCode}" is not registered in the system.`);
         return;
@@ -437,6 +459,39 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
       Alert.alert('Verification Failed', 'Could not verify token with Supabase Cloud');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEventEnrollSubmit = async () => {
+    if (!regFullName.trim() || !regMobile.trim()) {
+      Alert.alert('Required Fields', 'Please enter participant full name and mobile number.');
+      return;
+    }
+    setSubmittingCheckIn(true);
+    try {
+      const res = await api.enrollParticipant({
+        event_id: eventEnrollData?.event?.id,
+        event_title: eventEnrollData?.event?.title,
+        participant_no: eventEnrollData?.participantNo,
+        participant_code: eventEnrollData?.participantCode,
+        full_name: regFullName.trim(),
+        mobile: regMobile.trim(),
+        organization: regHost.trim(),
+        category: eventCategory,
+        gate: 'Gate 1 Entrance',
+      });
+      if (res?.success) {
+        Alert.alert(
+          'Participant Enrolled',
+          `Participant #${res.participant.participant_no} (${res.participant.participant_code})\nName: ${res.participant.full_name}\nEvent: ${res.participant.event_title}\n\nStored in Event Participants! Gate barrier unlocked.`
+        );
+        setShowEventEnrollModal(false);
+        await loadData(true);
+      }
+    } catch (e) {
+      Alert.alert('Enrollment Error', e.message || 'Failed to enroll participant');
+    } finally {
+      setSubmittingCheckIn(false);
     }
   };
 
@@ -518,6 +573,36 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
               }
             } catch {
               Alert.alert('Error', 'Failed to check out visitor');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleCancelVisit = (visit) => {
+    Alert.alert(
+      'Cancel Pass',
+      `Cancel pass for ${visit.full_name} and release badge #${visit.token_code}?`,
+      [
+        { text: 'Keep Pass', style: 'cancel' },
+        {
+          text: 'Yes, Cancel Pass',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const res = await api.cancelVisit(visit.token_code, visit.id);
+              if (res.success) {
+                Alert.alert('Pass Cancelled', `Badge ${visit.token_code} returned to available fleet.`);
+                await loadData(true);
+              } else {
+                Alert.alert('Error', res.message || 'Could not cancel pass');
+              }
+            } catch (e) {
+              Alert.alert('Error', e.message || 'Failed to cancel pass');
+            } finally {
+              setLoading(false);
             }
           },
         },
@@ -675,7 +760,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         </View>
       )}
 
-      {/* Visitors List Items (Reference UI style) */}
+      {/* Visitors List Items (Matching Admin Page Card) */}
       {recentActivities.length === 0 ? (
         <View style={s.emptyStateBox}>
           <Text style={s.emptyStateTitle}>No visitors found</Text>
@@ -686,85 +771,25 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           </Text>
         </View>
       ) : (
-        recentActivities.slice(0, 10).map((visit, index) => {
-          const initials = (visit.full_name || 'V')
-            .split(' ')
-            .map((n) => n[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase();
-
-          const pastelColors = [
-            { bg: '#FFE8D6', text: '#D97706' },
-            { bg: '#F2EBFE', text: '#7C3AED' },
-            { bg: '#E0F2FE', text: '#0284C7' },
-            { bg: '#FFE4E8', text: '#E11D48' },
-          ];
-          const colorTheme = pastelColors[index % pastelColors.length];
-
-          const isScheduled = visit.status === 'SCHEDULED';
-          const isInside = visit.status === 'ACTIVE';
-
-          return (
-            <TouchableOpacity
-              key={visit.id || visit.token_code || index}
-              style={s.visitorCard}
-              activeOpacity={0.85}
-              onPress={() => setSelectedVisitForAction(visit)}
-            >
-              <View style={[s.visitorIconBox, { backgroundColor: colorTheme.bg }]}>
-                <Text style={[s.visitorInitials, { color: colorTheme.text }]}>{initials}</Text>
-              </View>
-
-              <View style={s.visitorInfoCol}>
-                <View style={s.visitorNameRow}>
-                  <Text style={s.visitorNameText}>{visit.full_name}</Text>
-                  <View style={[s.badgeTokenPill, { backgroundColor: '#F4F0FF' }]}>
-                    <Text style={[s.badgeTokenText, { color: '#6C5CE7' }]}>{visit.token_code}</Text>
-                  </View>
-                </View>
-                <Text style={s.visitorSubDetail} numberOfLines={1}>
-                  {visit.address || 'Admin Office'} • {visit.purpose || 'Campus Visit'}
-                </Text>
-              </View>
-
-              <View style={s.visitorStatusCol}>
-                <View style={[
-                  s.statusPill,
-                  isScheduled
-                    ? { backgroundColor: '#FEF3C7' }
-                    : isInside
-                    ? { backgroundColor: '#DCFCE7' }
-                    : { backgroundColor: '#F1F5F9' }
-                ]}>
-                  <View style={[
-                    s.statusDot,
-                    isScheduled
-                      ? { backgroundColor: '#F59E0B' }
-                      : isInside
-                      ? { backgroundColor: '#22C55E' }
-                      : { backgroundColor: '#94A3B8' }
-                  ]} />
-                  <Text style={[
-                    s.statusPillText,
-                    isScheduled
-                      ? { color: '#B45309' }
-                      : isInside
-                      ? { color: '#166534' }
-                      : { color: '#475569' }
-                  ]}>
-                    {isScheduled ? 'Issued' : isInside ? 'Inside' : 'Exited'}
-                  </Text>
-                </View>
-                <Text style={s.visitorTimeText}>
-                  {isScheduled
-                    ? (visit.time_window || visit.expected_date || 'Expected')
-                    : formatDisplayTime(visit.check_in)}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })
+        recentActivities.slice(0, 10).map((visit, index) => (
+          <VisitorCard
+            key={visit.id || visit.token_code || index}
+            item={visit}
+            index={index}
+            onCheckInScheduled={handleCheckInScheduled}
+            onCheckOut={handleCheckOutConfirm}
+            onReschedule={(v) => setSelectedVisitForAction(v)}
+            onCancelToken={handleCancelVisit}
+            onDetails={(v) => setSelectedVisitForAction(v)}
+            onCall={(mobile) => {
+              if (mobile) {
+                Linking.openURL(`tel:${mobile}`).catch(() =>
+                  Alert.alert('Unavailable', `Could not initiate phone call to ${mobile}`)
+                );
+              }
+            }}
+          />
+        ))
       )}
     </ScrollView>
   );
@@ -1525,6 +1550,18 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         regPurpose={regPurpose} setRegPurpose={setRegPurpose}
         onSubmit={handleCheckInSubmit}
         submittingCheckIn={submittingCheckIn}
+      />
+
+      <EventEnrollModal
+        visible={showEventEnrollModal}
+        onClose={() => setShowEventEnrollModal(false)}
+        eventEnrollData={eventEnrollData}
+        regFullName={regFullName} setRegFullName={setRegFullName}
+        regMobile={regMobile} setRegMobile={setRegMobile}
+        regHost={regHost} setRegHost={setRegHost}
+        eventCategory={eventCategory} setEventCategory={setEventCategory}
+        onSubmit={handleEventEnrollSubmit}
+        submitting={submittingCheckIn}
       />
 
       <VisitActionModal

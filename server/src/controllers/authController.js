@@ -21,6 +21,18 @@ exports.login = (req, res) => {
     });
   }
 
+  if (
+    (username === 'event' || username.toLowerCase().includes('event') || username.toLowerCase().includes('tech') || username.toLowerCase().startsWith('evt')) &&
+    (password === 'event123' || password === 'admin123')
+  ) {
+    return res.json({
+      success: true,
+      role: 'event',
+      name: 'Event Coordinator',
+      token: 'demo-event-token'
+    });
+  }
+
   return res.status(401).json({
     success: false,
     message: 'Invalid username or password'

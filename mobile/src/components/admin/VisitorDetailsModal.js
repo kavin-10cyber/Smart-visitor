@@ -112,10 +112,14 @@ function VisitorDetailsModal({ visitor, onClose, onCall, onSms, onCheckOut }) {
                   <Text style={modalStyles.digitalIdFieldLabel}>Pass Number</Text>
                   <Text style={modalStyles.digitalIdFieldValue}>{passId}</Text>
 
-                  <Text style={modalStyles.digitalIdFieldLabel}>Assigned Badge</Text>
-                  <Text style={[modalStyles.digitalIdFieldValue, { fontSize: 18, color: '#FFFFFF' }]}>
-                    {visitor.token_code || 'V-000'}
-                  </Text>
+                  {!isScheduled && (
+                    <>
+                      <Text style={modalStyles.digitalIdFieldLabel}>Assigned Badge</Text>
+                      <Text style={[modalStyles.digitalIdFieldValue, { fontSize: 18, color: '#FFFFFF' }]}>
+                        {visitor.token_code || 'V-000'}
+                      </Text>
+                    </>
+                  )}
 
                   <Text style={modalStyles.digitalIdFieldLabel}>Host / Dept</Text>
                   <Text style={modalStyles.digitalIdFieldValue} numberOfLines={1}>

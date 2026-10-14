@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Platform,
+  StyleSheet,
 } from 'react-native';
 import { api } from '../services/api';
 import {
@@ -26,7 +27,10 @@ import {
   SearchIcon,
   CloseIcon,
   FilterIcon,
-  ManifestTabIcon,
+  EventsTabIcon,
+  TicketIcon,
+  CalendarIcon,
+  KeyIcon,
   FilterSlidersIcon,
   ArrowUpRightIcon,
   PlusIcon,
@@ -37,6 +41,7 @@ import {
   HomeTabIcon,
   ShieldTabIcon,
   TotalPassIcon,
+  HistoryIcon,
 } from '../components/AdminIcons';
 
 // Extracted components
@@ -47,18 +52,13 @@ import IssueScheduledTokenModal from '../components/admin/IssueScheduledTokenMod
 import RescheduleModal from '../components/admin/RescheduleModal';
 import NotificationsModal from '../components/admin/NotificationsModal';
 import ProfileMenuModal from '../components/admin/ProfileMenuModal';
+import AddEventModal from '../components/admin/AddEventModal';
+import VisitorHistoryModal from '../components/admin/VisitorHistoryModal';
 import LiveHeaderClock from '../components/common/LiveHeaderClock';
+import { FilterModal } from '../components/security/SecurityModals';
 
 // Styles & helpers
 import styles from '../styles/adminStyles';
-
-function ManifestHeader() {
-  return (
-    <View style={styles.sectionHeaderRow}>
-      <Text style={styles.sectionTitle}>Campus Manifest</Text>
-    </View>
-  );
-}
 
 export default function AdminPortal({ onLogout }) {
   // ── Navigation ──────────────────────────────────────────────
@@ -74,9 +74,17 @@ export default function AdminPortal({ onLogout }) {
   const [activeVisits, setActiveVisits] = useState([]);
   const [scheduledVisits, setScheduledVisits] = useState([]);
   const [historyVisits, setHistoryVisits] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [generatingToken, setGeneratingToken] = useState(false);
+
+  // ── Events Handling State ────────────────────────────────────
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [creatingEvent, setCreatingEvent] = useState(false);
+  const [revealedPasswords, setRevealedPasswords] = useState({});
+  const [eventSearchQuery, setEventSearchQuery] = useState('');
 
   // ── Modals ───────────────────────────────────────────────────
   const [selectedVisitorDetails, setSelectedVisitorDetails] = useState(null);
@@ -85,7 +93,9 @@ export default function AdminPortal({ onLogout }) {
   const [rescheduleTarget, setRescheduleTarget] = useState(null);
   const [reschedulingLoading, setReschedulingLoading] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
 
   // ── Issue Token State ────────────────────────────────────────
   const [issuingLoading, setIssuingLoading] = useState(false);
@@ -141,17 +151,42 @@ export default function AdminPortal({ onLogout }) {
     return {
       all: allVisitsCombined.length,
       active: activeVisits.length,
+      inside: activeVisits.length,
+      issued: scheduledVisits.length,
+      exited: historyVisits.length,
       vip,
       contractors,
       history: historyVisits.length,
     };
-  }, [allVisitsCombined, activeVisits.length, historyVisits.length]);
+  }, [allVisitsCombined, activeVisits.length, scheduledVisits.length, historyVisits.length]);
+
+  const selectedFilterName = useMemo(() => {
+    switch (selectedFilter) {
+      case 'ISSUED':
+      case 'SCHEDULED':
+        return 'Issued Passes';
+      case 'INSIDE':
+      case 'ACTIVE':
+        return 'Inside Campus';
+      case 'EXITED':
+      case 'HISTORY':
+        return 'Exited';
+      case 'VIP':
+        return 'VIP Passes';
+      case 'CONTRACTORS':
+        return 'Contractors';
+      case 'GENERAL':
+        return 'General';
+      default:
+        return 'All Passes';
+    }
+  }, [selectedFilter]);
 
   const filteredVisits = useMemo(() => {
     let list = [];
-    if (selectedFilter === 'ACTIVE') {
+    if (selectedFilter === 'ACTIVE' || selectedFilter === 'INSIDE') {
       list = activeVisits;
-    } else if (selectedFilter === 'SCHEDULED') {
+    } else if (selectedFilter === 'SCHEDULED' || selectedFilter === 'ISSUED') {
       list = scheduledVisits;
     } else if (selectedFilter === 'EXITED' || selectedFilter === 'HISTORY') {
       list = historyVisits;
@@ -205,9 +240,11 @@ export default function AdminPortal({ onLogout }) {
   const loadData = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const [tokenRes, visitRes] = await Promise.all([
+      const [tokenRes, visitRes, eventRes, partRes] = await Promise.all([
         api.getTokens().catch(() => ({ success: false, tokens: [] })),
         api.getVisits().catch(() => ({ success: false, activeVisits: [], scheduledVisits: [], historyVisits: [] })),
+        api.getEvents().catch(() => ({ success: false, events: [] })),
+        api.getParticipants().catch(() => ({ success: false, participants: [] })),
       ]);
       if (tokenRes?.success) setTokens(tokenRes.tokens || []);
       if (visitRes?.success) {
@@ -215,12 +252,61 @@ export default function AdminPortal({ onLogout }) {
         setScheduledVisits(visitRes.scheduledVisits || []);
         setHistoryVisits(visitRes.historyVisits || []);
       }
+      if (eventRes?.success && Array.isArray(eventRes.events)) {
+        setEvents(eventRes.events);
+      }
+      if (partRes?.success && Array.isArray(partRes.participants)) {
+        setParticipants(partRes.participants);
+      }
     } catch (err) {
       console.error('Failed to load admin data:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  // ── Event Handlers ───────────────────────────────────────────
+  const handleCreateEventSubmit = async (eventData) => {
+    setCreatingEvent(true);
+    try {
+      const res = await api.createEvent(eventData);
+      if (res?.success) {
+        Alert.alert(
+          'Event & Credentials Created',
+          `Event: ${res.event.title}\nVenue: ${res.event.venue}\n\nCOORDINATOR LOGIN:\nLogin ID: ${res.event.login_id}\nPassword: ${res.event.password}\n\nThe user can now log in using these credentials under the "Events" tab on the Login Screen!`
+        );
+        setShowAddEventModal(false);
+        loadData(true);
+      }
+    } catch (err) {
+      Alert.alert('Error', err.message || 'Could not create event');
+    } finally {
+      setCreatingEvent(false);
+    }
+  };
+
+  const handleDeleteEvent = (eventId, title) => {
+    Alert.alert(
+      'Delete Event',
+      `Are you sure you want to delete "${title}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.deleteEvent(eventId);
+              setEvents((prev) => prev.filter((e) => e.id !== eventId));
+              Alert.alert('Deleted', `Event "${title}" has been removed.`);
+            } catch (e) {
+              Alert.alert('Error', 'Could not delete event');
+            }
+          },
+        },
+      ]
+    );
   };
 
   useEffect(() => {
@@ -309,11 +395,11 @@ export default function AdminPortal({ onLogout }) {
         await loadData(true);
 
         // Professional SMS / WhatsApp notification message
-        const smsMessage = `Smart Campus Pass: Hello ${formData.full_name}, your pass has been pre-approved for ${formData.expected_date} (${formData.time_window}). Assigned Badge: ${formData.token_code} at ${formData.gate}. Host: ${formData.address}. Please present this badge code at the gate.`;
+        const smsMessage = `Smart Campus Pass: Hello ${formData.full_name}, your pass has been pre-approved for ${formData.expected_date} (${formData.time_window}) at ${formData.gate}. Host: ${formData.address}.`;
 
         Alert.alert(
-          '✅ Pass Issued Successfully',
-          `Badge ${formData.token_code} assigned to ${formData.full_name}.\n\nDate: ${formData.expected_date}\nWindow: ${formData.time_window}\nGate: ${formData.gate}`,
+          'Pass Issued Successfully',
+          `Pass pre-approved for ${formData.full_name}.\n\nDate: ${formData.expected_date}\nWindow: ${formData.time_window}\nGate: ${formData.gate}`,
           [
             {
               text: 'Send WhatsApp',
@@ -407,85 +493,6 @@ export default function AdminPortal({ onLogout }) {
   }, []);
 
   // ── Tab Renders ───────────────────────────────────────────────
-  // ── Search & Filter block (reused in Dashboard + Manifest) ────
-  const renderSearchAndFilterBlock = () => (
-    <View style={searchFilterStyles.block}>
-      <View style={searchFilterStyles.searchRow}>
-        <SearchIcon size={16} color="#94a3b8" />
-        <TextInput
-          style={searchFilterStyles.input}
-          placeholder="Search visitor, phone, company…"
-          placeholderTextColor="#94a3b8"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          clearButtonMode="never"
-        />
-        {searchQuery.length > 0 && (
-          <TouchableOpacity
-            onPress={() => setSearchQuery('')}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            style={searchFilterStyles.clearBtn}
-          >
-            <CloseIcon size={15} color="#94a3b8" />
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity
-          onPress={() => setShowFilters(prev => !prev)}
-          activeOpacity={0.7}
-          style={[
-            searchFilterStyles.filterBtn,
-            (showFilters || selectedFilter !== 'ALL') && searchFilterStyles.filterBtnActive,
-          ]}
-        >
-          <FilterIcon
-            size={15}
-            color={showFilters || selectedFilter !== 'ALL' ? '#2563eb' : '#64748b'}
-          />
-          {selectedFilter !== 'ALL' && (
-            <View style={searchFilterStyles.filterActiveDot} />
-          )}
-        </TouchableOpacity>
-      </View>
-      {showFilters && (
-        <>
-          <View style={searchFilterStyles.divider} />
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={searchFilterStyles.chipsRow}
-          >
-            {[
-              { key: 'ALL', label: 'All', count: filterCounts.all },
-              { key: 'ACTIVE', label: 'Active', count: filterCounts.active },
-              { key: 'VIP', label: 'VIP', count: filterCounts.vip },
-              { key: 'CONTRACTORS', label: 'Contractors', count: filterCounts.contractors },
-              { key: 'HISTORY', label: 'Completed', count: filterCounts.history },
-            ].map(({ key, label, count }) => {
-              const active = selectedFilter === key;
-              return (
-                <TouchableOpacity
-                  key={key}
-                  style={[searchFilterStyles.chip, active && searchFilterStyles.chipActive]}
-                  onPress={() => setSelectedFilter(key)}
-                  activeOpacity={0.75}
-                >
-                  <Text style={[searchFilterStyles.chipText, active && searchFilterStyles.chipTextActive]}>
-                    {label}
-                  </Text>
-                  <View style={[searchFilterStyles.chipCount, active && searchFilterStyles.chipCountActive]}>
-                    <Text style={[searchFilterStyles.chipCountText, active && searchFilterStyles.chipCountTextActive]}>
-                      {count}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </>
-      )}
-    </View>
-  );
-
   const renderDashboardTab = () => (
     <ScrollView
       style={styles.scrollArea}
@@ -495,30 +502,6 @@ export default function AdminPortal({ onLogout }) {
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
       }
     >
-      {/* Search Bar with Filter Sliders Icon (Reference UI) */}
-      <View style={styles.searchContainer}>
-        <SearchIcon size={18} color="#6C5CE7" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search visitor, badge, mobile..."
-          placeholderTextColor="#94A3B8"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        {searchQuery.length > 0 ? (
-          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.searchFilterBtn}>
-            <CloseIcon size={16} color="#94A3B8" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity
-            style={styles.searchFilterBtn}
-            onPress={() => setSelectedFilter('ALL')}
-          >
-            <FilterSlidersIcon size={18} color="#667085" />
-          </TouchableOpacity>
-        )}
-      </View>
-
       {/* Featured Vibrant Purple Hero Card (Reference UI Screen 1) */}
       <View style={styles.heroCard}>
         <View style={styles.heroDecorCircle1} />
@@ -594,38 +577,44 @@ export default function AdminPortal({ onLogout }) {
         })}
       </View>
 
-      {/* Quick Actions / Recent Visitors Header */}
+      {/* Quick Actions / Recent Visitors Header with Filter Logo (Like in Security Portal) */}
       <View style={styles.sectionHeaderRow}>
-        <Text style={styles.sectionTitle}>Recent Visitors</Text>
-        <TouchableOpacity onPress={() => setActiveNavTab('manifest')}>
-          <Text style={styles.sectionViewAll}>See All ({totalTodayCount})</Text>
-        </TouchableOpacity>
+        <View style={styles.sectionTitleRow}>
+          <Text style={styles.sectionTitle}>Recent Visitors</Text>
+          <Text style={styles.sectionSubtitle}>Today</Text>
+        </View>
+
+        <View style={styles.sectionHeaderActions}>
+          <TouchableOpacity
+            style={[styles.filterIconButton, selectedFilter !== 'ALL' && styles.filterIconButtonActive]}
+            activeOpacity={0.8}
+            onPress={() => setShowFilterModal(true)}
+          >
+            <FilterSlidersIcon
+              size={18}
+              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+            />
+            {selectedFilter !== 'ALL' && <View style={styles.filterActiveDot} />}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => { setSelectedFilter('ALL'); setSearchQuery(''); }}>
+            <Text style={styles.sectionViewAll}>See All ({totalTodayCount})</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Filter Chips */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterChipsRow}>
-        {[
-          { key: 'ACTIVE', label: 'Inside', count: activeVisits.length },
-          { key: 'SCHEDULED', label: 'Issued Passes', count: scheduledVisits.length },
-          { key: 'EXITED', label: 'Exited', count: historyVisits.length },
-          { key: 'VIP', label: 'VIP Pass', count: filterCounts.vip },
-          { key: 'ALL', label: 'All Cards', count: allVisitsCombined.length },
-        ].map(({ key, label, count }) => (
-          <TouchableOpacity
-            key={key}
-            style={[styles.filterChip, selectedFilter === key && styles.filterChipActive]}
-            onPress={() => setSelectedFilter(key)}
-            activeOpacity={0.8}
-          >
-            <Text style={[styles.filterChipText, selectedFilter === key && styles.filterChipTextActive]}>{label}</Text>
-            {count !== null && (
-              <View style={[styles.filterCountBadge, selectedFilter === key && styles.filterCountBadgeActive]}>
-                <Text style={[styles.filterCountText, selectedFilter === key && styles.filterCountTextActive]}>{count}</Text>
-              </View>
-            )}
+      {/* Active Filter Indicator Bar */}
+      {selectedFilter !== 'ALL' && (
+        <View style={styles.activeFilterBar}>
+          <Text style={styles.activeFilterLabel}>
+            Filtered: <Text style={styles.activeFilterName}>{selectedFilterName}</Text>
+          </Text>
+          <TouchableOpacity onPress={() => setSelectedFilter('ALL')} activeOpacity={0.7}>
+            <Text style={styles.clearFilterText}>Clear Filter ✕</Text>
           </TouchableOpacity>
-        ))}
-      </ScrollView>
+        </View>
+      )}
+
 
       {filteredVisits.length === 0 ? (
         <View style={styles.emptyState}>
@@ -652,73 +641,207 @@ export default function AdminPortal({ onLogout }) {
     </ScrollView>
   );
 
-  // ── Manifest Tab: Today's Campus Manifest (full screen) ───────
-  const renderManifestTab = () => (
-    <ScrollView
-      style={styles.scrollArea}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
-      }
-    >
-      {/* Header */}
-      <View style={navStyles.manifestTabHeader}>
-        <View>
-          <Text style={navStyles.manifestTabTitle}>Today's Campus Manifest</Text>
-          <Text style={navStyles.manifestTabSub}>
-            {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-          </Text>
-        </View>
-        <View style={navStyles.manifestTabCountBox}>
-          <Text style={navStyles.manifestTabCountNum}>{allVisitsCombined.length}</Text>
-          <Text style={navStyles.manifestTabCountLabel}>entries</Text>
-        </View>
-      </View>
+  // ── Events Tab: Campus Events & Coordinator Handling ────────
+  const renderEventsTab = () => {
+    const q = eventSearchQuery.trim().toLowerCase();
+    const filteredEvents = events.filter((e) => {
+      if (!q) return true;
+      return (
+        (e.title && e.title.toLowerCase().includes(q)) ||
+        (e.venue && e.venue.toLowerCase().includes(q)) ||
+        (e.coordinator_name && e.coordinator_name.toLowerCase().includes(q)) ||
+        (e.login_id && e.login_id.toLowerCase().includes(q))
+      );
+    });
 
-      {/* Summary row */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={navStyles.manifestSummaryRow}>
-        {[
-          { label: 'Active', count: activeVisits.length, color: '#22c55e', bg: '#dcfce7' },
-          { label: 'Scheduled', count: scheduledVisits.length, color: '#f59e0b', bg: '#fef3c7' },
-          { label: 'Completed', count: historyVisits.length, color: '#64748b', bg: '#f1f5f9' },
-          { label: 'VIP', count: filterCounts.vip, color: '#6C5CE7', bg: '#F4F0FF' },
-        ].map(({ label, count, color, bg }) => (
-          <View key={label} style={[navStyles.manifestSummaryChip, { backgroundColor: bg }]}>
-            <Text style={[navStyles.manifestSummaryCount, { color }]}>{count}</Text>
-            <Text style={[navStyles.manifestSummaryLabel, { color }]}>{label}</Text>
+    return (
+      <ScrollView
+        style={styles.scrollArea}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
+        }
+      >
+        {/* Header with Title and "Add Event" button */}
+        <View style={eventStyles.headerRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={eventStyles.title}>Campus Events</Text>
+            <Text style={eventStyles.sub}>Event handling & coordinator credentials</Text>
           </View>
-        ))}
-      </ScrollView>
-
-      {/* Search + Filter */}
-      {renderSearchAndFilterBlock()}
-
-      <ManifestHeader />
-
-      {filteredVisits.length === 0 ? (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyStateTitle}>No visitors found</Text>
-          <Text style={styles.emptyStateSub}>
-            {searchQuery ? `No results for "${searchQuery}"` : 'No visitor records for today.'}
-          </Text>
+          <TouchableOpacity
+            style={eventStyles.createBtn}
+            onPress={() => setShowAddEventModal(true)}
+            activeOpacity={0.85}
+          >
+            <PlusIcon size={16} color="#FFFFFF" />
+            <Text style={eventStyles.createBtnText}>Add Event</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        filteredVisits.map((item, index) => (
-          <VisitorCard
-            key={item.id || item.token_code || index}
-            item={item}
-            index={index}
-            onCheckOut={handleCheckOut}
-            onReschedule={setRescheduleTarget}
-            onCancelToken={handleCancelToken}
-            onDetails={setSelectedVisitorDetails}
-            onCall={handleCallVisitor}
+
+        {/* Metric summary chips */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={eventStyles.metricsRow}>
+          <View style={[eventStyles.metricChip, { backgroundColor: '#F4F0FF' }]}>
+            <Text style={[eventStyles.metricCount, { color: '#6C5CE7' }]}>{events.length}</Text>
+            <Text style={[eventStyles.metricLabel, { color: '#6C5CE7' }]}>Total Events</Text>
+          </View>
+          <View style={[eventStyles.metricChip, { backgroundColor: '#DCFCE7' }]}>
+            <Text style={[eventStyles.metricCount, { color: '#16A34A' }]}>
+              {events.filter((e) => e.status === 'ACTIVE').length}
+            </Text>
+            <Text style={[eventStyles.metricLabel, { color: '#16A34A' }]}>Active Events</Text>
+          </View>
+          <View style={[eventStyles.metricChip, { backgroundColor: '#FEF3C7' }]}>
+            <Text style={[eventStyles.metricCount, { color: '#D97706' }]}>{events.length}</Text>
+            <Text style={[eventStyles.metricLabel, { color: '#D97706' }]}>Coordinators</Text>
+          </View>
+        </ScrollView>
+
+        {/* Search input for events */}
+        <View style={eventStyles.searchBar}>
+          <SearchIcon size={18} color="#64748B" />
+          <TextInput
+            style={eventStyles.searchInput}
+            value={eventSearchQuery}
+            onChangeText={setEventSearchQuery}
+            placeholder="Search events, venues, or login IDs..."
+            placeholderTextColor="#94A3B8"
           />
-        ))
-      )}
-    </ScrollView>
-  );
+          {eventSearchQuery ? (
+            <TouchableOpacity onPress={() => setEventSearchQuery('')}>
+              <CloseIcon size={16} color="#64748B" />
+            </TouchableOpacity>
+          ) : null}
+        </View>
+
+        {/* Event Cards List */}
+        {filteredEvents.length === 0 ? (
+          <View style={eventStyles.emptyBox}>
+            <TicketIcon size={40} color="#94A3B8" />
+            <Text style={eventStyles.emptyTitle}>No Events Found</Text>
+            <Text style={eventStyles.emptySub}>
+              {eventSearchQuery
+                ? `No event matches "${eventSearchQuery}".`
+                : 'Tap "Add Event" above to create an event and coordinator login credentials.'}
+            </Text>
+          </View>
+        ) : (
+          filteredEvents.map((item) => {
+            const isPasswordShown = !!revealedPasswords[item.id];
+            return (
+              <View key={item.id} style={eventStyles.card}>
+                {/* Top Row: Title + Status + Delete */}
+                <View style={eventStyles.cardTopRow}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <Text style={eventStyles.cardTitle}>{item.title}</Text>
+                    <Text style={eventStyles.cardVenue}>{item.venue || 'Campus Hall'}</Text>
+                  </View>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <View style={eventStyles.activeBadge}>
+                      <Text style={eventStyles.activeBadgeText}>{item.status || 'ACTIVE'}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => handleDeleteEvent(item.id, item.title)}
+                      style={eventStyles.deleteBtn}
+                    >
+                      <Text style={eventStyles.deleteText}>Delete</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {item.description ? (
+                  <Text style={eventStyles.cardDesc} numberOfLines={2}>
+                    {item.description}
+                  </Text>
+                ) : null}
+
+                {/* Details badge row */}
+                <View style={eventStyles.detailsRow}>
+                  <View style={eventStyles.detailPill}>
+                    <Text style={eventStyles.detailPillText}>Date: {item.date || 'Upcoming'}</Text>
+                  </View>
+                  <View style={eventStyles.detailPill}>
+                    <Text style={eventStyles.detailPillText}>Time: {item.time || 'All Day'}</Text>
+                  </View>
+                  <View style={eventStyles.detailPill}>
+                    <Text style={eventStyles.detailPillText}>{item.expected_attendees || '100'} attendees</Text>
+                  </View>
+                </View>
+
+                {/* Coordinator Login Credentials Box */}
+                <View style={eventStyles.credBox}>
+                  <View style={eventStyles.credHeader}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                      <KeyIcon size={14} color="#6C5CE7" />
+                      <Text style={eventStyles.credHeading}>COORDINATOR LOGIN CREDENTIALS</Text>
+                    </View>
+                    <Text style={eventStyles.credCoordinatorName}>
+                      {item.coordinator_name || 'Coordinator'}
+                    </Text>
+                  </View>
+
+                  <View style={eventStyles.credFieldRow}>
+                    <Text style={eventStyles.credFieldLabel}>Login ID:</Text>
+                    <Text style={eventStyles.credFieldValue}>{item.login_id}</Text>
+                  </View>
+
+                  <View style={eventStyles.credFieldRow}>
+                    <Text style={eventStyles.credFieldLabel}>Password:</Text>
+                    <Text style={eventStyles.credFieldValue}>
+                      {isPasswordShown ? item.password : '••••••••'}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setRevealedPasswords((prev) => ({
+                          ...prev,
+                          [item.id]: !prev[item.id],
+                        }))
+                      }
+                      style={eventStyles.togglePwBtn}
+                    >
+                      <Text style={eventStyles.togglePwText}>
+                        {isPasswordShown ? 'Hide' : 'Show'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* Action buttons */}
+                <View style={eventStyles.cardActionsRow}>
+                  <TouchableOpacity
+                    style={eventStyles.previewQrBtn}
+                    onPress={() =>
+                      setPreviewToken({
+                        token_code: item.event_qr_code || `EVT-${item.id}`,
+                        status: 'AVAILABLE',
+                      })
+                    }
+                    activeOpacity={0.8}
+                  >
+                    <QRIcon size={16} color="#6C5CE7" />
+                    <Text style={eventStyles.previewQrBtnText}>Preview QR Badge</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={eventStyles.shareCredBtn}
+                    onPress={() => {
+                      Alert.alert(
+                        'Coordinator Login Access',
+                        `Event: ${item.title}\nRole: Event Coordinator\nLogin ID: ${item.login_id}\nPassword: ${item.password}\n\nThe user can log in under the "Events" tab on the Login Screen!`
+                      );
+                    }}
+                    activeOpacity={0.8}
+                  >
+                    <Text style={eventStyles.shareCredBtnText}>Share Login</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            );
+          })
+        )}
+      </ScrollView>
+    );
+  };
 
   const renderTokensTab = () => (
     <ScrollView
@@ -908,12 +1031,12 @@ export default function AdminPortal({ onLogout }) {
 
         <View style={styles.headerRightCol}>
           <TouchableOpacity
-            style={styles.iconCircleBtn}
-            onPress={() => setShowNotificationsModal(true)}
+            style={adminHeaderStyles.historyBtn}
+            onPress={() => setShowHistoryModal(true)}
             activeOpacity={0.8}
           >
-            <BellIcon size={19} color="#14172C" />
-            {hasNotificationAlerts && <View style={styles.notificationRedDot} />}
+            <HistoryIcon size={17} color="#6C5CE7" />
+            <Text style={adminHeaderStyles.historyBtnText}>History</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -921,7 +1044,7 @@ export default function AdminPortal({ onLogout }) {
       {/* Tab Content */}
       <View style={styles.screenContainer}>
         {activeNavTab === 'dashboard' && renderDashboardTab()}
-        {activeNavTab === 'manifest' && renderManifestTab()}
+        {activeNavTab === 'events' && renderEventsTab()}
         {activeNavTab === 'tokens' && renderTokensTab()}
         {activeNavTab === 'analytics' && renderAnalyticsTab()}
         {activeNavTab === 'profile' && renderProfileTab()}
@@ -945,19 +1068,18 @@ export default function AdminPortal({ onLogout }) {
             {activeNavTab === 'dashboard' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
 
-          {/* Tab 2: Manifest */}
+          {/* Tab 2: Events */}
           <TouchableOpacity
             style={styles.navTabItem}
             onPress={() => {
-              setActiveNavTab('manifest');
+              setActiveNavTab('events');
               setSearchQuery('');
-              setSelectedFilter('ALL');
             }}
             activeOpacity={0.8}
           >
-            <ManifestTabIcon size={22} color={activeNavTab === 'manifest' ? '#6C5CE7' : '#94A3B8'} />
-            <Text style={[styles.navTabLabel, activeNavTab === 'manifest' && styles.navTabLabelActive]}>Manifest</Text>
-            {activeNavTab === 'manifest' && <View style={styles.navActiveDot} />}
+            <EventsTabIcon size={22} color={activeNavTab === 'events' ? '#6C5CE7' : '#94A3B8'} />
+            <Text style={[styles.navTabLabel, activeNavTab === 'events' && styles.navTabLabelActive]}>Events</Text>
+            {activeNavTab === 'events' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
 
           {/* Center Elevated FAB: Issue Pass / Token */}
@@ -967,7 +1089,7 @@ export default function AdminPortal({ onLogout }) {
               activeOpacity={0.85}
               onPress={() => setShowIssueTokenModal(true)}
             >
-              <QrNavIcon size={26} color="#FFFFFF" />
+              <PlusIcon size={24} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
 
@@ -1015,6 +1137,13 @@ export default function AdminPortal({ onLogout }) {
         onClose={() => setPreviewToken(null)}
       />
 
+      <AddEventModal
+        visible={showAddEventModal}
+        onClose={() => setShowAddEventModal(false)}
+        onSubmit={handleCreateEventSubmit}
+        loading={creatingEvent}
+      />
+
       <IssueScheduledTokenModal
         visible={showIssueTokenModal}
         onClose={() => setShowIssueTokenModal(false)}
@@ -1041,6 +1170,16 @@ export default function AdminPortal({ onLogout }) {
         totalTokensCount={totalTokensCount}
       />
 
+      <VisitorHistoryModal
+        visible={showHistoryModal}
+        onClose={() => setShowHistoryModal(false)}
+        allVisits={allVisitsCombined}
+        participants={participants}
+        onSelectVisitor={(v) => {
+          setSelectedVisitorDetails(v);
+        }}
+      />
+
       <ProfileMenuModal
         visible={showProfileModal}
         onClose={() => setShowProfileModal(false)}
@@ -1048,9 +1187,48 @@ export default function AdminPortal({ onLogout }) {
         onRefresh={() => loadData(false)}
         onLogout={onLogout}
       />
+
+      <FilterModal
+        visible={showFilterModal}
+        onClose={() => setShowFilterModal(false)}
+        selectedFilter={selectedFilter === 'ACTIVE' ? 'INSIDE' : selectedFilter === 'SCHEDULED' ? 'ISSUED' : selectedFilter === 'EXITED' ? 'EXITED' : selectedFilter}
+        onSelectFilter={setSelectedFilter}
+        counts={{
+          all: allVisitsCombined.length,
+          issued: scheduledVisits.length,
+          inside: activeVisits.length,
+          exited: historyVisits.length,
+          vip: filterCounts.vip,
+        }}
+      />
     </SafeAreaView>
   );
 }
+
+const adminHeaderStyles = StyleSheet.create({
+  historyBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#EDE9FE',
+    paddingHorizontal: 13,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#DDD6FE',
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  historyBtnText: {
+    fontSize: 12.5,
+    fontWeight: '700',
+    color: '#6C5CE7',
+    letterSpacing: 0.2,
+  },
+});
 
 // ── Unified Search + Filter Block Styles ─────────────────────────
 const searchFilterStyles = {
@@ -1349,3 +1527,273 @@ const navStyles = {
     fontWeight: '800',
   },
 };
+
+const eventStyles = {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 14,
+    paddingHorizontal: 4,
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  sub: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  createBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#6C5CE7',
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+    borderRadius: 10,
+    gap: 6,
+    shadowColor: '#6C5CE7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  createBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12.5,
+    fontWeight: '700',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
+    paddingHorizontal: 4,
+  },
+  metricChip: {
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+    borderRadius: 12,
+    minWidth: 95,
+  },
+  metricCount: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  metricLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    gap: 8,
+    marginBottom: 14,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 13.5,
+    color: '#0F172A',
+    padding: 0,
+  },
+  emptyBox: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginTop: 10,
+  },
+  emptyTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#334155',
+    marginTop: 10,
+  },
+  emptySub: {
+    fontSize: 12.5,
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 16,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  cardTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  cardVenue: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  activeBadge: {
+    backgroundColor: '#DCFCE7',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  activeBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: '#15803D',
+  },
+  deleteBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    backgroundColor: '#FEE2E2',
+    borderRadius: 6,
+  },
+  deleteText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#DC2626',
+  },
+  cardDesc: {
+    fontSize: 12.5,
+    color: '#64748B',
+    lineHeight: 18,
+    marginBottom: 10,
+  },
+  detailsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+    marginBottom: 12,
+  },
+  detailPill: {
+    backgroundColor: '#F8FAFC',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  detailPillText: {
+    fontSize: 11,
+    color: '#475569',
+    fontWeight: '600',
+  },
+  credBox: {
+    backgroundColor: '#F7F6FE',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E6E1FA',
+    marginBottom: 12,
+  },
+  credHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+    paddingBottom: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EDE9FE',
+  },
+  credHeading: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#6C5CE7',
+    letterSpacing: 0.5,
+  },
+  credCoordinatorName: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  credFieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
+  },
+  credFieldLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748B',
+    width: 65,
+  },
+  credFieldValue: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#0F172A',
+    letterSpacing: 0.5,
+  },
+  togglePwBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: '#EDE9FE',
+    borderRadius: 4,
+    marginLeft: 6,
+  },
+  togglePwText: {
+    fontSize: 11,
+    color: '#6C5CE7',
+    fontWeight: '700',
+  },
+  cardActionsRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  previewQrBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    backgroundColor: '#F4F0FF',
+    paddingVertical: 9,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5DDFF',
+  },
+  previewQrBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#6C5CE7',
+  },
+  shareCredBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0F172A',
+    paddingVertical: 9,
+    borderRadius: 8,
+  },
+  shareCredBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+};
+
