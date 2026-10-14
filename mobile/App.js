@@ -3,6 +3,7 @@ import { StyleSheet, View, SafeAreaView, StatusBar } from 'react-native';
 import LoginScreen from './src/screens/LoginScreen';
 import AdminPortal from './src/screens/AdminPortal';
 import SecurityPortal from './src/screens/SecurityPortal';
+import EventPortal from './src/screens/EventPortal';
 
 export default function App() {
   const [currentUser, setCurrentUser] = useState({ role: 'security', username: 'security' });
@@ -29,6 +30,10 @@ export default function App() {
 
         {currentUser && currentUser.role === 'security' && (
           <SecurityPortal onLogout={handleLogout} />
+        )}
+
+        {currentUser && currentUser.role === 'event' && (
+          <EventPortal currentUser={currentUser} onLogout={handleLogout} />
         )}
       </View>
     </SafeAreaView>

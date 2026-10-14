@@ -105,9 +105,11 @@ function VisitorCard({
       {/* ── 1. Top Bar: Token & VIP Micro-Badge + Status Pill ── */}
       <View style={styles.visitorCardTopRow}>
         <View style={styles.visitorCardLeftTags}>
-          <View style={styles.tokenPill}>
-            <Text style={styles.tokenPillText}>{item.token_code || 'V-000'}</Text>
-          </View>
+          {!isScheduled && item.token_code && (
+            <View style={styles.tokenPill}>
+              <Text style={styles.tokenPillText}>{item.token_code}</Text>
+            </View>
+          )}
           {isVip && (
             <View style={styles.vipTagBadge}>
               <CrownIcon size={12} color="#5642DE" />

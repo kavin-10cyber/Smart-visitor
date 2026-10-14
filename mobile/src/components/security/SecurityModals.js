@@ -410,3 +410,147 @@ export function FilterModal({
     </Modal>
   );
 }
+
+/**
+ * EventEnrollModal — opens when security scans an Event QR badge.
+ * Auto-assigns an increasing ID number and enrolls the participant into Event Participants.
+ */
+export function EventEnrollModal({
+  visible,
+  onClose,
+  eventEnrollData,
+  regFullName,
+  setRegFullName,
+  regMobile,
+  setRegMobile,
+  regHost,
+  setRegHost,
+  eventCategory,
+  setEventCategory,
+  onSubmit,
+  submitting,
+}) {
+  const event = eventEnrollData?.event;
+  const participantNo = eventEnrollData?.participantNo || 1;
+  const participantCode = eventEnrollData?.participantCode || 'EVT-001';
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={s.modalBackdrop}>
+          <View style={s.modalCard}>
+            <View style={s.modalHeaderRow}>
+              <View>
+                <Text style={s.modalHeaderTitle}>Event Attendee Enrollment</Text>
+                <Text style={{ fontSize: 12, color: '#6C5CE7', fontWeight: '700', marginTop: 2 }}>
+                  {event?.title || 'Campus Event'}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
+                <CloseIcon size={20} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {/* Auto-Incrementing Participant ID Badge */}
+              <View
+                style={{
+                  backgroundColor: '#F4F0FF',
+                  borderRadius: 14,
+                  padding: 14,
+                  marginBottom: 14,
+                  borderWidth: 1.5,
+                  borderColor: '#D8D1F8',
+                }}
+              >
+                <Text style={{ fontSize: 11, fontWeight: '800', color: '#6C5CE7', letterSpacing: 0.5 }}>
+                  ASSIGNED PARTICIPANT ID (AUTO-INCREMENTED)
+                </Text>
+                <Text style={{ fontSize: 20, fontWeight: '900', color: '#1E1B4B', marginTop: 4 }}>
+                  Participant #{participantNo} • {participantCode}
+                </Text>
+                <Text style={{ fontSize: 11.5, color: '#64748B', marginTop: 3 }}>
+                  Scanning this event badge registers another participant with the next sequential ID.
+                </Text>
+              </View>
+
+              <Text style={s.formInputLabel}>Participant Full Name *</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. Rahul Sharma"
+                placeholderTextColor="#94a3b8"
+                value={regFullName}
+                onChangeText={setRegFullName}
+              />
+
+              <Text style={s.formInputLabel}>Mobile Number *</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. 9840122345"
+                placeholderTextColor="#94a3b8"
+                keyboardType="phone-pad"
+                value={regMobile}
+                onChangeText={setRegMobile}
+              />
+
+              <Text style={s.formInputLabel}>College / Organization / Dept</Text>
+              <TextInput
+                style={s.formTextInput}
+                placeholder="e.g. Department of AI / Tech Corp"
+                placeholderTextColor="#94a3b8"
+                value={regHost}
+                onChangeText={setRegHost}
+              />
+
+              <Text style={s.formInputLabel}>Pass Category</Text>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 16 }}>
+                {['Delegate', 'VIP', 'Student', 'Speaker', 'Guest'].map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    onPress={() => setEventCategory(cat)}
+                    style={{
+                      paddingHorizontal: 12,
+                      paddingVertical: 7,
+                      borderRadius: 8,
+                      backgroundColor: eventCategory === cat ? '#6C5CE7' : '#F1F5F9',
+                      borderWidth: 1,
+                      borderColor: eventCategory === cat ? '#6C5CE7' : '#E2E8F0',
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 12,
+                        fontWeight: '700',
+                        color: eventCategory === cat ? '#FFFFFF' : '#475569',
+                      }}
+                    >
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={[s.submitCheckInBtn, { backgroundColor: '#6C5CE7' }]}
+                onPress={onSubmit}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <ActivityIndicator color="#ffffff" />
+                ) : (
+                  <Text style={s.submitCheckInBtnText}>
+                    Enroll Participant #{participantNo} & Open Turnstile
+                  </Text>
+                )}
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
+}
+

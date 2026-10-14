@@ -114,7 +114,7 @@ function Checkbox({ checked, onToggle }) {
 }
 
 export default function LoginScreen({ onLoginSuccess }) {
-  const [activeTab, setActiveTab] = useState('security'); // 'security' | 'admin'
+  const [activeTab, setActiveTab] = useState('security'); // 'security' | 'admin' | 'event'
   const [username, setUsername] = useState('DEMO');
   const [password, setPassword] = useState('security123');
   const [showPassword, setShowPassword] = useState(false);
@@ -133,9 +133,12 @@ export default function LoginScreen({ onLoginSuccess }) {
     if (tab === 'security') {
       setUsername('DEMO');
       setPassword('security123');
-    } else {
+    } else if (tab === 'admin') {
       setUsername('admin');
       setPassword('admin123');
+    } else if (tab === 'event') {
+      setUsername('tech2026');
+      setPassword('event123');
     }
   };
 
@@ -152,24 +155,48 @@ export default function LoginScreen({ onLoginSuccess }) {
     setErrorMessage('');
 
     try {
-      // Authentication logic supporting 'DEMO' or 'security' for security staff, 'admin' for admin
+      // First try unified api.login which supports security, admin, and all event accounts
+      const authResult = await api.login(userVal, passVal);
+      if (authResult && authResult.success) {
+        onLoginSuccess(authResult);
+        return;
+      }
+    } catch (apiErr) {
+      // Fallback local checks if offline
       if (
         (activeTab === 'security' && (userVal.toLowerCase() === 'demo' || userVal.toLowerCase() === 'security')) ||
         (userVal.toLowerCase() === 'security' && passVal === 'security123')
       ) {
         onLoginSuccess({ role: 'security', username: 'security', name: 'Security Staff' });
+        return;
       } else if (
         (activeTab === 'admin' && userVal.toLowerCase() === 'admin') ||
         (userVal.toLowerCase() === 'admin' && passVal === 'admin123')
       ) {
         onLoginSuccess({ role: 'admin', username: 'admin', name: 'Administrator' });
-      } else if (userVal.toLowerCase() === 'security' && passVal === 'security123') {
-        onLoginSuccess({ role: 'security', username: 'security', name: 'Security Staff' });
-      } else {
-        setErrorMessage('Invalid credentials. Please verify ID and password.');
+        return;
+      } else if (
+        (activeTab === 'event' || userVal.toLowerCase().includes('event') || userVal.toLowerCase().includes('tech')) &&
+        passVal === 'event123'
+      ) {
+        onLoginSuccess({
+          role: 'event',
+          username: userVal,
+          name: 'Event Coordinator',
+          event: {
+            id: 'evt-001',
+            title: 'Campus Tech Symposium 2026',
+            venue: 'Main Auditorium, Gate 1',
+            date: '2026-10-25',
+            event_qr_code: 'EVT-TECH-2026',
+            coordinator_name: 'Event Coordinator',
+            login_id: userVal,
+          },
+        });
+        return;
       }
-    } catch (err) {
-      setErrorMessage('Login failed. Please check network connection.');
+
+      setErrorMessage(apiErr.message || 'Invalid credentials. Please verify ID and password.');
     } finally {
       setLoading(false);
     }
@@ -218,7 +245,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                     activeTab === 'security' && styles.tabButtonTextActive,
                   ]}
                 >
-                  Security Staff
+                  Security
                 </Text>
               </TouchableOpacity>
 
@@ -236,7 +263,25 @@ export default function LoginScreen({ onLoginSuccess }) {
                     activeTab === 'admin' && styles.tabButtonTextActive,
                   ]}
                 >
-                  Administrator
+                  Admin
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[
+                  styles.tabButton,
+                  activeTab === 'event' && styles.tabButtonActive,
+                ]}
+                onPress={() => handleTabChange('event')}
+                activeOpacity={0.8}
+              >
+                <Text
+                  style={[
+                    styles.tabButtonText,
+                    activeTab === 'event' && styles.tabButtonTextActive,
+                  ]}
+                >
+                  Events
                 </Text>
               </TouchableOpacity>
             </View>
@@ -248,10 +293,14 @@ export default function LoginScreen({ onLoginSuccess }) {
               </View>
             ) : null}
 
-            {/* Field 1: Staff ID or Email */}
+            {/* Field 1: Staff / Admin / Event ID or Email */}
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>
-                {activeTab === 'security' ? 'Staff ID or Email' : 'Admin ID or Email'}
+                {activeTab === 'security'
+                  ? 'Staff ID or Email'
+                  : activeTab === 'admin'
+                  ? 'Admin ID or Email'
+                  : 'Event Login ID'}
               </Text>
               <View style={styles.inputBox}>
                 <View style={styles.inputIconLeft}>
@@ -261,7 +310,13 @@ export default function LoginScreen({ onLoginSuccess }) {
                   style={styles.textInput}
                   value={username}
                   onChangeText={setUsername}
-                  placeholder="DEMO"
+                  placeholder={
+                    activeTab === 'security'
+                      ? 'DEMO'
+                      : activeTab === 'admin'
+                      ? 'admin'
+                      : 'e.g. tech2026'
+                  }
                   placeholderTextColor="#94a3b8"
                   autoCapitalize="none"
                   autoCorrect={false}
