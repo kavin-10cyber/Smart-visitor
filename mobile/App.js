@@ -28,7 +28,7 @@ export default function App() {
         )}
 
         {currentUser && currentUser.role === 'security' && (
-          <SecurityPortal onLogout={handleLogout} />
+          <SecurityPortal onLogout={handleLogout} officer={currentUser} />
         )}
       </View>
     </SafeAreaView>

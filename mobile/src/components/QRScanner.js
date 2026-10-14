@@ -349,18 +349,6 @@ export default function QRScanner({
           </View>
         </View>
 
-        {/* Security Operator Protocol Card */}
-        <View style={styles.protocolCard}>
-          <View style={styles.protocolIconCircle}>
-            <ShieldIcon size={20} color="#FFFFFF" />
-          </View>
-          <View style={styles.protocolContentCol}>
-            <Text style={styles.protocolTitle}>Security Gate Protocol</Text>
-            <Text style={styles.protocolSub}>
-              Ensure visitor credentials match ID before disengaging electromagnetic barrier. Tokens must be returned to gate dock on exit.
-            </Text>
-          </View>
-        </View>
 
         {/* Dismiss Button */}
         <TouchableOpacity

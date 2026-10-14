@@ -582,6 +582,16 @@ export function HomeTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
+export function HistoryTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+      <Path d="M3 3v5h5" />
+      <Polyline points="12 7 12 12 15 15" />
+    </Svg>
+  );
+}
+
 export function ShieldTabIcon({ size = 22, color = '#6C5CE7' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -622,6 +632,18 @@ export function FlashlightOffIcon({ size = 20, color = '#667085' }) {
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
       <Line x1="2" y1="2" x2="22" y2="22" strokeWidth="2.2" />
+    </Svg>
+  );
+}
+
+export function ArrivalsTabIcon({ size = 22, color = '#6C5CE7' }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <Line x1="16" y1="2" x2="16" y2="6" />
+      <Line x1="8" y1="2" x2="8" y2="6" />
+      <Line x1="3" y1="10" x2="21" y2="10" />
+      <Polyline points="9 16 11 18 15 14" strokeWidth="2.2" />
     </Svg>
   );
 }

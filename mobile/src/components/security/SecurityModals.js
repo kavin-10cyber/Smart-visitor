@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View, Text, Modal, ScrollView, TouchableOpacity,
   TextInput, ActivityIndicator, SafeAreaView,
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import QRScanner from '../QRScanner';
-import { ShieldIcon, CloseIcon } from '../AdminIcons';
+import { ShieldIcon, CloseIcon, CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../AdminIcons';
 import s from '../../styles/securityStyles';
 
 /**
@@ -405,6 +405,247 @@ export function FilterModal({
               <Text style={s.filterResetBtnText}>Reset to All Passes</Text>
             </TouchableOpacity>
           )}
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+
+/**
+ * CalendarModal — bottom sheet modal allowing security officers to pick any date to view logs.
+ * Props: visible, onClose, selectedDate, onSelectDate
+ */
+export function CalendarModal({
+  visible,
+  onClose,
+  selectedDate = new Date(),
+  onSelectDate,
+  allowAllTime = false,
+}) {
+  const activeDate = selectedDate || new Date();
+  const [currentYear, setCurrentYear] = useState(activeDate.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(activeDate.getMonth());
+
+  useEffect(() => {
+    const d = selectedDate || new Date();
+    setCurrentYear(d.getFullYear());
+    setCurrentMonth(d.getMonth());
+  }, [selectedDate, visible]);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const prevMonth = () => {
+    if (currentMonth === 0) {
+      setCurrentMonth(11);
+      setCurrentYear(currentYear - 1);
+    } else {
+      setCurrentMonth(currentMonth - 1);
+    }
+  };
+
+  const nextMonth = () => {
+    if (currentMonth === 11) {
+      setCurrentMonth(0);
+      setCurrentYear(currentYear + 1);
+    } else {
+      setCurrentMonth(currentMonth + 1);
+    }
+  };
+
+  const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+  const isSameDayHelper = (d1, d2) => {
+    if (!d1 || !d2) return false;
+    return (
+      d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear()
+    );
+  };
+
+  const handlePickDate = (day) => {
+    const picked = new Date(currentYear, currentMonth, day);
+    onSelectDate(picked);
+    onClose();
+  };
+
+  const handlePreset = (presetDate) => {
+    onSelectDate(presetDate);
+    setCurrentYear(presetDate.getFullYear());
+    setCurrentMonth(presetDate.getMonth());
+    onClose();
+  };
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  return (
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      <View style={s.modalBackdrop}>
+        <View style={s.modalCard}>
+          {/* Header */}
+          <View style={s.modalHeaderRow}>
+            <View>
+              <Text style={s.modalHeaderTitle}>Select Date</Text>
+              <Text style={s.modalHeaderSub}>Filter visitor logs by day</Text>
+            </View>
+            <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
+              <CloseIcon size={20} color="#64748B" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Quick Presets */}
+          <View style={s.calendarPresetsRow}>
+            {allowAllTime && (
+              <TouchableOpacity
+                style={[
+                  s.calendarPresetChip,
+                  !selectedDate && s.calendarPresetChipActive,
+                ]}
+                onPress={() => {
+                  onSelectDate(null);
+                  onClose();
+                }}
+                activeOpacity={0.7}
+              >
+                <Text
+                  style={[
+                    s.calendarPresetText,
+                    !selectedDate && s.calendarPresetTextActive,
+                  ]}
+                >
+                  All Time
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
+              style={[
+                s.calendarPresetChip,
+                isSameDayHelper(selectedDate, today) && s.calendarPresetChipActive,
+              ]}
+              onPress={() => handlePreset(today)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  s.calendarPresetText,
+                  isSameDayHelper(selectedDate, today) && s.calendarPresetTextActive,
+                ]}
+              >
+                Today
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                s.calendarPresetChip,
+                isSameDayHelper(selectedDate, yesterday) && s.calendarPresetChipActive,
+              ]}
+              onPress={() => handlePreset(yesterday)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  s.calendarPresetText,
+                  isSameDayHelper(selectedDate, yesterday) && s.calendarPresetTextActive,
+                ]}
+              >
+                Yesterday
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Month Navigation */}
+          <View style={s.calendarMonthHeader}>
+            <TouchableOpacity onPress={prevMonth} style={s.calendarNavBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <ChevronLeftIcon size={18} color="#6C5CE7" />
+            </TouchableOpacity>
+
+            <Text style={s.calendarMonthTitle}>
+              {MONTH_NAMES[currentMonth]} {currentYear}
+            </Text>
+
+            <TouchableOpacity onPress={nextMonth} style={s.calendarNavBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+              <ChevronRightIcon size={18} color="#6C5CE7" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Weekday Row */}
+          <View style={s.calendarWeekdaysRow}>
+            {WEEKDAYS.map((w, index) => (
+              <Text key={`${w}-${index}`} style={s.calendarWeekdayText}>
+                {w}
+              </Text>
+            ))}
+          </View>
+
+          {/* Days Grid */}
+          <View style={s.calendarDaysGrid}>
+            {Array.from({ length: firstDayIndex }).map((_, i) => (
+              <View key={`empty-${i}`} style={s.calendarDayCell} />
+            ))}
+
+            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+              const cellDate = new Date(currentYear, currentMonth, day);
+              const isTodayCell = isSameDayHelper(cellDate, today);
+              const isSelectedCell = isSameDayHelper(cellDate, selectedDate);
+
+              return (
+                <View key={`day-${day}`} style={s.calendarDayCell}>
+                  <TouchableOpacity
+                    style={[
+                      s.calendarDayBtn,
+                      isTodayCell && !isSelectedCell && s.calendarDayBtnToday,
+                      isSelectedCell && s.calendarDayBtnSelected,
+                    ]}
+                    onPress={() => handlePickDate(day)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[
+                        s.calendarDayText,
+                        isTodayCell && !isSelectedCell && s.calendarDayTextToday,
+                        isSelectedCell && s.calendarDayTextSelected,
+                      ]}
+                    >
+                      {day}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </View>
+
+          {/* Reset button if custom non-today or non-all-time date selected */}
+          {allowAllTime && selectedDate ? (
+            <TouchableOpacity
+              style={s.calendarResetBtn}
+              onPress={() => {
+                onSelectDate(null);
+                onClose();
+              }}
+              activeOpacity={0.8}
+            >
+              <Text style={s.calendarResetBtnText}>Show All Lifetime Visitors</Text>
+            </TouchableOpacity>
+          ) : !isSameDayHelper(selectedDate, today) ? (
+            <TouchableOpacity
+              style={s.calendarResetBtn}
+              onPress={() => handlePreset(today)}
+              activeOpacity={0.8}
+            >
+              <Text style={s.calendarResetBtnText}>Reset to Today's Logs</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </Modal>
