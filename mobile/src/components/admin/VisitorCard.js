@@ -16,7 +16,7 @@ import styles from '../../styles/adminStyles';
 // Reference UI Pastel Avatar Color Pairs
 const AVATAR_PALETTES = [
   { bg: '#FFE8D6', text: '#D97706' }, // Peach
-  { bg: '#F2EBFE', text: '#7C3AED' }, // Lavender / Purple
+  { bg: '#F1F5FA', text: '#123B73' }, // Lavender / Purple
   { bg: '#E0F2FE', text: '#0284C7' }, // Sky Blue
   { bg: '#FFE4E8', text: '#E11D48' }, // Blush Pink
   { bg: '#DCFCE7', text: '#15803D' }, // Mint Green
@@ -85,7 +85,15 @@ function VisitorCard({
 
   const dateDisplay = isScheduled
     ? (item.expected_date || 'Today')
-    : (item.check_in ? new Date(item.check_in).toLocaleDateString() : 'Today');
+    : (() => {
+        if (!item.check_in) return 'Today';
+        try {
+          const d = new Date(item.check_in);
+          return isNaN(d.getTime()) ? 'Today' : d.toLocaleDateString();
+        } catch (_) {
+          return 'Today';
+        }
+      })();
 
   const timeDisplay = isScheduled
     ? (item.time_window || '09:00 AM - 01:00 PM')
@@ -112,7 +120,7 @@ function VisitorCard({
           )}
           {isVip && (
             <View style={styles.vipTagBadge}>
-              <CrownIcon size={12} color="#5642DE" />
+              <CrownIcon size={12} color="#071D40" />
               <Text style={styles.vipTagBadgeText}>VIP GUEST</Text>
             </View>
           )}
@@ -186,7 +194,7 @@ function VisitorCard({
 
         {/* Minimal Tap Target Arrow */}
         <View style={styles.expandChevronBtn}>
-          <ChevronRightIcon size={14} color="#94a3b8" />
+          <ChevronRightIcon size={14} color="#7B8CA3" />
         </View>
       </TouchableOpacity>
 
@@ -210,7 +218,7 @@ function VisitorCard({
               onPress={() => onReschedule && onReschedule(item)}
               activeOpacity={0.7}
             >
-              <CalendarIcon size={14} color="#6C5CE7" />
+              <CalendarIcon size={14} color="#0B2A5B" />
               <Text style={styles.outlineActionBtnText}>Reschedule</Text>
             </TouchableOpacity>
 

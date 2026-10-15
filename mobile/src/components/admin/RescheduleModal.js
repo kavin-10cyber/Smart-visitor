@@ -69,7 +69,7 @@ function RescheduleModal({
             <TextInput
               style={styles.formTextInput}
               placeholder="e.g. 02:00 PM - 06:00 PM"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#7B8CA3"
               value={newTime}
               onChangeText={setNewTime}
             />

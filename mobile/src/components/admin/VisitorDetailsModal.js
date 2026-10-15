@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Modal, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import QRCode from '../QRCodeSafe';
 import {
   CloseIcon,
   PhoneIcon,
@@ -32,7 +32,17 @@ function VisitorDetailsModal({ visitor, onClose, onCall, onSms, onCheckOut }) {
 
   const dateDisplay = isScheduled
     ? (visitor.expected_date || 'Today')
-    : (visitor.check_in ? new Date(visitor.check_in).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Today');
+    : (() => {
+        if (!visitor.check_in) return 'Today';
+        try {
+          const d = new Date(visitor.check_in);
+          return isNaN(d.getTime())
+            ? 'Today'
+            : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+        } catch (_) {
+          return 'Today';
+        }
+      })();
 
   const timeDisplay = isScheduled
     ? (visitor.time_window || '09:00 AM - 01:00 PM')
@@ -65,7 +75,7 @@ function VisitorDetailsModal({ visitor, onClose, onCall, onSms, onCheckOut }) {
               style={modalStyles.modalCloseBtn}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
-              <CloseIcon size={18} color="#6C5CE7" />
+              <CloseIcon size={18} color="#0B2A5B" />
             </TouchableOpacity>
           </View>
 
@@ -137,7 +147,7 @@ function VisitorDetailsModal({ visitor, onClose, onCall, onSms, onCheckOut }) {
                   <QRCode
                     value={visitor.token_code || 'V-001'}
                     size={76}
-                    color="#14172C"
+                    color="#10233F"
                     backgroundColor="#FFFFFF"
                   />
                 </View>
@@ -210,7 +220,7 @@ const modalStyles = StyleSheet.create({
   modalHeaderTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
   },
   vipTagBadge: {
@@ -231,7 +241,7 @@ const modalStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -248,7 +258,7 @@ const modalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 10,
@@ -261,22 +271,22 @@ const modalStyles = StyleSheet.create({
   profileName: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   profileDate: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#667085',
+    color: '#52657D',
     marginTop: 3,
   },
 
   // Signature Digital ID Card (Screen 3)
   digitalIdCard: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 24,
     padding: 20,
     marginBottom: 18,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,
@@ -348,7 +358,7 @@ const modalStyles = StyleSheet.create({
   },
   callBtn: {
     flex: 1,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 16,
     paddingVertical: 13,
     flexDirection: 'row',
@@ -363,21 +373,21 @@ const modalStyles = StyleSheet.create({
   },
   smsBtn: {
     flex: 1,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 16,
     paddingVertical: 13,
     alignItems: 'center',
     justifyContent: 'center',
   },
   smsBtnText: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontSize: 13.5,
     fontWeight: '700',
   },
 
   // Check out button
   checkOutBtn: {
-    backgroundColor: '#141624',
+    backgroundColor: '#071D40',
     borderRadius: 18,
     paddingVertical: 15,
     flexDirection: 'row',

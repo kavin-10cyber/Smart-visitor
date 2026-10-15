@@ -32,7 +32,7 @@ function ProfileMenuModal({ visible, onClose, onNavigate, onRefresh, onLogout })
                 onNavigate('analytics');
               }}
             >
-              <BarChartIcon size={20} color="#6C5CE7" />
+              <BarChartIcon size={20} color="#0B2A5B" />
               <Text style={styles.menuItemText}>View Campus Analytics</Text>
             </TouchableOpacity>
 
@@ -43,7 +43,7 @@ function ProfileMenuModal({ visible, onClose, onNavigate, onRefresh, onLogout })
                 onNavigate('tokens');
               }}
             >
-              <QrTabIcon size={20} color="#6C5CE7" />
+              <QrTabIcon size={20} color="#0B2A5B" />
               <Text style={styles.menuItemText}>Manage QR Tokens</Text>
             </TouchableOpacity>
 
@@ -54,7 +54,7 @@ function ProfileMenuModal({ visible, onClose, onNavigate, onRefresh, onLogout })
                 onClose();
               }}
             >
-              <SparklesIcon size={20} color="#6C5CE7" />
+              <SparklesIcon size={20} color="#0B2A5B" />
               <Text style={styles.menuItemText}>Force Refresh Data</Text>
             </TouchableOpacity>
 

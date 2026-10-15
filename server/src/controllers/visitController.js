@@ -68,6 +68,26 @@ exports.checkIn = async (req, res) => {
   }
 };
 
+// Check in an already issued / scheduled pass
+exports.checkInScheduled = async (req, res) => {
+  try {
+    const { token_code, visit_id } = req.body;
+    if (!token_code && !visit_id) {
+      return res.status(400).json({ success: false, message: 'Token code or visit ID is required for check-in' });
+    }
+
+    const updated = await db.checkInScheduledVisit(visit_id, token_code);
+    res.json({
+      success: true,
+      visit: updated,
+      message: `Visitor checked in. Token ${token_code || (updated && updated.token_code)} is now ACTIVE inside campus`
+    });
+  } catch (err) {
+    console.error('Error checking in scheduled visit:', err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // Cancel scheduled visit & release token
 exports.cancelVisit = async (req, res) => {
   try {

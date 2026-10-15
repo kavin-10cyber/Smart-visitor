@@ -158,7 +158,7 @@ function IssueScheduledTokenModal({
             <TextInput
               style={styles.formTextInput}
               placeholder="e.g. Mr. Kannan"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#7B8CA3"
               value={fullName}
               onChangeText={setFullName}
             />
@@ -169,7 +169,7 @@ function IssueScheduledTokenModal({
                 <TextInput
                   style={styles.formTextInput}
                   placeholder="e.g. 9840122345"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#7B8CA3"
                   keyboardType="phone-pad"
                   value={mobile}
                   onChangeText={setMobile}
@@ -180,7 +180,7 @@ function IssueScheduledTokenModal({
                 <TextInput
                   style={styles.formTextInput}
                   placeholder="e.g. Diebold / Tech Corp"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#7B8CA3"
                   value={company}
                   onChangeText={setCompany}
                 />
@@ -222,7 +222,7 @@ function IssueScheduledTokenModal({
             <TextInput
               style={styles.formTextInput}
               placeholder="e.g. 09:00 AM - 01:00 PM"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#7B8CA3"
               value={timeWindow}
               onChangeText={setTimeWindow}
             />
@@ -231,7 +231,7 @@ function IssueScheduledTokenModal({
             <TextInput
               style={styles.formTextInput}
               placeholder="e.g. Dr. Amar Karthik - Placement Cell"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#7B8CA3"
               value={host}
               onChangeText={setHost}
             />
@@ -265,7 +265,7 @@ function IssueScheduledTokenModal({
             <TextInput
               style={styles.formTextInput}
               placeholder="e.g. ATM Cash Replenishment / Keynote Speaker"
-              placeholderTextColor="#94a3b8"
+              placeholderTextColor="#7B8CA3"
               value={purpose}
               onChangeText={setPurpose}
             />
@@ -286,7 +286,7 @@ function IssueScheduledTokenModal({
               </View>
               <View style={styles.priorityLabelCol}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                  <CrownIcon size={14} color="#5642DE" />
+                  <CrownIcon size={14} color="#071D40" />
                   <Text style={styles.priorityMainTitle}>Mark as VIP Priority</Text>
                 </View>
                 <Text style={styles.prioritySubDescription}>

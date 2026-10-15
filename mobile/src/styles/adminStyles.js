@@ -3,11 +3,11 @@ import { StyleSheet, Platform } from 'react-native';
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   screenContainer: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
 
   // ── Top Header (Reference UI Screen 1) ──────────────────────
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'ios' ? 10 : 14,
     paddingBottom: 14,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   headerLeftCol: {
     flexDirection: 'row',
@@ -29,10 +29,10 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -49,12 +49,12 @@ const styles = StyleSheet.create({
   greetingTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
   },
   greetingSub: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     fontWeight: '500',
     marginTop: 2,
   },
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   systemStatusPillText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   headerCenterDot: {
     justifyContent: 'center',
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 18,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: '#14172C',
+    color: '#10233F',
     paddingVertical: 0,
     marginLeft: 10,
     fontWeight: '500',
@@ -195,11 +195,11 @@ const styles = StyleSheet.create({
 
   // ── Featured Purple Hero Card (Screen 1 Reference) ──────────
   heroCard: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 26,
     padding: 22,
     marginBottom: 22,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.35,
     shadowRadius: 18,
@@ -293,18 +293,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   heroActionBtn: {
-    backgroundColor: '#141624',
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    backgroundColor: '#FFFFFF',
+    width: 44,
+    height: 44,
     borderRadius: 22,
-    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 4,
   },
   heroActionBtnText: {
     color: '#FFFFFF',
@@ -323,13 +322,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.3,
   },
   sectionViewAll: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   sectionTitleRow: {
     flexDirection: 'row',
@@ -339,7 +338,7 @@ const styles = StyleSheet.create({
   sectionSubtitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   sectionHeaderActions: {
     flexDirection: 'row',
@@ -350,21 +349,21 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1.2,
     borderColor: '#DDD6FE',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
   },
   filterIconButtonActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   filterActiveDot: {
     position: 'absolute',
@@ -381,7 +380,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 14,
@@ -392,7 +391,7 @@ const styles = StyleSheet.create({
   activeFilterLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   activeFilterName: {
     fontWeight: '800',
@@ -446,7 +445,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
 
   // ── Filter Chips (Inside / Scheduled / VIP / All) ───────────
@@ -464,12 +463,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
   },
   filterChipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
-    shadowColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -478,14 +477,14 @@ const styles = StyleSheet.create({
   filterChipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#667085',
+    color: '#52657D',
   },
   filterChipTextActive: {
     color: '#FFFFFF',
     fontWeight: '700',
   },
   filterCountBadge: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 10,
@@ -496,7 +495,7 @@ const styles = StyleSheet.create({
   filterCountText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   filterCountTextActive: {
     color: '#FFFFFF',
@@ -537,17 +536,17 @@ const styles = StyleSheet.create({
   navTabLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   navTabLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   navActiveDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     marginTop: 2,
   },
   centerFabContainer: {
@@ -559,11 +558,11 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -28,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.45,
     shadowRadius: 16,
@@ -607,14 +606,14 @@ const styles = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 10,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   statCardValue: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 10,
   },
   statPillTrend: {
@@ -677,36 +676,36 @@ const styles = StyleSheet.create({
   capacityValueBig: {
     fontSize: 28,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   capacityValueMax: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#94a3b8',
+    color: '#7B8CA3',
     marginLeft: 3,
   },
   progressBarTrack: {
     height: 7,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 3.5,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 3.5,
   },
 
   // Primary Action Button
   generatePrimaryBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 14,
     paddingVertical: 14,
     paddingHorizontal: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 14,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -745,7 +744,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#14172C',
+    color: '#10233F',
     paddingVertical: 0,
   },
 
@@ -764,8 +763,8 @@ const styles = StyleSheet.create({
     borderColor: '#e2e8f0',
   },
   filterChipActive: {
-    backgroundColor: '#14172C',
-    borderColor: '#14172C',
+    backgroundColor: '#10233F',
+    borderColor: '#10233F',
   },
   filterChipText: {
     fontSize: 12,
@@ -792,10 +791,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   liveCountBadge: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,
@@ -803,7 +802,7 @@ const styles = StyleSheet.create({
   liveCountBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   issueTokenBtn: {
     flexDirection: 'row',
@@ -815,7 +814,7 @@ const styles = StyleSheet.create({
   issueTokenBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
 
   // Visitor Manifest Card
@@ -826,7 +825,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
     marginBottom: 14,
-    shadowColor: '#14172C',
+    shadowColor: '#10233F',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -845,9 +844,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tokenPill: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
     paddingHorizontal: 9,
     paddingVertical: 3,
     borderRadius: 8,
@@ -855,7 +854,7 @@ const styles = StyleSheet.create({
   tokenPillText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#5642DE',
+    color: '#071D40',
   },
   gateLocationText: {
     fontSize: 12,
@@ -900,7 +899,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#22c55e',
   },
   statusDotDone: {
-    backgroundColor: '#94a3b8',
+    backgroundColor: '#7B8CA3',
   },
   statusDotAmber: {
     backgroundColor: '#f59e0b',
@@ -958,7 +957,7 @@ const styles = StyleSheet.create({
   visitorFullName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
     marginBottom: 4,
   },
@@ -999,7 +998,7 @@ const styles = StyleSheet.create({
   },
   metaItemTextLink: {
     fontSize: 11,
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '600',
   },
 
@@ -1032,7 +1031,7 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -1157,7 +1156,7 @@ const styles = StyleSheet.create({
     color: '#1E293B',
   },
   completedBtn: {
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
@@ -1206,7 +1205,7 @@ const styles = StyleSheet.create({
   companyTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -1222,7 +1221,7 @@ const styles = StyleSheet.create({
   vehicleTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -1238,7 +1237,7 @@ const styles = StyleSheet.create({
   scheduledDateTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     paddingHorizontal: 7,
@@ -1254,9 +1253,9 @@ const styles = StyleSheet.create({
   vipTagBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
     paddingHorizontal: 7,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1265,15 +1264,15 @@ const styles = StyleSheet.create({
   vipTagBadgeText: {
     fontSize: 10.5,
     fontWeight: '700',
-    color: '#5642DE',
+    color: '#071D40',
     letterSpacing: 0.3,
   },
   vipCardHighlight: {
     borderColor: '#E5E7EB',
     borderLeftWidth: 3.5,
-    borderLeftColor: '#6C5CE7',
+    borderLeftColor: '#0B2A5B',
     backgroundColor: '#ffffff',
-    shadowColor: '#14172C',
+    shadowColor: '#10233F',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -1292,7 +1291,7 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 4,
   },
   emptyStateSub: {
@@ -1322,7 +1321,7 @@ const styles = StyleSheet.create({
     color: '#64748b',
   },
   tabBarLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '700',
   },
 
@@ -1336,7 +1335,7 @@ const styles = StyleSheet.create({
   tabHeaderTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   tabHeaderSub: {
     fontSize: 12,
@@ -1344,7 +1343,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   tabHeaderActionBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
@@ -1380,7 +1379,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   qrBoxAvail: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
   },
   qrBoxInUse: {
     backgroundColor: '#fef3c7',
@@ -1389,7 +1388,7 @@ const styles = StyleSheet.create({
   tokenListCode: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   tokenListSub: {
     fontSize: 11,
@@ -1416,7 +1415,7 @@ const styles = StyleSheet.create({
   analyticsStatNumber: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     marginBottom: 4,
   },
   analyticsStatLabel: {
@@ -1435,7 +1434,7 @@ const styles = StyleSheet.create({
   analyticsSectionCardTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 12,
   },
   capacityBarLarge: {
@@ -1449,7 +1448,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f59e0b',
   },
   capacityFillAvail: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   capacityLegendRow: {
     flexDirection: 'row',
@@ -1484,7 +1483,7 @@ const styles = StyleSheet.create({
   categoryPercent: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
   },
   categoryBar: {
     height: 6,
@@ -1511,7 +1510,7 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -1519,7 +1518,7 @@ const styles = StyleSheet.create({
   profileName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 4,
   },
   profileRole: {
@@ -1553,7 +1552,7 @@ const styles = StyleSheet.create({
   profileSectionTitle: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 10,
   },
   profileItemRow: {
@@ -1561,7 +1560,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#F7F8FC',
+    borderBottomColor: '#F7F9FC',
   },
   profileItemKey: {
     fontSize: 12,
@@ -1570,11 +1569,11 @@ const styles = StyleSheet.create({
   profileItemVal: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     maxWidth: '60%',
   },
   refreshSyncBtn: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: 'center',
@@ -1583,7 +1582,7 @@ const styles = StyleSheet.create({
   refreshSyncBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   logoutFullBtn: {
     flexDirection: 'row',
@@ -1624,7 +1623,7 @@ const styles = StyleSheet.create({
   modalHeaderTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   modalCloseBtn: {
     padding: 4,
@@ -1652,7 +1651,7 @@ const styles = StyleSheet.create({
   modalVisitorName: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   modalVisitorToken: {
     fontSize: 13,
@@ -1661,10 +1660,10 @@ const styles = StyleSheet.create({
   },
   tokenHighlight: {
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   modalInfoList: {
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 14,
     padding: 14,
     marginBottom: 16,
@@ -1680,7 +1679,7 @@ const styles = StyleSheet.create({
   modalVal: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     marginTop: 2,
   },
   modalActionButtonsRow: {
@@ -1693,7 +1692,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingVertical: 12,
     borderRadius: 12,
     gap: 6,
@@ -1739,7 +1738,7 @@ const styles = StyleSheet.create({
   },
   closeModalSimpleBtn: {
     marginTop: 18,
-    backgroundColor: '#14172C',
+    backgroundColor: '#10233F',
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 12,
@@ -1759,7 +1758,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   tokenSelectorBox: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
@@ -1767,7 +1766,7 @@ const styles = StyleSheet.create({
   tokenSelectorText: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   tokenSelectorSub: {
     fontSize: 11,
@@ -1775,18 +1774,18 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   formTextInput: {
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 44,
     fontSize: 13,
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 8,
   },
   submitIssueBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 14,
     paddingVertical: 14,
     alignItems: 'center',
@@ -1811,7 +1810,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1821,7 +1820,7 @@ const styles = StyleSheet.create({
   notifTitle: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
   },
   notifSub: {
     fontSize: 12,
@@ -1830,7 +1829,7 @@ const styles = StyleSheet.create({
   },
   notifTime: {
     fontSize: 10,
-    color: '#94a3b8',
+    color: '#7B8CA3',
     marginTop: 4,
   },
 
@@ -1844,7 +1843,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingVertical: 14,
     borderBottomWidth: 1,
-    borderBottomColor: '#F7F8FC',
+    borderBottomColor: '#F7F9FC',
   },
   menuItemText: {
     fontSize: 14,
@@ -1906,7 +1905,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   categoryTabItemActiveVip: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
     borderColor: '#DDD6FE',
   },
@@ -1917,10 +1916,10 @@ const styles = StyleSheet.create({
   },
   categoryTabTextActive: {
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   categoryTabTextActiveVip: {
-    color: '#5642DE',
+    color: '#071D40',
   },
   // Two-column row
   twoColRow: {
@@ -1940,14 +1939,14 @@ const styles = StyleSheet.create({
   chipSelectItem: {
     paddingHorizontal: 12,
     paddingVertical: 7,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#e2e8f0',
   },
   chipSelectItemActive: {
-    backgroundColor: '#F4F0FF',
-    borderColor: '#8B78FF',
+    backgroundColor: '#F1F5FA',
+    borderColor: '#35D49A',
   },
   chipSelectText: {
     fontSize: 12,
@@ -1955,14 +1954,14 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   chipSelectTextActive: {
-    color: '#5642DE',
+    color: '#071D40',
     fontWeight: '800',
   },
   // Priority VIP Toggle
   priorityToggleBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E5E7EB',
     borderRadius: 14,
@@ -1976,14 +1975,14 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 6,
     borderWidth: 1.5,
-    borderColor: '#94a3b8',
+    borderColor: '#7B8CA3',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ffffff',
   },
   priorityCheckboxChecked: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   priorityLabelCol: {
     flex: 1,
@@ -2000,7 +1999,7 @@ const styles = StyleSheet.create({
   },
   // Modal Actions
   sendPassPrimaryBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 14,
     paddingVertical: 14,
     flexDirection: 'row',
@@ -2008,7 +2007,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
     marginTop: 8,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -2021,7 +2020,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   cancelModalSecondaryBtn: {
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     borderRadius: 14,
@@ -2038,7 +2037,7 @@ const styles = StyleSheet.create({
 
   // ── Calendar Component Styles ─────────────────────────────
   calendarCard: {
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
@@ -2055,7 +2054,7 @@ const styles = StyleSheet.create({
   calendarMonthTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   calendarNavBtn: {
     padding: 6,
@@ -2074,7 +2073,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 11,
     fontWeight: '700',
-    color: '#94a3b8',
+    color: '#7B8CA3',
   },
   calendarDaysGrid: {
     flexDirection: 'row',
@@ -2096,8 +2095,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarDaySelected: {
-    backgroundColor: '#6C5CE7',
-    shadowColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -2105,7 +2104,7 @@ const styles = StyleSheet.create({
   },
   calendarDayToday: {
     borderWidth: 1.5,
-    borderColor: '#8B78FF',
+    borderColor: '#35D49A',
   },
   calendarDayText: {
     fontSize: 13,
@@ -2117,7 +2116,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   calendarDayTextToday: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   calendarDayTextDisabled: {
@@ -2127,7 +2126,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -2136,7 +2135,7 @@ const styles = StyleSheet.create({
   calendarSelectedBannerText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#5642DE',
+    color: '#071D40',
   },
   calendarCloseLinkText: {
     fontSize: 11,

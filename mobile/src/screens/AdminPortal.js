@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
-  Alert,
   Linking,
   StatusBar,
   SafeAreaView,
@@ -14,6 +13,7 @@ import {
   Platform,
   StyleSheet,
 } from 'react-native';
+import { CustomAlert as Alert } from '../components/common/CustomAlert';
 import { api } from '../services/api';
 import {
   BellIcon,
@@ -313,7 +313,7 @@ export default function AdminPortal({ onLogout }) {
     loadData();
     const interval = setInterval(() => {
       loadData(true);
-    }, 4000);
+    }, 20000);
     return () => clearInterval(interval);
   }, []);
 
@@ -499,7 +499,7 @@ export default function AdminPortal({ onLogout }) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} tintColor="#0B2A5B" />
       }
     >
       {/* Featured Vibrant Purple Hero Card (Reference UI Screen 1) */}
@@ -540,8 +540,7 @@ export default function AdminPortal({ onLogout }) {
             activeOpacity={0.85}
             onPress={() => setShowIssueTokenModal(true)}
           >
-            <Text style={styles.heroActionBtnText}>+ Issue Pass</Text>
-            <ArrowUpRightIcon size={14} color="#FFFFFF" />
+            <PlusIcon size={22} color="#0B2A5B" />
           </TouchableOpacity>
         </View>
       </View>
@@ -555,9 +554,10 @@ export default function AdminPortal({ onLogout }) {
         {[
           { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
           { key: 'CONTRACTORS', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
-          { key: 'GENERAL', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+          { key: 'GENERAL', label: 'General', Icon: BuildingIcon, bg: '#F1F5FA', text: '#123B73', border: '#DCE5F0' },
         ].map(({ key, label, Icon, bg, text, border }) => {
           const isSelected = selectedFilter === key;
+          const IconComponent = typeof Icon === 'function' ? Icon : null;
           return (
             <TouchableOpacity
               key={key}
@@ -569,7 +569,11 @@ export default function AdminPortal({ onLogout }) {
               activeOpacity={0.8}
             >
               <View style={[styles.categoryIconBox, { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : '#FFFFFF' }]}>
-                <Icon size={20} color={isSelected ? '#FFFFFF' : text} />
+                {IconComponent ? (
+                  <IconComponent size={20} color={isSelected ? '#FFFFFF' : text} />
+                ) : (
+                  <View style={{ width: 20, height: 20 }} />
+                )}
               </View>
               <Text style={[styles.categoryLabel, { color: isSelected ? '#FFFFFF' : text }]}>{label}</Text>
             </TouchableOpacity>
@@ -592,7 +596,7 @@ export default function AdminPortal({ onLogout }) {
           >
             <FilterSlidersIcon
               size={18}
-              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#0B2A5B'}
             />
             {selectedFilter !== 'ALL' && <View style={styles.filterActiveDot} />}
           </TouchableOpacity>
@@ -660,7 +664,7 @@ export default function AdminPortal({ onLogout }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} tintColor="#0B2A5B" />
         }
       >
         {/* Header with Title and "Add Event" button */}
@@ -681,9 +685,9 @@ export default function AdminPortal({ onLogout }) {
 
         {/* Metric summary chips */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={eventStyles.metricsRow}>
-          <View style={[eventStyles.metricChip, { backgroundColor: '#F4F0FF' }]}>
-            <Text style={[eventStyles.metricCount, { color: '#6C5CE7' }]}>{events.length}</Text>
-            <Text style={[eventStyles.metricLabel, { color: '#6C5CE7' }]}>Total Events</Text>
+          <View style={[eventStyles.metricChip, { backgroundColor: '#F1F5FA' }]}>
+            <Text style={[eventStyles.metricCount, { color: '#0B2A5B' }]}>{events.length}</Text>
+            <Text style={[eventStyles.metricLabel, { color: '#0B2A5B' }]}>Total Events</Text>
           </View>
           <View style={[eventStyles.metricChip, { backgroundColor: '#DCFCE7' }]}>
             <Text style={[eventStyles.metricCount, { color: '#16A34A' }]}>
@@ -705,7 +709,7 @@ export default function AdminPortal({ onLogout }) {
             value={eventSearchQuery}
             onChangeText={setEventSearchQuery}
             placeholder="Search events, venues, or login IDs..."
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor="#7B8CA3"
           />
           {eventSearchQuery ? (
             <TouchableOpacity onPress={() => setEventSearchQuery('')}>
@@ -717,7 +721,7 @@ export default function AdminPortal({ onLogout }) {
         {/* Event Cards List */}
         {filteredEvents.length === 0 ? (
           <View style={eventStyles.emptyBox}>
-            <TicketIcon size={40} color="#94A3B8" />
+            <TicketIcon size={40} color="#7B8CA3" />
             <Text style={eventStyles.emptyTitle}>No Events Found</Text>
             <Text style={eventStyles.emptySub}>
               {eventSearchQuery
@@ -771,11 +775,11 @@ export default function AdminPortal({ onLogout }) {
                 {/* Coordinator Login Credentials Box */}
                 <View style={eventStyles.credBox}>
                   <View style={eventStyles.credHeader}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                      <KeyIcon size={14} color="#6C5CE7" />
-                      <Text style={eventStyles.credHeading}>COORDINATOR LOGIN CREDENTIALS</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flex: 1, marginRight: 8 }}>
+                      <KeyIcon size={14} color="#0B2A5B" />
+                      <Text style={eventStyles.credHeading} numberOfLines={1}>COORDINATOR LOGIN CREDENTIALS</Text>
                     </View>
-                    <Text style={eventStyles.credCoordinatorName}>
+                    <Text style={eventStyles.credCoordinatorName} numberOfLines={1}>
                       {item.coordinator_name || 'Coordinator'}
                     </Text>
                   </View>
@@ -818,7 +822,7 @@ export default function AdminPortal({ onLogout }) {
                     }
                     activeOpacity={0.8}
                   >
-                    <QRIcon size={16} color="#6C5CE7" />
+                    <QRIcon size={16} color="#0B2A5B" />
                     <Text style={eventStyles.previewQrBtnText}>Preview QR Badge</Text>
                   </TouchableOpacity>
 
@@ -1011,7 +1015,7 @@ export default function AdminPortal({ onLogout }) {
   // ── Main Render ───────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.mainContainer}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FC" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F9FC" />
 
       {/* Top Header (Matching Screen 1 of Reference) */}
       <View style={styles.topHeader}>
@@ -1035,7 +1039,7 @@ export default function AdminPortal({ onLogout }) {
             onPress={() => setShowHistoryModal(true)}
             activeOpacity={0.8}
           >
-            <HistoryIcon size={17} color="#6C5CE7" />
+            <HistoryIcon size={17} color="#0B2A5B" />
             <Text style={adminHeaderStyles.historyBtnText}>History</Text>
           </TouchableOpacity>
         </View>
@@ -1063,7 +1067,7 @@ export default function AdminPortal({ onLogout }) {
             }}
             activeOpacity={0.8}
           >
-            <HomeTabIcon size={22} color={activeNavTab === 'dashboard' ? '#6C5CE7' : '#94A3B8'} />
+            <HomeTabIcon size={22} color={activeNavTab === 'dashboard' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[styles.navTabLabel, activeNavTab === 'dashboard' && styles.navTabLabelActive]}>Home</Text>
             {activeNavTab === 'dashboard' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
@@ -1077,7 +1081,7 @@ export default function AdminPortal({ onLogout }) {
             }}
             activeOpacity={0.8}
           >
-            <EventsTabIcon size={22} color={activeNavTab === 'events' ? '#6C5CE7' : '#94A3B8'} />
+            <EventsTabIcon size={22} color={activeNavTab === 'events' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[styles.navTabLabel, activeNavTab === 'events' && styles.navTabLabelActive]}>Events</Text>
             {activeNavTab === 'events' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
@@ -1102,7 +1106,7 @@ export default function AdminPortal({ onLogout }) {
             }}
             activeOpacity={0.8}
           >
-            <QrTabIcon size={22} color={activeNavTab === 'tokens' ? '#6C5CE7' : '#94A3B8'} />
+            <QrTabIcon size={22} color={activeNavTab === 'tokens' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[styles.navTabLabel, activeNavTab === 'tokens' && styles.navTabLabelActive]}>Tokens</Text>
             {activeNavTab === 'tokens' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
@@ -1116,91 +1120,109 @@ export default function AdminPortal({ onLogout }) {
             }}
             activeOpacity={0.8}
           >
-            <BarChartIcon size={22} color={activeNavTab === 'analytics' ? '#6C5CE7' : '#94A3B8'} />
+            <BarChartIcon size={22} color={activeNavTab === 'analytics' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[styles.navTabLabel, activeNavTab === 'analytics' && styles.navTabLabelActive]}>Analytics</Text>
             {activeNavTab === 'analytics' && <View style={styles.navActiveDot} />}
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* ── Modals ────────────────────────────────────────────── */}
-      <VisitorDetailsModal
-        visitor={selectedVisitorDetails}
-        onClose={() => setSelectedVisitorDetails(null)}
-        onCall={handleCallVisitor}
-        onSms={handleSmsVisitor}
-        onCheckOut={handleCheckOut}
-      />
+      {/* ── Modals & Action Sheets ── */}
+      {!!selectedVisitorDetails && (
+        <VisitorDetailsModal
+          visitor={selectedVisitorDetails}
+          onClose={() => setSelectedVisitorDetails(null)}
+          onCall={handleCallVisitor}
+          onSms={handleSmsVisitor}
+          onCheckOut={handleCheckOut}
+        />
+      )}
 
-      <QRPreviewModal
-        token={previewToken}
-        onClose={() => setPreviewToken(null)}
-      />
+      {!!previewToken && (
+        <QRPreviewModal
+          token={previewToken}
+          onClose={() => setPreviewToken(null)}
+        />
+      )}
 
-      <AddEventModal
-        visible={showAddEventModal}
-        onClose={() => setShowAddEventModal(false)}
-        onSubmit={handleCreateEventSubmit}
-        loading={creatingEvent}
-      />
+      {showAddEventModal && (
+        <AddEventModal
+          visible={showAddEventModal}
+          onClose={() => setShowAddEventModal(false)}
+          onSubmit={handleCreateEventSubmit}
+          loading={creatingEvent}
+        />
+      )}
 
-      <IssueScheduledTokenModal
-        visible={showIssueTokenModal}
-        onClose={() => setShowIssueTokenModal(false)}
-        availableTokens={availableTokens}
-        onSubmit={handleIssueScheduledSubmit}
-        isLoading={issuingLoading}
-      />
+      {showIssueTokenModal && (
+        <IssueScheduledTokenModal
+          visible={showIssueTokenModal}
+          onClose={() => setShowIssueTokenModal(false)}
+          availableTokens={availableTokens}
+          onSubmit={handleIssueScheduledSubmit}
+          isLoading={issuingLoading}
+        />
+      )}
 
-      <RescheduleModal
-        visible={!!rescheduleTarget}
-        visit={rescheduleTarget}
-        onClose={() => setRescheduleTarget(null)}
-        onConfirm={handleRescheduleConfirm}
-        isLoading={reschedulingLoading}
-      />
+      {!!rescheduleTarget && (
+        <RescheduleModal
+          visible={!!rescheduleTarget}
+          visit={rescheduleTarget}
+          onClose={() => setRescheduleTarget(null)}
+          onConfirm={handleRescheduleConfirm}
+          isLoading={reschedulingLoading}
+        />
+      )}
 
-      <NotificationsModal
-        visible={showNotificationsModal}
-        onClose={() => setShowNotificationsModal(false)}
-        activeVisits={activeVisits}
-        scheduledVisits={scheduledVisits}
-        historyVisits={historyVisits}
-        availableCount={availableCount}
-        totalTokensCount={totalTokensCount}
-      />
+      {showNotificationsModal && (
+        <NotificationsModal
+          visible={showNotificationsModal}
+          onClose={() => setShowNotificationsModal(false)}
+          activeVisits={activeVisits}
+          scheduledVisits={scheduledVisits}
+          historyVisits={historyVisits}
+          availableCount={availableCount}
+          totalTokensCount={totalTokensCount}
+        />
+      )}
 
-      <VisitorHistoryModal
-        visible={showHistoryModal}
-        onClose={() => setShowHistoryModal(false)}
-        allVisits={allVisitsCombined}
-        participants={participants}
-        onSelectVisitor={(v) => {
-          setSelectedVisitorDetails(v);
-        }}
-      />
+      {showHistoryModal && (
+        <VisitorHistoryModal
+          visible={showHistoryModal}
+          onClose={() => setShowHistoryModal(false)}
+          allVisits={allVisitsCombined}
+          participants={participants}
+          onSelectVisitor={(v) => {
+            setSelectedVisitorDetails(v);
+          }}
+        />
+      )}
 
-      <ProfileMenuModal
-        visible={showProfileModal}
-        onClose={() => setShowProfileModal(false)}
-        onNavigate={setActiveNavTab}
-        onRefresh={() => loadData(false)}
-        onLogout={onLogout}
-      />
+      {showProfileModal && (
+        <ProfileMenuModal
+          visible={showProfileModal}
+          onClose={() => setShowProfileModal(false)}
+          onNavigate={setActiveNavTab}
+          onRefresh={() => loadData(false)}
+          onLogout={onLogout}
+        />
+      )}
 
-      <FilterModal
-        visible={showFilterModal}
-        onClose={() => setShowFilterModal(false)}
-        selectedFilter={selectedFilter === 'ACTIVE' ? 'INSIDE' : selectedFilter === 'SCHEDULED' ? 'ISSUED' : selectedFilter === 'EXITED' ? 'EXITED' : selectedFilter}
-        onSelectFilter={setSelectedFilter}
-        counts={{
-          all: allVisitsCombined.length,
-          issued: scheduledVisits.length,
-          inside: activeVisits.length,
-          exited: historyVisits.length,
-          vip: filterCounts.vip,
-        }}
-      />
+      {showFilterModal && (
+        <FilterModal
+          visible={showFilterModal}
+          onClose={() => setShowFilterModal(false)}
+          selectedFilter={selectedFilter === 'ACTIVE' ? 'INSIDE' : selectedFilter === 'SCHEDULED' ? 'ISSUED' : selectedFilter === 'EXITED' ? 'EXITED' : selectedFilter}
+          onSelectFilter={setSelectedFilter}
+          counts={{
+            all: allVisitsCombined.length,
+            issued: scheduledVisits.length,
+            inside: activeVisits.length,
+            exited: historyVisits.length,
+            vip: filterCounts.vip,
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -1215,8 +1237,8 @@ const adminHeaderStyles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#DDD6FE',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -1225,7 +1247,7 @@ const adminHeaderStyles = StyleSheet.create({
   historyBtnText: {
     fontSize: 12.5,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 0.2,
   },
 });
@@ -1239,7 +1261,7 @@ const searchFilterStyles = {
     borderRadius: 14,
     borderWidth: 1,
     borderColor: '#e2e8f0',
-    shadowColor: '#94a3b8',
+    shadowColor: '#7B8CA3',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
@@ -1267,7 +1289,7 @@ const searchFilterStyles = {
     width: 32,
     height: 32,
     borderRadius: 8,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     justifyContent: 'center',
@@ -1275,8 +1297,8 @@ const searchFilterStyles = {
     position: 'relative',
   },
   filterBtnActive: {
-    backgroundColor: '#F4F0FF',
-    borderColor: '#E5DDFF',
+    backgroundColor: '#F1F5FA',
+    borderColor: '#DCE5F0',
   },
   filterActiveDot: {
     position: 'absolute',
@@ -1285,7 +1307,7 @@ const searchFilterStyles = {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   divider: {
     height: 1,
@@ -1311,8 +1333,8 @@ const searchFilterStyles = {
     borderColor: 'transparent',
   },
   chipActive: {
-    backgroundColor: '#F4F0FF',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#F1F5FA',
+    borderColor: '#0B2A5B',
   },
   chipText: {
     fontSize: 11,
@@ -1320,7 +1342,7 @@ const searchFilterStyles = {
     color: '#64748b',
   },
   chipTextActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   chipCount: {
     backgroundColor: '#e2e8f0',
@@ -1332,7 +1354,7 @@ const searchFilterStyles = {
     paddingHorizontal: 4,
   },
   chipCountActive: {
-    backgroundColor: '#E5DDFF',
+    backgroundColor: '#DCE5F0',
   },
   chipCountText: {
     fontSize: 9,
@@ -1340,7 +1362,7 @@ const searchFilterStyles = {
     color: '#64748b',
   },
   chipCountTextActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
 };
 
@@ -1357,7 +1379,7 @@ const navStyles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: '#94a3b8',
+    shadowColor: '#7B8CA3',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
@@ -1374,20 +1396,20 @@ const navStyles = {
     color: '#0f172a',
   },
   dashManifestBannerBadge: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
   },
   dashManifestBannerBadgeText: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   dashManifestBannerBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
@@ -1416,23 +1438,23 @@ const navStyles = {
     fontWeight: '500',
   },
   manifestTabCountBox: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 6,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
   },
   manifestTabCountNum: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   manifestTabCountLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     textTransform: 'uppercase',
   },
   manifestSummaryRow: {
@@ -1496,11 +1518,11 @@ const navStyles = {
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -24,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.4,
     shadowRadius: 12,
@@ -1515,15 +1537,15 @@ const navStyles = {
     marginBottom: 2,
   },
   navIconWrapActive: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
   },
   navLabel: {
     fontSize: 10,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   navLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
 };
@@ -1549,12 +1571,12 @@ const eventStyles = {
   createBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 13,
     paddingVertical: 8,
     borderRadius: 10,
     gap: 6,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -1632,12 +1654,12 @@ const eventStyles = {
     padding: 16,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000',
+    borderColor: '#DCE5F0',
+    shadowColor: '#071D40',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
   },
   cardTopRow: {
     flexDirection: 'row',
@@ -1648,16 +1670,16 @@ const eventStyles = {
   cardTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#10233F',
   },
   cardVenue: {
     fontSize: 12,
-    color: '#64748B',
+    color: '#52657D',
     marginTop: 2,
     fontWeight: '500',
   },
   activeBadge: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#DDF8EE',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -1665,7 +1687,7 @@ const eventStyles = {
   activeBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#15803D',
+    color: '#20A879',
   },
   deleteBtn: {
     paddingHorizontal: 8,
@@ -1676,11 +1698,11 @@ const eventStyles = {
   deleteText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#DC2626',
+    color: '#991B1B',
   },
   cardDesc: {
     fontSize: 12.5,
-    color: '#64748B',
+    color: '#52657D',
     lineHeight: 18,
     marginBottom: 10,
   },
@@ -1691,24 +1713,24 @@ const eventStyles = {
     marginBottom: 12,
   },
   detailPill: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#DCE5F0',
   },
   detailPillText: {
     fontSize: 11,
-    color: '#475569',
+    color: '#123B73',
     fontWeight: '600',
   },
   credBox: {
-    backgroundColor: '#F7F6FE',
+    backgroundColor: '#F4F8FC',
     borderRadius: 12,
     padding: 12,
     borderWidth: 1,
-    borderColor: '#E6E1FA',
+    borderColor: '#DCE5F0',
     marginBottom: 12,
   },
   credHeader: {
@@ -1718,18 +1740,18 @@ const eventStyles = {
     marginBottom: 8,
     paddingBottom: 6,
     borderBottomWidth: 1,
-    borderBottomColor: '#EDE9FE',
+    borderBottomColor: '#DCE5F0',
   },
   credHeading: {
     fontSize: 10.5,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 0.5,
   },
   credCoordinatorName: {
     fontSize: 11.5,
     fontWeight: '700',
-    color: '#475569',
+    color: '#52657D',
   },
   credFieldRow: {
     flexDirection: 'row',
@@ -1740,25 +1762,25 @@ const eventStyles = {
   credFieldLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#64748B',
+    color: '#52657D',
     width: 65,
   },
   credFieldValue: {
     fontSize: 13,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#10233F',
     letterSpacing: 0.5,
   },
   togglePwBtn: {
     paddingHorizontal: 8,
     paddingVertical: 2,
-    backgroundColor: '#EDE9FE',
+    backgroundColor: '#DDF8EE',
     borderRadius: 4,
     marginLeft: 6,
   },
   togglePwText: {
     fontSize: 11,
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '700',
   },
   cardActionsRow: {
@@ -1771,22 +1793,22 @@ const eventStyles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingVertical: 9,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
   },
   previewQrBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   shareCredBtn: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#0F172A',
+    backgroundColor: '#0B2A5B',
     paddingVertical: 9,
     borderRadius: 8,
   },

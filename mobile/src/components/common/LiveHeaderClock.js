@@ -41,7 +41,7 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: 10,
     fontWeight: '500',
-    color: '#94a3b8',
+    color: '#7B8CA3',
     marginTop: 1,
   },
 });

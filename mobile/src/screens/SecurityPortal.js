@@ -6,11 +6,11 @@ import {
   ScrollView,
   TextInput,
   RefreshControl,
-  Alert,
   StatusBar,
   SafeAreaView,
   Linking,
 } from 'react-native';
+import { CustomAlert as Alert } from '../components/common/CustomAlert';
 import { api } from '../services/api';
 import VisitorCard from '../components/admin/VisitorCard';
 import {
@@ -617,7 +617,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
       contentContainerStyle={s.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} tintColor="#0B2A5B" />
       }
     >
       {/* Featured Vibrant Purple Hero Card (Reference UI Screen 1) */}
@@ -660,7 +660,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           >
             <View style={s.heroQrHalo}>
               <View style={s.heroQrFabButton}>
-                <QrNavIcon size={26} color="#6C5CE7" />
+                <QrNavIcon size={26} color="#0B2A5B" />
               </View>
             </View>
             <Text style={s.heroQrTagText}>SCAN QR</Text>
@@ -677,7 +677,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         {[
           { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
           { key: 'Contractor', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
-          { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+          { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F1F5FA', text: '#123B73', border: '#DCE5F0' },
         ].map(({ key, label, Icon, bg, text, border }) => {
           const isSelected = selectedCategory === key;
           return (
@@ -717,7 +717,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           >
             <CalendarIcon
               size={18}
-              color={!isSelectedDateToday ? '#FFFFFF' : '#6C5CE7'}
+              color={!isSelectedDateToday ? '#FFFFFF' : '#0B2A5B'}
             />
             {!isSelectedDateToday && <View style={s.filterActiveDot} />}
           </TouchableOpacity>
@@ -729,7 +729,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           >
             <FilterSlidersIcon
               size={18}
-              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+              color={selectedFilter !== 'ALL' ? '#FFFFFF' : '#0B2A5B'}
             />
             {selectedFilter !== 'ALL' && <View style={s.filterActiveDot} />}
           </TouchableOpacity>
@@ -799,7 +799,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
       style={s.scrollArea}
       contentContainerStyle={s.scrollContent}
       showsVerticalScrollIndicator={false}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(false)} colors={['#6C5CE7']} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData(false)} colors={['#0B2A5B']} />}
     >
       {/* History Header */}
       <View style={s.historyHeaderRow}>
@@ -814,11 +814,11 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
       {/* Search Bar with Calendar & Filter Icons */}
       <View style={s.historySearchRow}>
         <View style={s.historySearchInputBox}>
-          <SearchIcon size={18} color="#6C5CE7" />
+          <SearchIcon size={18} color="#0B2A5B" />
           <TextInput
             style={s.historySearchInput}
             placeholder="Search visitor, badge, mobile, host..."
-            placeholderTextColor="#94A3B8"
+            placeholderTextColor="#7B8CA3"
             value={historySearchQuery}
             onChangeText={setHistorySearchQuery}
           />
@@ -828,7 +828,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
               style={s.searchClearBtn}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <CloseIcon size={15} color="#94A3B8" />
+              <CloseIcon size={15} color="#7B8CA3" />
             </TouchableOpacity>
           )}
         </View>
@@ -841,7 +841,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         >
           <CalendarIcon
             size={18}
-            color={historySelectedDate ? '#FFFFFF' : '#6C5CE7'}
+            color={historySelectedDate ? '#FFFFFF' : '#0B2A5B'}
           />
           {historySelectedDate && <View style={s.filterActiveDot} />}
         </TouchableOpacity>
@@ -854,7 +854,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         >
           <FilterSlidersIcon
             size={18}
-            color={historySelectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+            color={historySelectedFilter !== 'ALL' ? '#FFFFFF' : '#0B2A5B'}
           />
           {historySelectedFilter !== 'ALL' && <View style={s.filterActiveDot} />}
         </TouchableOpacity>
@@ -868,7 +868,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         {[
           { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
           { key: 'Contractor', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
-          { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+          { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F1F5FA', text: '#123B73', border: '#DCE5F0' },
         ].map(({ key, label, Icon, bg, text, border }) => {
           const isSelected = historySelectedCategory === key;
           return (
@@ -892,10 +892,10 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         <View style={s.historyActiveFiltersRow}>
           {historySelectedDate && (
             <View style={s.historyFilterTag}>
-              <CalendarIcon size={12} color="#6C5CE7" />
+              <CalendarIcon size={12} color="#0B2A5B" />
               <Text style={s.historyFilterTagText}>{formatLogDateLabel(historySelectedDate)}</Text>
               <TouchableOpacity onPress={() => setHistorySelectedDate(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                <CloseIcon size={12} color="#6C5CE7" />
+                <CloseIcon size={12} color="#0B2A5B" />
               </TouchableOpacity>
             </View>
           )}
@@ -904,7 +904,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             <View style={s.historyFilterTag}>
               <Text style={s.historyFilterTagText}>{historySelectedFilterName}</Text>
               <TouchableOpacity onPress={() => setHistorySelectedFilter('ALL')} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                <CloseIcon size={12} color="#6C5CE7" />
+                <CloseIcon size={12} color="#0B2A5B" />
               </TouchableOpacity>
             </View>
           )}
@@ -913,7 +913,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             <View style={s.historyFilterTag}>
               <Text style={s.historyFilterTagText}>{historySelectedCategory}</Text>
               <TouchableOpacity onPress={() => setHistorySelectedCategory(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                <CloseIcon size={12} color="#6C5CE7" />
+                <CloseIcon size={12} color="#0B2A5B" />
               </TouchableOpacity>
             </View>
           )}
@@ -966,7 +966,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
 
           const pastelColors = [
             { bg: '#FFE8D6', text: '#D97706' },
-            { bg: '#F2EBFE', text: '#7C3AED' },
+            { bg: '#F1F5FA', text: '#123B73' },
             { bg: '#E0F2FE', text: '#0284C7' },
             { bg: '#FFE4E8', text: '#E11D48' },
           ];
@@ -991,8 +991,8 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
                   <View style={s.visitorNameRow}>
                     <Text style={s.visitorNameText}>{visit.full_name}</Text>
                     {visit.is_vip && <CrownIcon size={14} color="#D97706" />}
-                    <View style={[s.badgeTokenPill, { backgroundColor: '#F4F0FF' }]}>
-                      <Text style={[s.badgeTokenText, { color: '#6C5CE7' }]}>{visit.token_code}</Text>
+                    <View style={[s.badgeTokenPill, { backgroundColor: '#F1F5FA' }]}>
+                      <Text style={[s.badgeTokenText, { color: '#0B2A5B' }]}>{visit.token_code}</Text>
                     </View>
                   </View>
                   <Text style={s.visitorSubDetail} numberOfLines={1}>
@@ -1023,7 +1023,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
                           ? { backgroundColor: '#F59E0B' }
                           : isInside
                           ? { backgroundColor: '#22C55E' }
-                          : { backgroundColor: '#94A3B8' },
+                          : { backgroundColor: '#7B8CA3' },
                       ]}
                     />
                     <Text
@@ -1118,7 +1118,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         contentContainerStyle={s.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} tintColor="#6C5CE7" />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} tintColor="#0B2A5B" />
         }
       >
         {/* Header */}
@@ -1133,7 +1133,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         {/* Summary stat chips */}
         <View style={{ flexDirection: 'row', gap: 10, marginBottom: 16, paddingHorizontal: 2 }}>
           {[
-            { label: 'Expected', count: todayScheduled.length, bg: '#F4F0FF', text: '#6C5CE7' },
+            { label: 'Expected', count: todayScheduled.length, bg: '#F1F5FA', text: '#0B2A5B' },
             { label: 'VIP', count: vipCount, bg: '#FEF3C7', text: '#D97706' },
             { label: 'Showing', count: filtered.length, bg: '#DCFCE7', text: '#166534' },
           ].map(({ label, count, bg, text }) => (
@@ -1147,11 +1147,11 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
         {/* Search bar & Filter */}
         <View style={s.historySearchRow}>
           <View style={s.historySearchInputBox}>
-            <SearchIcon size={18} color="#6C5CE7" />
+            <SearchIcon size={18} color="#0B2A5B" />
             <TextInput
               style={s.historySearchInput}
               placeholder="Search visitor, badge, mobile..."
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#7B8CA3"
               value={arrivalsSearchQuery}
               onChangeText={setArrivalsSearchQuery}
             />
@@ -1161,7 +1161,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
                 style={s.searchClearBtn}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <CloseIcon size={15} color="#94A3B8" />
+                <CloseIcon size={15} color="#7B8CA3" />
               </TouchableOpacity>
             )}
           </View>
@@ -1174,7 +1174,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           >
             <FilterSlidersIcon
               size={18}
-              color={arrivalsSelectedFilter !== 'ALL' ? '#FFFFFF' : '#6C5CE7'}
+              color={arrivalsSelectedFilter !== 'ALL' ? '#FFFFFF' : '#0B2A5B'}
             />
             {arrivalsSelectedFilter !== 'ALL' && <View style={s.filterActiveDot} />}
           </TouchableOpacity>
@@ -1188,7 +1188,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
           {[
             { key: 'VIP', label: 'VIP Pass', Icon: CrownIcon, bg: '#FEF3C7', text: '#D97706', border: '#FDE68A' },
             { key: 'Contractor', label: 'Contractor', Icon: WrenchIcon, bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
-            { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
+            { key: 'General', label: 'General', Icon: BuildingIcon, bg: '#F1F5FA', text: '#123B73', border: '#DCE5F0' },
           ].map(({ key, label, Icon, bg, text, border }) => {
             const isSel = arrivalsSelectedCategory === key;
             return (
@@ -1214,7 +1214,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
               <View style={s.historyFilterTag}>
                 <Text style={s.historyFilterTagText}>{arrivalsSelectedFilterName}</Text>
                 <TouchableOpacity onPress={() => setArrivalsSelectedFilter('ALL')} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                  <CloseIcon size={12} color="#6C5CE7" />
+                  <CloseIcon size={12} color="#0B2A5B" />
                 </TouchableOpacity>
               </View>
             )}
@@ -1223,7 +1223,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
               <View style={s.historyFilterTag}>
                 <Text style={s.historyFilterTagText}>{arrivalsSelectedCategory}</Text>
                 <TouchableOpacity onPress={() => setArrivalsSelectedCategory(null)} hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}>
-                  <CloseIcon size={12} color="#6C5CE7" />
+                  <CloseIcon size={12} color="#0B2A5B" />
                 </TouchableOpacity>
               </View>
             )}
@@ -1275,7 +1275,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
               .split(' ').map((n) => n[0]).slice(0, 2).join('').toUpperCase();
             const pastelColors = [
               { bg: '#FFE8D6', text: '#D97706' },
-              { bg: '#F2EBFE', text: '#7C3AED' },
+              { bg: '#F1F5FA', text: '#123B73' },
               { bg: '#E0F2FE', text: '#0284C7' },
               { bg: '#FFE4E8', text: '#E11D48' },
             ];
@@ -1296,15 +1296,15 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
                   <View style={s.visitorNameRow}>
                     <Text style={s.visitorNameText}>{visit.full_name}</Text>
                     {visit.is_vip && <CrownIcon size={13} color="#D97706" />}
-                    <View style={[s.badgeTokenPill, { backgroundColor: '#F4F0FF' }]}>
-                      <Text style={[s.badgeTokenText, { color: '#6C5CE7' }]}>{visit.token_code}</Text>
+                    <View style={[s.badgeTokenPill, { backgroundColor: '#F1F5FA' }]}>
+                      <Text style={[s.badgeTokenText, { color: '#0B2A5B' }]}>{visit.token_code}</Text>
                     </View>
                   </View>
                   <Text style={s.visitorSubDetail} numberOfLines={1}>
                     {visit.address || 'Admin Office'} • {visit.purpose || 'Campus Visit'}
                   </Text>
                   {visit.time_window && (
-                    <Text style={[s.visitorSubDetail, { marginTop: 2, color: '#6C5CE7', fontWeight: '600' }]}>
+                    <Text style={[s.visitorSubDetail, { marginTop: 2, color: '#0B2A5B', fontWeight: '600' }]}>
                       🕐 {visit.time_window}
                     </Text>
                   )}
@@ -1313,7 +1313,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
                 {/* Quick check-in button */}
                 <TouchableOpacity
                   style={{
-                    backgroundColor: '#6C5CE7',
+                    backgroundColor: '#0B2A5B',
                     paddingHorizontal: 12,
                     paddingVertical: 7,
                     borderRadius: 10,
@@ -1350,7 +1350,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
 
     const shiftStats = [
       { label: 'Inside Now', val: activeVisits.length.toString(), color: '#22C55E', bg: '#DCFCE7' },
-      { label: 'Today Total', val: todayTotalCount.toString(), color: '#6C5CE7', bg: '#F4F0FF' },
+      { label: 'Today Total', val: todayTotalCount.toString(), color: '#0B2A5B', bg: '#F1F5FA' },
       { label: 'Badges Free', val: availableTokens.length.toString(), color: '#0284C7', bg: '#E0F2FE' },
     ];
 
@@ -1438,7 +1438,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
   // ── Main Layout ───────────────────────────────────────────────
   return (
     <SafeAreaView style={s.mainContainer}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FC" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F9FC" />
 
       {/* Top Header */}
       <View style={s.topHeader}>
@@ -1457,7 +1457,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             style={s.iconCircleBtn}
             onPress={() => Alert.alert('Station Alerts', 'Campus security database is clear. No active alerts.')}
           >
-            <BellIcon size={19} color="#14172C" />
+            <BellIcon size={19} color="#10233F" />
             <View style={s.notificationRedDot} />
           </TouchableOpacity>
         </View>
@@ -1480,7 +1480,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             onPress={() => setActiveTab('dashboard')}
             activeOpacity={0.8}
           >
-            <HomeTabIcon size={22} color={activeTab === 'dashboard' ? '#6C5CE7' : '#94A3B8'} />
+            <HomeTabIcon size={22} color={activeTab === 'dashboard' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[s.navTabLabel, activeTab === 'dashboard' && s.navTabLabelActive]}>Home</Text>
             {activeTab === 'dashboard' && <View style={s.navActiveDot} />}
           </TouchableOpacity>
@@ -1491,7 +1491,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             onPress={() => setActiveTab('history')}
             activeOpacity={0.8}
           >
-            <HistoryTabIcon size={22} color={activeTab === 'history' ? '#6C5CE7' : '#94A3B8'} />
+            <HistoryTabIcon size={22} color={activeTab === 'history' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[s.navTabLabel, activeTab === 'history' && s.navTabLabelActive]}>History</Text>
             {activeTab === 'history' && <View style={s.navActiveDot} />}
           </TouchableOpacity>
@@ -1513,7 +1513,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             onPress={() => setActiveTab('arrivals')}
             activeOpacity={0.8}
           >
-            <ArrivalsTabIcon size={22} color={activeTab === 'arrivals' ? '#6C5CE7' : '#94A3B8'} />
+            <ArrivalsTabIcon size={22} color={activeTab === 'arrivals' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[s.navTabLabel, activeTab === 'arrivals' && s.navTabLabelActive]}>Arrivals</Text>
             {activeTab === 'arrivals' && <View style={s.navActiveDot} />}
           </TouchableOpacity>
@@ -1524,7 +1524,7 @@ export default function SecurityPortal({ onLogout, officer = {} }) {
             onPress={() => setActiveTab('settings')}
             activeOpacity={0.8}
           >
-            <UserTabIcon size={22} color={activeTab === 'settings' ? '#6C5CE7' : '#94A3B8'} />
+            <UserTabIcon size={22} color={activeTab === 'settings' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[s.navTabLabel, activeTab === 'settings' && s.navTabLabelActive]}>Profile</Text>
             {activeTab === 'settings' && <View style={s.navActiveDot} />}
           </TouchableOpacity>

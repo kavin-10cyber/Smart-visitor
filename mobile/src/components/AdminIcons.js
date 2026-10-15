@@ -493,7 +493,7 @@ export function ManifestTabIcon({ size = 20, color = '#64748b' }) {
   );
 }
 
-export function FilterSlidersIcon({ size = 18, color = '#667085' }) {
+export function FilterSlidersIcon({ size = 18, color = '#52657D' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Line x1="4" y1="21" x2="4" y2="14" />
@@ -573,7 +573,7 @@ export function WrenchIcon({ size = 20, color = '#D97706' }) {
   );
 }
 
-export function HomeTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function HomeTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -582,7 +582,7 @@ export function HomeTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function HistoryTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function HistoryTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -592,7 +592,7 @@ export function HistoryTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function ShieldTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function ShieldTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -600,7 +600,7 @@ export function ShieldTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function CardsTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function CardsTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Rect x="2" y="5" width="20" height="14" rx="2" />
@@ -609,7 +609,7 @@ export function CardsTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function ChartTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function ChartTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Line x1="18" y1="20" x2="18" y2="10" />
@@ -619,7 +619,7 @@ export function ChartTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function FlashlightIcon({ size = 20, color = '#6C5CE7' }) {
+export function FlashlightIcon({ size = 20, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -627,7 +627,7 @@ export function FlashlightIcon({ size = 20, color = '#6C5CE7' }) {
   );
 }
 
-export function FlashlightOffIcon({ size = 20, color = '#667085' }) {
+export function FlashlightOffIcon({ size = 20, color = '#52657D' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -636,7 +636,7 @@ export function FlashlightOffIcon({ size = 20, color = '#667085' }) {
   );
 }
 
-export function ArrivalsTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function ArrivalsTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -649,7 +649,7 @@ export function ArrivalsTabIcon({ size = 22, color = '#6C5CE7' }) {
 }
 
 
-export function EventsTabIcon({ size = 22, color = '#6C5CE7' }) {
+export function EventsTabIcon({ size = 22, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -663,7 +663,7 @@ export function EventsTabIcon({ size = 22, color = '#6C5CE7' }) {
   );
 }
 
-export function TicketIcon({ size = 20, color = '#6C5CE7' }) {
+export function TicketIcon({ size = 20, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z" />
@@ -672,7 +672,7 @@ export function TicketIcon({ size = 20, color = '#6C5CE7' }) {
   );
 }
 
-export function KeyIcon({ size = 18, color = '#6C5CE7' }) {
+export function KeyIcon({ size = 18, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M21 2l-2 2m-1.5 1.5L14 9l-3 3" />
@@ -682,7 +682,7 @@ export function KeyIcon({ size = 18, color = '#6C5CE7' }) {
   );
 }
 
-export function HistoryIcon({ size = 20, color = '#6C5CE7' }) {
+export function HistoryIcon({ size = 20, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -702,7 +702,7 @@ export function DownloadIcon({ size = 18, color = '#ffffff' }) {
   );
 }
 
-export function PrinterIcon({ size = 18, color = '#6C5CE7' }) {
+export function PrinterIcon({ size = 18, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <Polyline points="6 9 6 2 18 2 18 9" />
@@ -712,7 +712,7 @@ export function PrinterIcon({ size = 18, color = '#6C5CE7' }) {
   );
 }
 
-export function LinkIcon({ size = 18, color = '#6C5CE7' }) {
+export function LinkIcon({ size = 18, color = '#0B2A5B' }) {
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />

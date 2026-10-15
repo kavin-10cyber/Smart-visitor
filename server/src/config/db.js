@@ -218,6 +218,11 @@ const db = {
     const now = new Date().toISOString();
     const visitStatus = status || 'ACTIVE';
 
+    let existingToken = await this.getTokenByCode(token_code);
+    if (!existingToken) {
+      existingToken = await this.createToken(token_code);
+    }
+
     if (isUsingSupabase) {
       let encodedPurpose = purpose || 'General Visit';
       if (is_vip && !encodedPurpose.includes('[VIP]')) {
@@ -335,6 +340,32 @@ const db = {
         if (expected_date) visit.expected_date = expected_date;
         if (time_window) visit.time_window = time_window;
       }
+      saveLocalData();
+      return visit ? enrichVisit(visit) : null;
+    }
+  },
+
+  // Check in scheduled visit
+  async checkInScheduledVisit(visitId, tokenCode) {
+    const checkInTime = new Date().toISOString();
+    if (isUsingSupabase) {
+      let query = supabase.from('visits').update({ status: 'ACTIVE', check_in: checkInTime });
+      if (visitId) query = query.eq('id', visitId);
+      else if (tokenCode) query = query.eq('token_code', tokenCode).eq('status', 'SCHEDULED');
+      const { data, error } = await query.select();
+      if (error) throw error;
+      const checkedIn = data && data.length > 0 ? data[0] : null;
+      const code = tokenCode || (checkedIn && checkedIn.token_code);
+      if (code) await this.updateTokenStatus(code, 'IN USE');
+      return checkedIn ? enrichVisit(checkedIn) : null;
+    } else {
+      const visit = localDb.visits.find(v => (visitId && v.id === String(visitId)) || (tokenCode && v.token_code.toLowerCase() === tokenCode.toLowerCase() && v.status === 'SCHEDULED'));
+      if (visit) {
+        visit.status = 'ACTIVE';
+        visit.check_in = checkInTime;
+      }
+      const code = tokenCode || (visit && visit.token_code);
+      if (code) await this.updateTokenStatus(code, 'IN USE');
       saveLocalData();
       return visit ? enrichVisit(visit) : null;
     }

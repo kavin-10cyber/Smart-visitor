@@ -15,13 +15,13 @@
     {
       "id": "1787662265092",
       "token_code": "V-003",
-      "status": "IN USE",
+      "status": "AVAILABLE",
       "created_at": "2026-08-25T12:51:05.092Z"
     },
     {
       "id": "1787669664973",
       "token_code": "V-004",
-      "status": "IN USE",
+      "status": "AVAILABLE",
       "created_at": "2026-08-25T14:54:24.973Z"
     },
     {
@@ -123,7 +123,7 @@
     {
       "id": "1788840956134",
       "token_code": "V-021",
-      "status": "IN USE",
+      "status": "AVAILABLE",
       "created_at": "2026-09-08T04:15:56.135Z"
     },
     {
@@ -145,132 +145,5 @@
       "created_at": "2026-09-08T06:46:14.917Z"
     }
   ],
-  "visits": [
-    {
-      "id": "1787662265097",
-      "token_id": "1787662265092",
-      "token_code": "V-003",
-      "full_name": "Arun Kumar",
-      "mobile": "9876543210",
-      "address": "Chennai",
-      "purpose": "General Campus Visit",
-      "expected_duration": "1 Hour",
-      "check_in": "2026-08-25T12:51:05.097Z",
-      "check_out": "2026-08-25T12:51:05.104Z",
-      "status": "COMPLETED",
-      "created_at": "2026-08-25T12:51:05.097Z"
-    },
-    {
-      "id": "1787662265111",
-      "token_id": "1787662265092",
-      "token_code": "V-003",
-      "full_name": "Priya",
-      "mobile": "9876501234",
-      "address": "Coimbatore",
-      "purpose": "Admission",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-08-25T12:51:05.111Z",
-      "check_out": null,
-      "status": "ACTIVE",
-      "created_at": "2026-08-25T12:51:05.111Z"
-    },
-    {
-      "id": "1787670179116",
-      "token_id": "1787669664973",
-      "token_code": "V-004",
-      "full_name": "KAVIN",
-      "mobile": "9042119252",
-      "address": "Tirupur",
-      "purpose": "General",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-08-25T15:02:59.116Z",
-      "check_out": "2026-08-25T15:24:30.849Z",
-      "status": "COMPLETED",
-      "created_at": "2026-08-25T15:02:59.116Z"
-    },
-    {
-      "id": "1787723439139",
-      "token_id": "1787723309797",
-      "token_code": "V-008",
-      "full_name": "Mithun",
-      "mobile": "9876543210",
-      "address": "Sathy",
-      "purpose": "Parents meeting",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-08-26T05:50:39.139Z",
-      "check_out": "2026-08-26T10:08:25.728Z",
-      "status": "COMPLETED",
-      "created_at": "2026-08-26T05:50:39.139Z"
-    },
-    {
-      "id": "1787738891038",
-      "token_id": "1787669664973",
-      "token_code": "V-004",
-      "full_name": "Kiran",
-      "mobile": "9087654312",
-      "address": "Erode",
-      "purpose": "Campus tour",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-08-26T10:08:11.038Z",
-      "check_out": null,
-      "status": "ACTIVE",
-      "created_at": "2026-08-26T10:08:11.038Z"
-    },
-    {
-      "id": "1788840956143",
-      "token_id": "1788840956134",
-      "token_code": "V-021",
-      "full_name": "Arun Kumar",
-      "mobile": "9876543210",
-      "address": "Chennai",
-      "purpose": "General Campus Visit",
-      "expected_duration": "1 Hour",
-      "check_in": "2026-09-08T04:15:56.143Z",
-      "check_out": "2026-09-08T04:15:56.151Z",
-      "status": "COMPLETED",
-      "created_at": "2026-09-08T04:15:56.143Z"
-    },
-    {
-      "id": "1788840956161",
-      "token_id": "1788840956134",
-      "token_code": "V-021",
-      "full_name": "Priya",
-      "mobile": "9876501234",
-      "address": "Coimbatore",
-      "purpose": "Admission",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-09-08T04:15:56.161Z",
-      "check_out": null,
-      "status": "ACTIVE",
-      "created_at": "2026-09-08T04:15:56.161Z"
-    },
-    {
-      "id": "1788843025287",
-      "token_id": "1788843025282",
-      "token_code": "V-022",
-      "full_name": "Arun Kumar",
-      "mobile": "9876543210",
-      "address": "Chennai",
-      "purpose": "General Campus Visit",
-      "expected_duration": "1 Hour",
-      "check_in": "2026-09-08T04:50:25.287Z",
-      "check_out": "2026-09-08T04:50:25.291Z",
-      "status": "COMPLETED",
-      "created_at": "2026-09-08T04:50:25.287Z"
-    },
-    {
-      "id": "1788843025296",
-      "token_id": "1788843025282",
-      "token_code": "V-022",
-      "full_name": "Priya",
-      "mobile": "9876501234",
-      "address": "Coimbatore",
-      "purpose": "Admission",
-      "expected_duration": "2 Hours",
-      "check_in": "2026-09-08T04:50:25.296Z",
-      "check_out": "2026-09-08T06:24:29.895Z",
-      "status": "COMPLETED",
-      "created_at": "2026-09-08T04:50:25.296Z"
-    }
-  ]
+  "visits": []
 }

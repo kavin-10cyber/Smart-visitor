@@ -150,7 +150,7 @@ export default function QRScanner({
       style={styles.keyboardContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <StatusBar barStyle="dark-content" backgroundColor="#F7F8FC" />
+      <StatusBar barStyle="dark-content" backgroundColor="#F7F9FC" />
 
       {/* Modern Soft Header with Navigation, Title, and Flashlight Button */}
       <View style={styles.topHeader}>
@@ -160,7 +160,7 @@ export default function QRScanner({
           activeOpacity={0.8}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <ArrowBackIcon size={20} color="#14172C" />
+          <ArrowBackIcon size={20} color="#10233F" />
         </TouchableOpacity>
 
         <View style={styles.headerCenterCol}>
@@ -199,7 +199,7 @@ export default function QRScanner({
           {torchActive ? (
             <FlashlightIcon size={20} color="#FFFFFF" />
           ) : (
-            <FlashlightOffIcon size={20} color="#667085" />
+            <FlashlightOffIcon size={20} color="#52657D" />
           )}
         </TouchableOpacity>
       </View>
@@ -238,7 +238,7 @@ export default function QRScanner({
               </View>
             ) : (
               <View style={styles.cameraFallback}>
-                <ActivityIndicator size="large" color="#6C5CE7" />
+                <ActivityIndicator size="large" color="#0B2A5B" />
                 <Text style={styles.cameraFallbackSub}>Calibrating optical sensor...</Text>
               </View>
             )}
@@ -291,7 +291,7 @@ export default function QRScanner({
               onPress={() => setTorchActive(!torchActive)}
               activeOpacity={0.8}
             >
-              <FlashlightIcon size={16} color={torchActive ? '#6C5CE7' : '#667085'} />
+              <FlashlightIcon size={16} color={torchActive ? '#0B2A5B' : '#52657D'} />
               <Text style={[styles.quickTorchText, torchActive && styles.quickTorchTextActive]}>
                 {torchActive ? 'Flashlight ON' : 'Flashlight OFF'}
               </Text>
@@ -318,11 +318,11 @@ export default function QRScanner({
 
           <View style={styles.inputGroupRow}>
             <View style={styles.inputBox}>
-              <QRIcon size={20} color="#6C5CE7" />
+              <QRIcon size={20} color="#0B2A5B" />
               <TextInput
                 style={styles.textInput}
                 placeholder="e.g. V-001 or V-027"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor="#7B8CA3"
                 value={manualCode}
                 onChangeText={setManualCode}
                 autoCapitalize="characters"
@@ -333,7 +333,7 @@ export default function QRScanner({
                   onPress={() => setManualCode('')}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                  <CloseIcon size={16} color="#94A3B8" />
+                  <CloseIcon size={16} color="#7B8CA3" />
                 </TouchableOpacity>
               )}
             </View>
@@ -366,7 +366,7 @@ export default function QRScanner({
 const styles = StyleSheet.create({
   keyboardContainer: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   topHeader: {
     flexDirection: 'row',
@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'ios' ? 8 : 14,
     paddingBottom: 12,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   headerCircleBtn: {
     width: 42,
@@ -385,17 +385,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 2,
   },
   headerCircleBtnActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
-    shadowColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.35,
     shadowRadius: 10,
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 17,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.3,
   },
   headerLiveRow: {
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
 
   container: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   contentContainer: {
     paddingHorizontal: 20,
@@ -450,10 +450,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 28,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     padding: 10,
     marginBottom: 16,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 18,
@@ -494,7 +494,7 @@ const styles = StyleSheet.create({
   },
   cameraFallbackSub: {
     fontSize: 12,
-    color: '#94A3B8',
+    color: '#7B8CA3',
     textAlign: 'center',
     lineHeight: 18,
   },
@@ -520,7 +520,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 32,
     height: 32,
-    borderColor: '#6C5CE7',
+    borderColor: '#0B2A5B',
   },
   cornerTL: {
     top: -1,
@@ -562,9 +562,9 @@ const styles = StyleSheet.create({
   },
   laserLine: {
     height: 2.5,
-    backgroundColor: '#8B78FF',
+    backgroundColor: '#35D49A',
     borderRadius: 1.5,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.85,
     shadowRadius: 6,
@@ -634,21 +634,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
   },
   quickTorchBtnActive: {
-    backgroundColor: '#F4F0FF',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#F1F5FA',
+    borderColor: '#0B2A5B',
   },
   quickTorchText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#667085',
+    color: '#52657D',
   },
   quickTorchTextActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   autoDetectPill: {
     flexDirection: 'row',
@@ -669,9 +669,9 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 18,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     marginBottom: 16,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
@@ -686,16 +686,16 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
   },
   cardSub: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     marginTop: 2,
   },
   keyTag: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 8,
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
   keyTagText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 0.5,
   },
 
@@ -717,9 +717,9 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1.5,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     borderRadius: 16,
     paddingHorizontal: 12,
     height: 48,
@@ -729,18 +729,18 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     paddingVertical: 0,
   },
   verifyBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#141624',
+    backgroundColor: '#071D40',
     paddingHorizontal: 18,
     height: 48,
     borderRadius: 16,
     gap: 6,
-    shadowColor: '#141624',
+    shadowColor: '#071D40',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 6,
@@ -769,7 +769,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -795,10 +795,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     height: 48,
     borderRadius: 16,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -807,6 +807,6 @@ const styles = StyleSheet.create({
   dismissBtnText: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#667085',
+    color: '#52657D',
   },
 });

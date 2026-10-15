@@ -67,8 +67,8 @@ function NotificationsModal({
           id: `vip_${v.id || v.token_code}`,
           type: 'vip',
           icon: 'crown',
-          iconBg: '#F4F0FF',
-          iconColor: '#5642DE',
+          iconBg: '#F1F5FA',
+          iconColor: '#071D40',
           title: `VIP Guest Active — ${name}`,
           sub: v.company ? `${v.company} · Badge ${v.token_code}` : `Badge ${v.token_code} · Currently inside campus`,
           time: v.check_in
@@ -113,7 +113,7 @@ function NotificationsModal({
           type: 'scheduled',
           icon: 'calendar',
           iconBg: '#faf5ff',
-          iconColor: '#7c3aed',
+          iconColor: '#123B73',
           title: `Scheduled: ${name}`,
           sub: v.time_window
             ? `Expected ${v.time_window}${v.company ? ' · ' + v.company : ''}`
@@ -148,8 +148,8 @@ function NotificationsModal({
         id: 'upcoming_sched',
         type: 'info',
         icon: 'clock',
-        iconBg: '#F4F0FF',
-        iconColor: '#6C5CE7',
+        iconBg: '#F1F5FA',
+        iconColor: '#0B2A5B',
         title: `${futureScheduled.length} Upcoming Pre-Approved Pass${futureScheduled.length > 1 ? 'es' : ''}`,
         sub: futureScheduled
           .slice(0, 2)
@@ -362,7 +362,7 @@ const notifStyles = {
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f8fafc',
+    borderBottomColor: '#F7F9FC',
   },
   criticalRow: {
     backgroundColor: '#fff5f5',
@@ -393,7 +393,7 @@ const notifStyles = {
   },
   notifTime: {
     fontSize: 10,
-    color: '#94a3b8',
+    color: '#7B8CA3',
     marginTop: 3,
     fontWeight: '500',
   },

@@ -10,7 +10,7 @@ import {
   NativeModules,
   Platform,
 } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import QRCode from './QRCodeSafe';
 import { getDownloadUrl, getBadgeUrl } from '../services/api';
 
 export default function QRCodeDisplay({ tokenCode, status = 'AVAILABLE', size = 200 }) {
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
   caption: {
     marginTop: 14,
     fontSize: 12,
-    color: '#94a3b8',
+    color: '#7B8CA3',
     fontStyle: 'italic',
   },
   actionsContainer: {

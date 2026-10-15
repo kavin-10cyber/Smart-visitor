@@ -270,7 +270,7 @@ export default function VisitorHistoryModal({
           <View style={styles.headerRow}>
             <View style={styles.headerLeft}>
               <View style={styles.historyIconBadge}>
-                <HistoryIcon size={20} color="#6C5CE7" />
+                <HistoryIcon size={20} color="#0B2A5B" />
               </View>
               <View>
                 <Text style={styles.headerTitle}>Visitor History Log</Text>
@@ -305,7 +305,7 @@ export default function VisitorHistoryModal({
                 style={styles.dateCenterBtn}
                 activeOpacity={0.8}
               >
-                <CalendarIcon size={16} color="#6C5CE7" />
+                <CalendarIcon size={16} color="#0B2A5B" />
                 <Text style={styles.dateCenterText}>
                   {formatHumanDate(selectedDate)}
                 </Text>
@@ -382,8 +382,8 @@ export default function VisitorHistoryModal({
 
           {/* Metric Counter Strip for Selected Date */}
           <View style={styles.metricsStrip}>
-            <View style={[styles.metricBox, { backgroundColor: '#F4F0FF' }]}>
-              <Text style={[styles.metricNum, { color: '#6C5CE7' }]}>{counts.all}</Text>
+            <View style={[styles.metricBox, { backgroundColor: '#F1F5FA' }]}>
+              <Text style={[styles.metricNum, { color: '#0B2A5B' }]}>{counts.all}</Text>
               <Text style={styles.metricLabel}>Total Visitors</Text>
             </View>
             <View style={[styles.metricBox, { backgroundColor: '#DCFCE7' }]}>
@@ -402,17 +402,17 @@ export default function VisitorHistoryModal({
 
           {/* Quick Search Input */}
           <View style={styles.searchBar}>
-            <SearchIcon size={16} color="#94A3B8" />
+            <SearchIcon size={16} color="#7B8CA3" />
             <TextInput
               style={styles.searchInput}
               placeholder="Filter by name, badge, or phone..."
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#7B8CA3"
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
             {searchQuery ? (
               <TouchableOpacity onPress={() => setSearchQuery('')}>
-                <CloseIcon size={15} color="#94A3B8" />
+                <CloseIcon size={15} color="#7B8CA3" />
               </TouchableOpacity>
             ) : null}
           </View>
@@ -509,8 +509,8 @@ export default function VisitorHistoryModal({
                         )}
                         {isEvent && (
                           <View style={[styles.badgePill, { backgroundColor: '#EDE9FE' }]}>
-                            <TicketIcon size={12} color="#6C5CE7" />
-                            <Text style={[styles.badgeText, { color: '#6C5CE7' }]}>
+                            <TicketIcon size={12} color="#0B2A5B" />
+                            <Text style={[styles.badgeText, { color: '#0B2A5B' }]}>
                               {item.category || 'EVENT'}
                             </Text>
                           </View>
@@ -572,7 +572,7 @@ export default function VisitorHistoryModal({
                           onPress={() => handleCall(item.mobile)}
                           activeOpacity={0.8}
                         >
-                          <PhoneIcon size={13} color="#6C5CE7" />
+                          <PhoneIcon size={13} color="#0B2A5B" />
                           <Text style={styles.callButtonText}>Call</Text>
                         </TouchableOpacity>
                       ) : null}
@@ -613,7 +613,7 @@ export default function VisitorHistoryModal({
                     {/* Footer Timestamps */}
                     <View style={styles.cardFooter}>
                       <View style={styles.timeRow}>
-                        <ClockIcon size={12} color="#94A3B8" />
+                        <ClockIcon size={12} color="#7B8CA3" />
                         <Text style={styles.timeText}>
                           {isActive
                             ? `In: ${formatDisplayTime(item.check_in)}`
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     maxHeight: '92%',
@@ -731,7 +731,7 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -765,7 +765,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 6,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   presetBtnTextActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   calendarPickerContainer: {
     marginTop: 10,
@@ -854,8 +854,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   chipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   chipText: {
     fontSize: 12,
@@ -913,7 +913,7 @@ const styles = StyleSheet.create({
   },
   jumpTodayBtn: {
     marginTop: 16,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 16,
     paddingVertical: 9,
     borderRadius: 10,
@@ -1007,7 +1007,7 @@ const styles = StyleSheet.create({
   },
   badgeCodeHighlight: {
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   callButton: {
     flexDirection: 'row',
@@ -1021,7 +1021,7 @@ const styles = StyleSheet.create({
   callButtonText: {
     fontSize: 11.5,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
 
   cardDetailsBox: {
@@ -1061,6 +1061,6 @@ const styles = StyleSheet.create({
   tapDetailsHint: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
 });

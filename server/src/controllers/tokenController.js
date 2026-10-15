@@ -11,14 +11,26 @@ exports.getTokens = async (req, res) => {
   }
 };
 
-// Generate next unique QR token (e.g., V-001, V-002)
+// Generate next unique QR token (e.g., VIP-001, CON-001, V-001)
 exports.generateToken = async (req, res) => {
   try {
+    const categoryOrPrefix = req.body?.category || req.body?.prefix || req.query?.category || req.query?.prefix || 'General';
+    let prefix = 'V';
+    const c = String(categoryOrPrefix).trim().toLowerCase();
+    if (c === 'vip' || c.startsWith('vip')) {
+      prefix = 'VIP';
+    } else if (c === 'contractor' || c === 'con' || c.startsWith('con')) {
+      prefix = 'CON';
+    } else if (c === 'utility' || c === 'utl' || c.startsWith('utl')) {
+      prefix = 'UTL';
+    }
+
     const tokens = await db.getTokens();
 
     let maxNumber = 0;
+    const regex = new RegExp(`^${prefix}-(\\d+)$`, 'i');
     tokens.forEach(t => {
-      const match = t.token_code.match(/^V-(\d+)$/i);
+      const match = t.token_code.match(regex);
       if (match) {
         const num = parseInt(match[1], 10);
         if (num > maxNumber) maxNumber = num;
@@ -26,17 +38,18 @@ exports.generateToken = async (req, res) => {
     });
 
     const nextNumber = maxNumber + 1;
-    const nextCode = `V-${String(nextNumber).padStart(3, '0')}`;
+    const nextCode = `${prefix}-${String(nextNumber).padStart(3, '0')}`;
 
     const existing = await db.getTokenByCode(nextCode);
     if (existing) {
-      return res.status(400).json({ success: false, message: `Token ${nextCode} already exists` });
+      return res.json({ success: true, token: existing, token_code: nextCode, message: `Token ${nextCode} ready` });
     }
 
     const newDbToken = await db.createToken(nextCode);
     res.json({
       success: true,
       token: newDbToken,
+      token_code: nextCode,
       message: `Generated QR Token ${nextCode}`
     });
   } catch (err) {

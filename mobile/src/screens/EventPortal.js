@@ -7,7 +7,6 @@ import {
   ScrollView,
   TextInput,
   Modal,
-  Alert,
   ActivityIndicator,
   Linking,
   NativeModules,
@@ -16,7 +15,8 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import { CustomAlert as Alert } from '../components/common/CustomAlert';
+import QRCode from '../components/QRCodeSafe';
 import { api, getDownloadUrl, getBadgeUrl } from '../services/api';
 import {
   LogoutIcon,
@@ -103,7 +103,7 @@ export default function EventPortal({ currentUser, onLogout }) {
     loadData();
     const interval = setInterval(() => {
       loadParticipantsSilently();
-    }, 4000);
+    }, 20000);
     return () => clearInterval(interval);
   }, []);
 
@@ -282,18 +282,18 @@ export default function EventPortal({ currentUser, onLogout }) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} />
       }
     >
       {/* Event Quick Info Banner */}
       <View style={styles.eventInfoBanner}>
         <View style={styles.bannerRow}>
           <View style={styles.infoPill}>
-            <CalendarIcon size={14} color="#6C5CE7" />
+            <CalendarIcon size={14} color="#0B2A5B" />
             <Text style={styles.infoPillText}>{eventData.date || 'Today'}</Text>
           </View>
           <View style={styles.infoPill}>
-            <BuildingIcon size={14} color="#6C5CE7" />
+            <BuildingIcon size={14} color="#0B2A5B" />
             <Text style={styles.infoPillText} numberOfLines={1}>
               {eventData.venue || 'Campus Auditorium'}
             </Text>
@@ -368,7 +368,7 @@ export default function EventPortal({ currentUser, onLogout }) {
               onPress={() => Linking.openURL(getBadgeUrl(mainQRCode))}
               activeOpacity={0.85}
             >
-              <PrinterIcon size={15} color="#6C5CE7" />
+              <PrinterIcon size={15} color="#0B2A5B" />
               <Text style={styles.printBtnText}>Print Pass</Text>
             </TouchableOpacity>
 
@@ -377,7 +377,7 @@ export default function EventPortal({ currentUser, onLogout }) {
               onPress={() => Linking.openURL(getDownloadUrl(mainQRCode))}
               activeOpacity={0.85}
             >
-              <LinkIcon size={15} color="#6C5CE7" />
+              <LinkIcon size={15} color="#0B2A5B" />
               <Text style={styles.shareBtnText}>Open Cloud Link</Text>
             </TouchableOpacity>
           </View>
@@ -443,7 +443,7 @@ export default function EventPortal({ currentUser, onLogout }) {
               onPress={() => setPreviewPass(pass)}
               activeOpacity={0.8}
             >
-              <QRIcon size={18} color="#6C5CE7" />
+              <QRIcon size={18} color="#0B2A5B" />
               <Text style={styles.viewQrBtnText}>View QR</Text>
             </TouchableOpacity>
           </View>
@@ -461,7 +461,7 @@ export default function EventPortal({ currentUser, onLogout }) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6C5CE7']} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#0B2A5B']} />
       }
     >
       {/* Header */}
@@ -478,9 +478,9 @@ export default function EventPortal({ currentUser, onLogout }) {
 
       {/* Metrics Row */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.metricsRow}>
-        <View style={[styles.metricChip, { backgroundColor: '#F4F0FF' }]}>
-          <Text style={[styles.metricCount, { color: '#6C5CE7' }]}>{participants.length}</Text>
-          <Text style={[styles.metricLabel, { color: '#6C5CE7' }]}>Total Checked-In</Text>
+        <View style={[styles.metricChip, { backgroundColor: '#F1F5FA' }]}>
+          <Text style={[styles.metricCount, { color: '#0B2A5B' }]}>{participants.length}</Text>
+          <Text style={[styles.metricLabel, { color: '#0B2A5B' }]}>Total Checked-In</Text>
         </View>
         <View style={[styles.metricChip, { backgroundColor: '#DCFCE7' }]}>
           <Text style={[styles.metricCount, { color: '#16A34A' }]}>
@@ -510,7 +510,7 @@ export default function EventPortal({ currentUser, onLogout }) {
           value={participantSearch}
           onChangeText={setParticipantSearch}
           placeholder="Search participant name, mobile, or pass #..."
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor="#7B8CA3"
         />
         {participantSearch ? (
           <TouchableOpacity onPress={() => setParticipantSearch('')}>
@@ -545,7 +545,7 @@ export default function EventPortal({ currentUser, onLogout }) {
       {/* Participants List */}
       {filteredParticipants.length === 0 ? (
         <View style={styles.emptyState}>
-          <UsersIcon size={40} color="#94A3B8" />
+          <UsersIcon size={40} color="#7B8CA3" />
           <Text style={styles.emptyStateTitle}>No Participants Enrolled Yet</Text>
           <Text style={styles.emptyStateSub}>
             When Security scans this event's QR code at the entrance, each attendee is enrolled with an auto-incrementing ID number and will appear here in real-time.
@@ -605,7 +605,17 @@ export default function EventPortal({ currentUser, onLogout }) {
               </View>
 
               <Text style={styles.participantTimeText}>
-                {part.check_in_time ? new Date(part.check_in_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Today'} • {part.gate || 'Gate 1'}
+                {(() => {
+                  if (!part.check_in_time) return 'Today';
+                  try {
+                    const d = new Date(part.check_in_time);
+                    return isNaN(d.getTime())
+                      ? 'Today'
+                      : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                  } catch (_) {
+                    return 'Today';
+                  }
+                })()} • {part.gate || 'Gate 1'}
               </Text>
 
               <TouchableOpacity
@@ -618,7 +628,7 @@ export default function EventPortal({ currentUser, onLogout }) {
                   })
                 }
               >
-                <QRIcon size={15} color="#6C5CE7" />
+                <QRIcon size={15} color="#0B2A5B" />
                 <Text style={styles.participantQrBtnText}>QR</Text>
               </TouchableOpacity>
             </View>
@@ -673,7 +683,7 @@ export default function EventPortal({ currentUser, onLogout }) {
             onPress={() => setActiveNavTab('pass')}
             activeOpacity={0.8}
           >
-            <TicketIcon size={22} color={activeNavTab === 'pass' ? '#6C5CE7' : '#94A3B8'} />
+            <TicketIcon size={22} color={activeNavTab === 'pass' ? '#0B2A5B' : '#7B8CA3'} />
             <Text style={[styles.navTabLabel, activeNavTab === 'pass' && styles.navTabLabelActive]}>
               Event Pass
             </Text>
@@ -687,7 +697,7 @@ export default function EventPortal({ currentUser, onLogout }) {
             activeOpacity={0.8}
           >
             <View style={{ position: 'relative' }}>
-              <UsersIcon size={22} color={activeNavTab === 'participants' ? '#6C5CE7' : '#94A3B8'} />
+              <UsersIcon size={22} color={activeNavTab === 'participants' ? '#0B2A5B' : '#7B8CA3'} />
               {participants.length > 0 && (
                 <View style={styles.navCountBadge}>
                   <Text style={styles.navCountBadgeText}>{participants.length}</Text>
@@ -729,7 +739,7 @@ export default function EventPortal({ currentUser, onLogout }) {
               value={newAttendeeName}
               onChangeText={setNewAttendeeName}
               placeholder="e.g. Dr. Alex Mercer"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#7B8CA3"
             />
 
             <Text style={styles.inputLabel}>Pass Category</Text>
@@ -834,7 +844,7 @@ export default function EventPortal({ currentUser, onLogout }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
   },
   screenWrapper: {
     flex: 1,
@@ -855,7 +865,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   roleBadgeContainer: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
@@ -865,7 +875,7 @@ const styles = StyleSheet.create({
   roleBadgeText: {
     fontSize: 10,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 0.5,
   },
   headerTitle: {
@@ -898,7 +908,7 @@ const styles = StyleSheet.create({
   },
   scrollArea: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
   },
   scrollContent: {
     padding: 16,
@@ -910,7 +920,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -925,7 +935,7 @@ const styles = StyleSheet.create({
   infoPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
@@ -999,12 +1009,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 8,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
   },
   regenerateBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   qrBox: {
     padding: 16,
@@ -1034,7 +1044,7 @@ const styles = StyleSheet.create({
   codeValue: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 1,
   },
   buttonActionsGroup: {
@@ -1100,7 +1110,7 @@ const styles = StyleSheet.create({
   addPassBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 10,
@@ -1193,7 +1203,7 @@ const styles = StyleSheet.create({
   viewQrBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
@@ -1202,7 +1212,7 @@ const styles = StyleSheet.create({
   viewQrBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   participantsHeaderRow: {
     flexDirection: 'row',
@@ -1211,7 +1221,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   participantCountBox: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -1222,12 +1232,12 @@ const styles = StyleSheet.create({
   participantCountNum: {
     fontSize: 18,
     fontWeight: '900',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   participantCountLabel: {
     fontSize: 9,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     textTransform: 'uppercase',
   },
   metricsRow: {
@@ -1282,8 +1292,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   catFilterChipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   catFilterChipText: {
     fontSize: 12,
@@ -1319,8 +1329,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   participantBadgeText: {
-    backgroundColor: '#F4F0FF',
-    color: '#6C5CE7',
+    backgroundColor: '#F1F5FA',
+    color: '#0B2A5B',
     fontWeight: '800',
     fontSize: 11,
     paddingHorizontal: 8,
@@ -1380,13 +1390,13 @@ const styles = StyleSheet.create({
   },
   participantTimeText: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: '#7B8CA3',
     fontWeight: '600',
   },
   participantQrBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 6,
@@ -1395,7 +1405,7 @@ const styles = StyleSheet.create({
   participantQrBtnText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   bottomNavWrapper: {
     position: 'absolute',
@@ -1426,25 +1436,25 @@ const styles = StyleSheet.create({
   navTabLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
     marginTop: 3,
   },
   navTabLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   navActiveDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     marginTop: 2,
   },
   navCountBadge: {
     position: 'absolute',
     top: -4,
     right: -10,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 8,
     paddingHorizontal: 5,
     paddingVertical: 1,
@@ -1495,7 +1505,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   textInput: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -1520,8 +1530,8 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   categoryChipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   categoryChipText: {
     fontSize: 12,
@@ -1532,7 +1542,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
   modalSubmitBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 12,
     paddingVertical: 13,
     alignItems: 'center',
@@ -1549,7 +1559,7 @@ const styles = StyleSheet.create({
   modalTokenCode: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     marginTop: 12,
     letterSpacing: 1,
   },

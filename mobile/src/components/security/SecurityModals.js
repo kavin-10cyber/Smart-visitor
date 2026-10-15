@@ -5,7 +5,16 @@ import {
   KeyboardAvoidingView, Platform,
 } from 'react-native';
 import QRScanner from '../QRScanner';
-import { ShieldIcon, CloseIcon, CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from '../AdminIcons';
+import QRCode from '../QRCodeSafe';
+import {
+  ShieldIcon,
+  CloseIcon,
+  CalendarIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  UserTabIcon,
+  LogoutIcon,
+} from '../AdminIcons';
 import s from '../../styles/securityStyles';
 
 /**
@@ -20,7 +29,7 @@ export function ScannerModal({ visible, onClose, onScan, tokensList = [] }) {
       onRequestClose={onClose}
       statusBarTranslucent={false}
     >
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F8FC' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#F7F9FC' }}>
         <QRScanner
           onScan={onScan}
           availableTokens={tokensList}
@@ -75,7 +84,7 @@ export function CheckInModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. Arun Kumar"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 value={regFullName}
                 onChangeText={setRegFullName}
               />
@@ -84,7 +93,7 @@ export function CheckInModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. 9840122345"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 keyboardType="phone-pad"
                 value={regMobile}
                 onChangeText={setRegMobile}
@@ -94,7 +103,7 @@ export function CheckInModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. Dr. Aris (Computer Science)"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 value={regHost}
                 onChangeText={setRegHost}
               />
@@ -103,7 +112,7 @@ export function CheckInModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. General Campus Visit"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 value={regPurpose}
                 onChangeText={setRegPurpose}
               />
@@ -122,8 +131,6 @@ export function CheckInModal({
     </Modal>
   );
 }
-
-import QRCode from 'react-native-qrcode-svg';
 
 /**
  * VisitActionModal — visitor digital pass / ID Card modal (Screen 3 Reference).
@@ -156,7 +163,7 @@ export function VisitActionModal({ visit, onClose, onCheckOut, onCheckInSchedule
           <View style={s.modalHeaderRow}>
             <Text style={s.modalHeaderTitle}>Visitor Digital Pass</Text>
             <TouchableOpacity onPress={onClose} style={s.modalCloseBtn}>
-              <CloseIcon size={18} color="#6C5CE7" />
+              <CloseIcon size={18} color="#0B2A5B" />
             </TouchableOpacity>
           </View>
 
@@ -206,7 +213,7 @@ export function VisitActionModal({ visit, onClose, onCheckOut, onCheckInSchedule
                   <QRCode
                     value={visit.token_code || 'V-001'}
                     size={74}
-                    color="#14172C"
+                    color="#10233F"
                     backgroundColor="#FFFFFF"
                   />
                 </View>
@@ -243,7 +250,6 @@ export function VisitActionModal({ visit, onClose, onCheckOut, onCheckInSchedule
  * Props: visible, onClose, onSync, onLogout
  */
 export function OfficerModal({ visible, onClose, onSync, onLogout }) {
-  const { UserTabIcon, LogoutIcon } = require('../AdminIcons');
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
       <View style={s.modalBackdrop}>
@@ -306,7 +312,7 @@ export function FilterModal({
       label: 'All Passes',
       desc: 'All visitors logged today',
       count: counts.all ?? 0,
-      color: '#6C5CE7',
+      color: '#0B2A5B',
     },
     {
       key: 'ISSUED',
@@ -567,7 +573,7 @@ export function CalendarModal({
           {/* Month Navigation */}
           <View style={s.calendarMonthHeader}>
             <TouchableOpacity onPress={prevMonth} style={s.calendarNavBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <ChevronLeftIcon size={18} color="#6C5CE7" />
+              <ChevronLeftIcon size={18} color="#0B2A5B" />
             </TouchableOpacity>
 
             <Text style={s.calendarMonthTitle}>
@@ -575,7 +581,7 @@ export function CalendarModal({
             </Text>
 
             <TouchableOpacity onPress={nextMonth} style={s.calendarNavBtn} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-              <ChevronRightIcon size={18} color="#6C5CE7" />
+              <ChevronRightIcon size={18} color="#0B2A5B" />
             </TouchableOpacity>
           </View>
 
@@ -686,7 +692,7 @@ export function EventEnrollModal({
             <View style={s.modalHeaderRow}>
               <View>
                 <Text style={s.modalHeaderTitle}>Event Attendee Enrollment</Text>
-                <Text style={{ fontSize: 12, color: '#6C5CE7', fontWeight: '700', marginTop: 2 }}>
+                <Text style={{ fontSize: 12, color: '#0B2A5B', fontWeight: '700', marginTop: 2 }}>
                   {event?.title || 'Campus Event'}
                 </Text>
               </View>
@@ -699,7 +705,7 @@ export function EventEnrollModal({
               {/* Auto-Incrementing Participant ID Badge */}
               <View
                 style={{
-                  backgroundColor: '#F4F0FF',
+                  backgroundColor: '#F1F5FA',
                   borderRadius: 14,
                   padding: 14,
                   marginBottom: 14,
@@ -707,7 +713,7 @@ export function EventEnrollModal({
                   borderColor: '#D8D1F8',
                 }}
               >
-                <Text style={{ fontSize: 11, fontWeight: '800', color: '#6C5CE7', letterSpacing: 0.5 }}>
+                <Text style={{ fontSize: 11, fontWeight: '800', color: '#0B2A5B', letterSpacing: 0.5 }}>
                   ASSIGNED PARTICIPANT ID (AUTO-INCREMENTED)
                 </Text>
                 <Text style={{ fontSize: 20, fontWeight: '900', color: '#1E1B4B', marginTop: 4 }}>
@@ -722,7 +728,7 @@ export function EventEnrollModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. Rahul Sharma"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 value={regFullName}
                 onChangeText={setRegFullName}
               />
@@ -731,7 +737,7 @@ export function EventEnrollModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. 9840122345"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 keyboardType="phone-pad"
                 value={regMobile}
                 onChangeText={setRegMobile}
@@ -741,7 +747,7 @@ export function EventEnrollModal({
               <TextInput
                 style={s.formTextInput}
                 placeholder="e.g. Department of AI / Tech Corp"
-                placeholderTextColor="#94a3b8"
+                placeholderTextColor="#7B8CA3"
                 value={regHost}
                 onChangeText={setRegHost}
               />
@@ -756,9 +762,9 @@ export function EventEnrollModal({
                       paddingHorizontal: 12,
                       paddingVertical: 7,
                       borderRadius: 8,
-                      backgroundColor: eventCategory === cat ? '#6C5CE7' : '#F1F5F9',
+                      backgroundColor: eventCategory === cat ? '#0B2A5B' : '#F1F5F9',
                       borderWidth: 1,
-                      borderColor: eventCategory === cat ? '#6C5CE7' : '#E2E8F0',
+                      borderColor: eventCategory === cat ? '#0B2A5B' : '#E2E8F0',
                     }}
                   >
                     <Text
@@ -775,7 +781,7 @@ export function EventEnrollModal({
               </View>
 
               <TouchableOpacity
-                style={[s.submitCheckInBtn, { backgroundColor: '#6C5CE7' }]}
+                style={[s.submitCheckInBtn, { backgroundColor: '#0B2A5B' }]}
                 onPress={onSubmit}
                 disabled={submitting}
               >

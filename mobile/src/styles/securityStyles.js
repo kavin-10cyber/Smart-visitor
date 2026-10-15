@@ -3,11 +3,11 @@ import { StyleSheet, Platform } from 'react-native';
 const securityStyles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   screenContainer: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
 
   // ── Top Header (Reference UI Screen 1) ──────────────────────
@@ -18,7 +18,7 @@ const securityStyles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: Platform.OS === 'ios' ? 10 : 14,
     paddingBottom: 14,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   headerLeftCol: {
     flexDirection: 'row',
@@ -29,10 +29,10 @@ const securityStyles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -49,12 +49,12 @@ const securityStyles = StyleSheet.create({
   greetingTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
   },
   greetingSub: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     fontWeight: '500',
     marginTop: 2,
   },
@@ -71,8 +71,8 @@ const securityStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.06,
     shadowRadius: 8,
@@ -111,8 +111,8 @@ const securityStyles = StyleSheet.create({
     height: 50,
     marginBottom: 18,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -121,7 +121,7 @@ const securityStyles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: '#14172C',
+    color: '#10233F',
     paddingVertical: 0,
     marginLeft: 10,
     fontWeight: '500',
@@ -132,11 +132,11 @@ const securityStyles = StyleSheet.create({
 
   // ── Featured Purple Hero Card (Screen 1 Reference) ──────────
   heroCard: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 26,
     padding: 22,
     marginBottom: 22,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.35,
     shadowRadius: 18,
@@ -306,13 +306,13 @@ const securityStyles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.3,
   },
   sectionSubtitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   sectionHeaderActions: {
     flexDirection: 'row',
@@ -323,21 +323,21 @@ const securityStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1.2,
     borderColor: '#DDD6FE',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 2,
   },
   filterIconButtonActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   filterActiveDot: {
     position: 'absolute',
@@ -354,7 +354,7 @@ const securityStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 14,
     paddingVertical: 9,
     borderRadius: 14,
@@ -365,7 +365,7 @@ const securityStyles = StyleSheet.create({
   activeFilterLabel: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   activeFilterName: {
     fontWeight: '800',
@@ -379,7 +379,7 @@ const securityStyles = StyleSheet.create({
   sectionViewAll: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   categoryScrollRow: {
     flexDirection: 'row',
@@ -424,7 +424,7 @@ const securityStyles = StyleSheet.create({
     width: 18,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
 
   // ── Filter Modal Sheet Styles ───────────────────────────────
@@ -445,7 +445,7 @@ const securityStyles = StyleSheet.create({
     borderColor: 'transparent',
   },
   filterOptionRowActive: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderColor: '#DDD6FE',
   },
   filterOptionLeft: {
@@ -462,14 +462,14 @@ const securityStyles = StyleSheet.create({
   filterOptionLabel: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
   },
   filterOptionLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   filterOptionDesc: {
     fontSize: 11,
-    color: '#667085',
+    color: '#52657D',
     marginTop: 2,
   },
   filterOptionRight: {
@@ -484,7 +484,7 @@ const securityStyles = StyleSheet.create({
     backgroundColor: '#EAECF5',
   },
   filterOptionCountBadgeActive: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   filterOptionCountText: {
     fontSize: 11,
@@ -504,13 +504,13 @@ const securityStyles = StyleSheet.create({
     alignItems: 'center',
   },
   filterRadioCircleActive: {
-    borderColor: '#6C5CE7',
+    borderColor: '#0B2A5B',
   },
   filterRadioDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   filterResetBtn: {
     marginTop: 8,
@@ -536,18 +536,18 @@ const securityStyles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 7,
     borderRadius: 16,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
     borderColor: '#E0D7FE',
   },
   calendarPresetChipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   calendarPresetText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   calendarPresetTextActive: {
     color: '#FFFFFF',
@@ -564,14 +564,14 @@ const securityStyles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 10,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
   calendarMonthTitle: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   calendarWeekdaysRow: {
     flexDirection: 'row',
@@ -583,7 +583,7 @@ const securityStyles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   calendarDaysGrid: {
     flexDirection: 'row',
@@ -605,20 +605,20 @@ const securityStyles = StyleSheet.create({
     alignItems: 'center',
   },
   calendarDayBtnToday: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1.5,
-    borderColor: '#6C5CE7',
+    borderColor: '#0B2A5B',
   },
   calendarDayBtnSelected: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   calendarDayText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#14172C',
+    color: '#10233F',
   },
   calendarDayTextToday: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   calendarDayTextSelected: {
@@ -654,12 +654,12 @@ const securityStyles = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
   },
   filterChipActive: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
-    shadowColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -668,14 +668,14 @@ const securityStyles = StyleSheet.create({
   filterChipText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#667085',
+    color: '#52657D',
   },
   filterChipTextActive: {
     color: '#FFFFFF',
     fontWeight: '700',
   },
   filterCountBadge: {
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 7,
     paddingVertical: 2,
     borderRadius: 10,
@@ -686,7 +686,7 @@ const securityStyles = StyleSheet.create({
   filterCountText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   filterCountTextActive: {
     color: '#FFFFFF',
@@ -701,8 +701,8 @@ const securityStyles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -732,7 +732,7 @@ const securityStyles = StyleSheet.create({
   visitorNameText: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   badgeTokenPill: {
     paddingHorizontal: 8,
@@ -745,7 +745,7 @@ const securityStyles = StyleSheet.create({
   },
   visitorSubDetail: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     fontWeight: '500',
   },
   visitorStatusCol: {
@@ -771,7 +771,7 @@ const securityStyles = StyleSheet.create({
   },
   visitorTimeText: {
     fontSize: 11,
-    color: '#94A3B8',
+    color: '#7B8CA3',
     fontWeight: '500',
   },
 
@@ -829,18 +829,18 @@ const securityStyles = StyleSheet.create({
     padding: 32,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     marginTop: 8,
   },
   emptyStateTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 6,
   },
   emptyStateSub: {
     fontSize: 13,
-    color: '#667085',
+    color: '#52657D',
     textAlign: 'center',
   },
 
@@ -849,9 +849,9 @@ const securityStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
@@ -872,11 +872,11 @@ const securityStyles = StyleSheet.create({
   turnstileTitle: {
     fontSize: 14,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   turnstileSubtitle: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     marginTop: 2,
   },
 
@@ -915,17 +915,17 @@ const securityStyles = StyleSheet.create({
   navTabLabel: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#94A3B8',
+    color: '#7B8CA3',
   },
   navTabLabelActive: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   navActiveDot: {
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     marginTop: 2,
   },
 
@@ -939,11 +939,11 @@ const securityStyles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: 29,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: -28,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.45,
     shadowRadius: 16,
@@ -956,13 +956,13 @@ const securityStyles = StyleSheet.create({
   tabHeadingTitle: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 4,
     letterSpacing: -0.3,
   },
   tabHeadingSub: {
     fontSize: 13,
-    color: '#667085',
+    color: '#52657D',
     marginBottom: 18,
   },
 
@@ -985,8 +985,8 @@ const securityStyles = StyleSheet.create({
     paddingHorizontal: 14,
     height: 48,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -995,7 +995,7 @@ const securityStyles = StyleSheet.create({
   historySearchInput: {
     flex: 1,
     fontSize: 13,
-    color: '#14172C',
+    color: '#10233F',
     paddingVertical: 0,
     marginLeft: 8,
     fontWeight: '500',
@@ -1017,14 +1017,14 @@ const securityStyles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 14,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderWidth: 1,
     borderColor: '#E0D7FE',
   },
   historyFilterTagText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   historyResetAllBtn: {
     paddingHorizontal: 10,
@@ -1052,7 +1052,7 @@ const securityStyles = StyleSheet.create({
   historyCardTimeLabel: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: '#7B8CA3',
     textTransform: 'uppercase',
   },
   historyCardTimeVal: {
@@ -1069,8 +1069,8 @@ const securityStyles = StyleSheet.create({
     padding: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -1084,8 +1084,8 @@ const securityStyles = StyleSheet.create({
   logCardToken: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#6C5CE7',
-    backgroundColor: '#F4F0FF',
+    color: '#0B2A5B',
+    backgroundColor: '#F1F5FA',
     paddingHorizontal: 9,
     paddingVertical: 4,
     borderRadius: 8,
@@ -1093,11 +1093,11 @@ const securityStyles = StyleSheet.create({
   logCardName: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   logCardSub: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     marginTop: 2,
   },
 
@@ -1107,9 +1107,9 @@ const securityStyles = StyleSheet.create({
     borderRadius: 22,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     marginBottom: 18,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 10,
@@ -1118,21 +1118,21 @@ const securityStyles = StyleSheet.create({
   gateControlTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 4,
   },
   gateControlSub: {
     fontSize: 13,
-    color: '#667085',
+    color: '#52657D',
     marginBottom: 16,
   },
   unlockTurnstileBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 16,
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
@@ -1171,7 +1171,7 @@ const securityStyles = StyleSheet.create({
   modalHeaderTitle: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: -0.2,
   },
   modalHeaderSub: {
@@ -1183,18 +1183,18 @@ const securityStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   // ── Digital ID Card (Screen 3 Reference) ────────────────────
   digitalIdCard: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 24,
     padding: 20,
     marginBottom: 20,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,
@@ -1258,11 +1258,11 @@ const securityStyles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 12,
@@ -1276,12 +1276,12 @@ const securityStyles = StyleSheet.create({
   modalProfileName: {
     fontSize: 20,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   modalProfileDate: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#667085',
+    color: '#52657D',
     marginTop: 3,
   },
 
@@ -1289,7 +1289,7 @@ const securityStyles = StyleSheet.create({
   formInputLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 6,
     marginTop: 12,
   },
@@ -1301,18 +1301,18 @@ const securityStyles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 12,
     fontSize: 14,
-    color: '#14172C',
+    color: '#10233F',
     fontWeight: '500',
   },
   submitCheckInBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 18,
     paddingVertical: 15,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 24,
     marginBottom: 20,
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -1354,7 +1354,7 @@ const securityStyles = StyleSheet.create({
   // Scanner modal safe area
   scannerModalSafeArea: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   scannerModalHeader: {
     flexDirection: 'row',
@@ -1362,7 +1362,7 @@ const securityStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 14,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   scannerHeaderLeft: {
     flexDirection: 'row',
@@ -1373,18 +1373,18 @@ const securityStyles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
   },
   scannerModalTitle: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   scannerModalSub: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
   },
   scannerModalCloseBtn: {
     width: 36,
@@ -1392,7 +1392,7 @@ const securityStyles = StyleSheet.create({
     borderRadius: 18,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EEF0F6',
+    borderColor: '#DCE5F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -1406,7 +1406,7 @@ const securityStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     marginBottom: 20,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
     padding: 14,
     borderRadius: 18,
   },
@@ -1414,18 +1414,18 @@ const securityStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     justifyContent: 'center',
     alignItems: 'center',
   },
   officerName: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
   },
   officerRole: {
     fontSize: 12,
-    color: '#667085',
+    color: '#52657D',
     marginTop: 2,
   },
   officerActionRow: {
@@ -1439,7 +1439,7 @@ const securityStyles = StyleSheet.create({
   officerActionText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#14172C',
+    color: '#10233F',
   },
 
   // ── Profile Tab ──────────────────────────────────────────────
@@ -1447,13 +1447,13 @@ const securityStyles = StyleSheet.create({
     marginHorizontal: 0,
     marginBottom: 16,
     borderRadius: 24,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingTop: 32,
     paddingBottom: 28,
     alignItems: 'center',
     overflow: 'hidden',
     position: 'relative',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 18,
@@ -1578,8 +1578,8 @@ const securityStyles = StyleSheet.create({
     paddingVertical: 6,
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 8,
@@ -1588,7 +1588,7 @@ const securityStyles = StyleSheet.create({
   profileSectionTitle: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#94A3B8',
+    color: '#7B8CA3',
     letterSpacing: 0.8,
     textTransform: 'uppercase',
     paddingTop: 14,
@@ -1614,7 +1614,7 @@ const securityStyles = StyleSheet.create({
   profileInfoValue: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     flex: 1,
     textAlign: 'right',
   },

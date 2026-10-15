@@ -29,6 +29,25 @@ async function fetchWithTimeout(url, options = {}, timeoutMs = 8000) {
   }
 }
 
+// ── In-Memory Fast Cache for instant screen transitions ─────────
+const memoryCache = new Map();
+
+function getCached(key, maxAgeMs = 15000) {
+  const entry = memoryCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > maxAgeMs) return null;
+  return entry.data;
+}
+
+function setCached(key, data) {
+  memoryCache.set(key, { data, timestamp: Date.now() });
+}
+
+export function invalidateApiCache() {
+  memoryCache.clear();
+}
+
+
 async function postgrest(endpoint, options = {}) {
   const url = `${SUPABASE_URL}/rest/v1${endpoint}`;
   const res = await fetchWithTimeout(url, {
@@ -446,16 +465,24 @@ export const api = {
     };
   },
 
-  // Tokens: Fetch all QR tokens directly from Supabase
-  async getTokens() {
+  // Tokens: Fetch all QR tokens directly from Supabase (with fast memory cache)
+  async getTokens(forceFresh = false) {
+    if (!forceFresh) {
+      const cached = getCached('tokens', 15000);
+      if (cached) return cached;
+    }
     try {
       const data = await postgrest('/visitor_tokens?select=*&order=token_code.asc');
-      return {
+      const res = {
         success: true,
         tokens: data || [],
       };
+      setCached('tokens', res);
+      return res;
     } catch (err) {
       console.error('getTokens error:', err);
+      const fallback = getCached('tokens', 60000);
+      if (fallback) return fallback;
       throw err;
     }
   },
@@ -713,6 +740,8 @@ export const api = {
       body: JSON.stringify({ status: 'IN USE' }),
     }).catch(() => {});
 
+    invalidateApiCache();
+
     const actionText =
       visitStatus === 'SCHEDULED' ? 'scheduled for arrival' : 'successfully checked in';
 
@@ -805,6 +834,8 @@ export const api = {
       body: JSON.stringify({ status: 'AVAILABLE' }),
     });
 
+    invalidateApiCache();
+
     return {
       success: true,
       visit: enrichVisit(completedVisit),
@@ -874,8 +905,13 @@ export const api = {
     };
   },
 
-  // Get visits history, scheduled visits, and active visits
-  async getVisits(search = '') {
+  // Get visits history, scheduled visits, and active visits (with fast memory cache)
+  async getVisits(search = '', forceFresh = false) {
+    const isUnfiltered = !search || search.trim() === '';
+    if (isUnfiltered && !forceFresh) {
+      const cached = getCached('visits_all', 10000);
+      if (cached) return cached;
+    }
     try {
       const data = await postgrest('/visits?select=*&order=created_at.desc');
       let visits = Array.isArray(data) ? data.map(enrichVisit) : [];
@@ -898,7 +934,7 @@ export const api = {
         (v) => v.status === 'COMPLETED' || v.status === 'CANCELLED'
       );
 
-      return {
+      const result = {
         success: true,
         activeVisits,
         scheduledVisits,
@@ -906,8 +942,18 @@ export const api = {
         allVisits: visits,
         totalCount: visits.length,
       };
+
+      if (isUnfiltered) {
+        setCached('visits_all', result);
+      }
+
+      return result;
     } catch (err) {
       console.error('getVisits error:', err);
+      if (isUnfiltered) {
+        const fallback = getCached('visits_all', 60000);
+        if (fallback) return fallback;
+      }
       throw err;
     }
   },

@@ -1,46 +1,55 @@
-// Unified Design System Theme based on Modern Violet & Pastel Reference UI
+// Unified Design System Theme based on Campus-Go Brand Visual Identity
 export const theme = {
   colors: {
-    // Primary Vibrant Violet / Purple Accent
-    primary: '#6C5CE7',
-    primaryLight: '#8B78FF',
-    primaryDark: '#5642DE',
-    primaryGradient: ['#6C5CE7', '#8B78FF'],
-    primarySoft: '#F4F0FF',
-    primaryBorder: '#E5DDFF',
+    // Primary Navy Brand System
+    primary: '#0B2A5B',
+    primaryDark: '#071D40',
+    primarySecondary: '#123B73',
+    blueSurface: '#163F75',
+    primaryLight: '#35D49A',
+    primaryGradient: ['#35D49A', '#28C7A0'],
+    primarySoft: '#F1F5FA',
+    primaryBorder: '#DCE5F0',
 
-    // Canvas & Neutral Backgrounds
-    background: '#F7F8FC',
+    // Green / Teal Accents
+    accentGreen: '#35D49A',
+    accentTeal: '#28C7A0',
+    accentGreenDark: '#20A879',
+    accentLight: '#DDF8EE',
+
+    // White / Light Surfaces
+    background: '#F7F9FC',
     cardBackground: '#FFFFFF',
-    cardBorder: '#EEF0F6',
+    cardBorder: '#DCE5F0',
+    lightBlueSurface: '#F1F5FA',
 
     // Text & Typographic Hierarchy
-    textPrimary: '#14172C',
-    textSecondary: '#667085',
-    textMuted: '#94A3B8',
+    textPrimary: '#10233F',
+    textSecondary: '#52657D',
+    textMuted: '#7B8CA3',
     textLight: '#CBD5E1',
 
-    // Dark Button Accents (Obsidian / Carbon pills from reference)
-    darkButton: '#141624',
-    darkButtonHover: '#23263B',
+    // Dark Button Accents
+    darkButton: '#071D40',
+    darkButtonHover: '#0B2A5B',
 
-    // Pastel Category & Tag Colors (from Reference Image)
+    // Category & Tag Colors
     pastels: {
       pink: { bg: '#FFE4E8', text: '#E11D48', border: '#FECDD3' },
       peach: { bg: '#FFE8D6', text: '#D97706', border: '#FED7AA' },
-      purple: { bg: '#F2EBFE', text: '#7C3AED', border: '#DDD6FE' },
-      cyan: { bg: '#E0F2FE', text: '#0284C7', border: '#BAE6FD' },
-      green: { bg: '#DCFCE7', text: '#15803D', border: '#BBF7D0' },
+      purple: { bg: '#F1F5FA', text: '#123B73', border: '#DCE5F0' },
+      cyan: { bg: '#DDF8EE', text: '#20A879', border: '#35D49A' },
+      green: { bg: '#DDF8EE', text: '#20A879', border: '#35D49A' },
     },
 
     // Status Colors
     status: {
-      active: { bg: '#DCFCE7', text: '#166534', dot: '#22C55E' },
-      scheduled: { bg: '#E0F2FE', text: '#075985', dot: '#0284C7' },
-      completed: { bg: '#F1F5F9', text: '#475569', dot: '#94A3B8' },
+      active: { bg: '#DDF8EE', text: '#20A879', dot: '#35D49A' },
+      scheduled: { bg: '#F1F5FA', text: '#123B73', dot: '#28C7A0' },
+      completed: { bg: '#F1F5FA', text: '#52657D', dot: '#7B8CA3' },
       cancelled: { bg: '#FEE2E2', text: '#991B1B', dot: '#EF4444' },
       inUse: { bg: '#FEE2E2', text: '#991B1B', dot: '#EF4444' },
-      available: { bg: '#DCFCE7', text: '#166534', dot: '#22C55E' },
+      available: { bg: '#DDF8EE', text: '#20A879', dot: '#35D49A' },
     },
   },
 
@@ -54,28 +63,28 @@ export const theme = {
 
   shadows: {
     card: {
-      shadowColor: '#6C5CE7',
+      shadowColor: '#071D40',
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.08,
       shadowRadius: 14,
       elevation: 3,
     },
     heroCard: {
-      shadowColor: '#6C5CE7',
+      shadowColor: '#071D40',
       shadowOffset: { width: 0, height: 10 },
       shadowOpacity: 0.28,
       shadowRadius: 18,
       elevation: 6,
     },
     fab: {
-      shadowColor: '#6C5CE7',
+      shadowColor: '#0B2A5B',
       shadowOffset: { width: 0, height: 8 },
       shadowOpacity: 0.4,
       shadowRadius: 14,
       elevation: 8,
     },
     navBar: {
-      shadowColor: '#000000',
+      shadowColor: '#071D40',
       shadowOffset: { width: 0, height: -4 },
       shadowOpacity: 0.06,
       shadowRadius: 16,

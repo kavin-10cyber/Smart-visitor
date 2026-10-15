@@ -94,7 +94,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
               value={title}
               onChangeText={setTitle}
               placeholder="e.g. National Tech Conclave 2026"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#7B8CA3"
             />
 
             {/* Field: Description */}
@@ -104,7 +104,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
               value={description}
               onChangeText={setDescription}
               placeholder="Brief description or purpose of this campus event..."
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor="#7B8CA3"
               multiline={true}
               numberOfLines={3}
             />
@@ -118,7 +118,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={date}
                   onChangeText={setDate}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                 />
               </View>
               <View style={styles.halfCol}>
@@ -128,7 +128,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={time}
                   onChangeText={setTime}
                   placeholder="10:00 AM - 05:00 PM"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                 />
               </View>
             </View>
@@ -142,7 +142,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={venue}
                   onChangeText={setVenue}
                   placeholder="Auditorium Hall A"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                 />
               </View>
               <View style={styles.halfCol}>
@@ -152,7 +152,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={attendees}
                   onChangeText={setAttendees}
                   placeholder="200"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                   keyboardType="numeric"
                 />
               </View>
@@ -167,7 +167,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={coordinatorName}
                   onChangeText={setCoordinatorName}
                   placeholder="Dr. Sarah Jenkins"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                 />
               </View>
               <View style={styles.halfCol}>
@@ -177,7 +177,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                   value={coordinatorPhone}
                   onChangeText={setCoordinatorPhone}
                   placeholder="+91 98765 43210"
-                  placeholderTextColor="#94A3B8"
+                  placeholderTextColor="#7B8CA3"
                   keyboardType="phone-pad"
                 />
               </View>
@@ -187,7 +187,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
             <View style={styles.credentialsBox}>
               <View style={styles.credHeaderRow}>
                 <View style={styles.credTitleRow}>
-                  <KeyIcon size={16} color="#6C5CE7" />
+                  <KeyIcon size={16} color="#0B2A5B" />
                   <Text style={styles.credTitle}>COORDINATOR LOGIN CREDENTIALS</Text>
                 </View>
                 <TouchableOpacity
@@ -210,7 +210,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                 value={loginId}
                 onChangeText={setLoginId}
                 placeholder="e.g. tech2026 or coordinator_id"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor="#7B8CA3"
                 autoCapitalize="none"
               />
 
@@ -221,7 +221,7 @@ export default function AddEventModal({ visible, onClose, onSubmit, loading }) {
                 value={password}
                 onChangeText={setPassword}
                 placeholder="e.g. event123"
-                placeholderTextColor="#94A3B8"
+                placeholderTextColor="#7B8CA3"
                 autoCapitalize="none"
               />
             </View>
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   input: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F7F9FC',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#E2E8F0',
@@ -340,11 +340,11 @@ const styles = StyleSheet.create({
   credTitle: {
     fontSize: 11,
     fontWeight: '800',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     letterSpacing: 0.5,
   },
   autoGenBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 6,
@@ -372,11 +372,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   submitBtn: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,

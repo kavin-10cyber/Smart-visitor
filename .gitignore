@@ -10,11 +10,20 @@ node_modules/
 .env.test.local
 .env.production.local
 
-# Android builds & Gradle
+# Android & iOS builds & Gradle
+.gradle/
+**/build/
+**/.gradle/
 android/.gradle/
 android/build/
 android/app/build/
 android/local.properties
+mobile/android/.gradle/
+mobile/android/build/
+mobile/android/app/build/
+mobile/android/local.properties
+mobile/ios/build/
+mobile/ios/Pods/
 *.keystore
 !android/app/debug.keystore
 

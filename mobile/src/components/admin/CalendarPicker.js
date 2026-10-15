@@ -122,7 +122,7 @@ export default function CalendarPicker({
       {/* Label and Toggle Header */}
       <View style={styles.labelRow}>
         <View style={styles.labelWithIcon}>
-          <CalendarIcon size={15} color="#6C5CE7" />
+          <CalendarIcon size={15} color="#0B2A5B" />
           <Text style={styles.label}>{label}</Text>
         </View>
         <TouchableOpacity
@@ -238,7 +238,7 @@ export default function CalendarPicker({
         <TextInput
           style={styles.manualInput}
           placeholder="e.g. Sep 18, 2026 or Next Monday"
-          placeholderTextColor="#94a3b8"
+          placeholderTextColor="#7B8CA3"
           value={value}
           onChangeText={onChange}
         />
@@ -275,10 +275,10 @@ const styles = StyleSheet.create({
   toggleBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   calendarCard: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F9FC',
     borderRadius: 16,
     padding: 12,
     borderWidth: 1,
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 11,
     fontWeight: '700',
-    color: '#94a3b8',
+    color: '#7B8CA3',
     textTransform: 'uppercase',
   },
   daysGrid: {
@@ -348,8 +348,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   dayBtnSelected: {
-    backgroundColor: '#6C5CE7',
-    shadowColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.35,
     shadowRadius: 4,
@@ -357,8 +357,8 @@ const styles = StyleSheet.create({
   },
   dayBtnToday: {
     borderWidth: 1.5,
-    borderColor: '#6C5CE7',
-    backgroundColor: '#F4F0FF',
+    borderColor: '#0B2A5B',
+    backgroundColor: '#F1F5FA',
   },
   dayText: {
     fontSize: 13,
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   dayTextToday: {
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '800',
   },
   dayTextPast: {
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 9,
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
     width: 7,
     height: 7,
     borderRadius: 4,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
   },
   summaryText: {
     fontSize: 12,
@@ -416,10 +416,10 @@ const styles = StyleSheet.create({
   doneBtnText: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   manualInput: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#F7F9FC',
     borderWidth: 1,
     borderColor: '#e2e8f0',
     borderRadius: 12,

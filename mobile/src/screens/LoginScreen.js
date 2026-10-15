@@ -6,13 +6,13 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   TouchableWithoutFeedback,
   Keyboard,
 } from 'react-native';
+import { CustomAlert as Alert } from '../components/common/CustomAlert';
 import Svg, { Path, Rect, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { api } from '../services/api';
 
@@ -59,7 +59,7 @@ function ShieldLogo() {
 }
 
 // User / Person icon
-function UserIcon({ color = '#94a3b8' }) {
+function UserIcon({ color = '#7B8CA3' }) {
   return (
     <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -69,7 +69,7 @@ function UserIcon({ color = '#94a3b8' }) {
 }
 
 // Lock icon
-function LockIcon({ color = '#94a3b8' }) {
+function LockIcon({ color = '#7B8CA3' }) {
   return (
     <Svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <Rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
@@ -338,7 +338,7 @@ export default function LoginScreen({ onLoginSuccess }) {
               </Text>
               <View style={styles.inputBox}>
                 <View style={styles.inputIconLeft}>
-                  <UserIcon color="#94a3b8" />
+                  <UserIcon color="#7B8CA3" />
                 </View>
                 <TextInput
                   style={styles.textInput}
@@ -351,7 +351,7 @@ export default function LoginScreen({ onLoginSuccess }) {
                       ? 'admin'
                       : 'e.g. tech2026'
                   }
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#7B8CA3"
                   autoCapitalize="none"
                   autoCorrect={false}
                 />
@@ -368,14 +368,14 @@ export default function LoginScreen({ onLoginSuccess }) {
               </View>
               <View style={styles.inputBox}>
                 <View style={styles.inputIconLeft}>
-                  <LockIcon color="#94a3b8" />
+                  <LockIcon color="#7B8CA3" />
                 </View>
                 <TextInput
                   style={[styles.textInput, { paddingRight: 42 }]}
                   value={password}
                   onChangeText={setPassword}
                   placeholder="••••••••••••"
-                  placeholderTextColor="#94a3b8"
+                  placeholderTextColor="#7B8CA3"
                   secureTextEntry={!showPassword}
                   autoCapitalize="none"
                   autoCorrect={false}
@@ -438,7 +438,7 @@ export default function LoginScreen({ onLoginSuccess }) {
 const styles = StyleSheet.create({
   screenWrapper: {
     flex: 1,
-    backgroundColor: '#F7F8FC',
+    backgroundColor: '#F7F9FC',
   },
   scrollContent: {
     flexGrow: 1,
@@ -455,10 +455,10 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 20,
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 14,
@@ -468,14 +468,14 @@ const styles = StyleSheet.create({
   appTitle: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#14172C',
+    color: '#10233F',
     letterSpacing: 0.5,
     textAlign: 'center',
   },
   appSubtitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#667085',
+    color: '#52657D',
     marginTop: 4,
     textAlign: 'center',
   },
@@ -486,8 +486,8 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     borderWidth: 1,
-    borderColor: '#EEF0F6',
-    shadowColor: '#6C5CE7',
+    borderColor: '#DCE5F0',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.08,
     shadowRadius: 18,
@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 14,
     padding: 4,
     marginBottom: 22,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
   },
   tabButtonActive: {
     backgroundColor: '#FFFFFF',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
@@ -518,11 +518,11 @@ const styles = StyleSheet.create({
   tabButtonText: {
     fontSize: 13.5,
     fontWeight: '600',
-    color: '#667085',
+    color: '#52657D',
   },
   tabButtonTextActive: {
     fontWeight: '700',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   errorBox: {
     backgroundColor: '#FEE2E2',
@@ -544,7 +544,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 13.5,
     fontWeight: '700',
-    color: '#14172C',
+    color: '#10233F',
     marginBottom: 8,
   },
   passwordLabelRow: {
@@ -556,7 +556,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#6C5CE7',
+    color: '#0B2A5B',
   },
   inputBox: {
     position: 'relative',
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
   textInput: {
     flex: 1,
     fontSize: 15,
-    color: '#14172C',
+    color: '#10233F',
     height: '100%',
     paddingVertical: 0,
     paddingRight: 14,
@@ -608,8 +608,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   checkboxChecked: {
-    backgroundColor: '#6C5CE7',
-    borderColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
+    borderColor: '#0B2A5B',
   },
   checkboxLabel: {
     fontSize: 13.5,
@@ -617,12 +617,12 @@ const styles = StyleSheet.create({
     color: '#475569',
   },
   signInButton: {
-    backgroundColor: '#6C5CE7',
+    backgroundColor: '#0B2A5B',
     borderRadius: 16,
     height: 52,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#6C5CE7',
+    shadowColor: '#0B2A5B',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
@@ -646,19 +646,19 @@ const styles = StyleSheet.create({
     marginTop: 24,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: '#F4F0FF',
+    backgroundColor: '#F1F5FA',
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#E5DDFF',
+    borderColor: '#DCE5F0',
   },
   serverText: {
     fontSize: 12,
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '600',
   },
   serverEditBtn: {
     fontSize: 12,
-    color: '#6C5CE7',
+    color: '#0B2A5B',
     fontWeight: '700',
   },
   serverEditBox: {
@@ -674,7 +674,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 12,
-    color: '#14172C',
+    color: '#10233F',
     textAlign: 'center',
   },
 });
